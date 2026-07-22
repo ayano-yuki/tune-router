@@ -50,7 +50,7 @@ def test_load_hf_dataset_can_use_parquet_api(monkeypatch) -> None:
             ).encode()
 
     def fake_urlopen(url, timeout):
-        assert url == "https://datasets-server.huggingface.co/parquet?dataset=shunk031%2FJGLUE"
+        assert url == "https://datasets-server.huggingface.co/parquet?dataset=shunk031/JGLUE"
         assert timeout == 60
         return FakeResponse()
 
@@ -77,6 +77,50 @@ def test_load_hf_dataset_can_use_parquet_api(monkeypatch) -> None:
     assert records == [{"_subset": "MARC-ja", "label": 1, "sentence": "テスト"}]
     assert calls[0][0] == "parquet"
     assert calls[0][2]["split"] == "validation"
+    assert calls[0][2]["data_files"] == {
+        "validation": [
+            "https://huggingface.co/datasets/shunk031/JGLUE/resolve/refs%2Fconvert%2Fparquet/MARC-ja/jglue-validation.parquet"
+        ]
+    }
+
+
+def test_load_hf_dataset_falls_back_to_repo_parquet_files(monkeypatch) -> None:
+    calls = []
+
+    def fake_urlopen(url, timeout):
+        raise OSError("metadata API unavailable")
+
+    def fake_list_repo_files(repo_id, repo_type, revision):
+        assert repo_id == "shunk031/JGLUE"
+        assert repo_type == "dataset"
+        assert revision == "refs/convert/parquet"
+        return [
+            "MARC-ja/jglue-validation.parquet",
+            "MARC-ja/jglue-train.parquet",
+        ]
+
+    def fake_load_dataset(name, *args, **kwargs):
+        calls.append((name, args, kwargs))
+        return [{"label": 1, "sentence": "テスト"}]
+
+    monkeypatch.setattr("tunescope.evaluation.urlopen", fake_urlopen)
+    monkeypatch.setattr("huggingface_hub.list_repo_files", fake_list_repo_files)
+    monkeypatch.setattr("datasets.load_dataset", fake_load_dataset)
+
+    records = _load_hf_dataset(
+        {
+            "id": "jglue",
+            "name": "shunk031/JGLUE",
+            "split": "validation",
+            "load_mode": "hf_parquet_api",
+            "subsets": ["MARC-ja"],
+        },
+        sample_count=None,
+        seed=42,
+        allow_floating_revision=False,
+    )
+
+    assert records == [{"_subset": "MARC-ja", "label": 1, "sentence": "テスト"}]
     assert calls[0][2]["data_files"] == {
         "validation": [
             "https://huggingface.co/datasets/shunk031/JGLUE/resolve/refs%2Fconvert%2Fparquet/MARC-ja/jglue-validation.parquet"

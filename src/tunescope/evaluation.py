@@ -10,7 +10,7 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlencode
+from urllib.parse import quote
 from urllib.request import urlopen
 
 from tunescope.artifacts import ensure_dir, resolve_output_dir, run_metadata, write_json, write_yaml
@@ -225,16 +225,16 @@ def _load_hf_dataset(
 
 
 def _hf_parquet_api_urls(dataset_name: str) -> dict[tuple[str, str], list[str]]:
-    api_url = "https://datasets-server.huggingface.co/parquet?" + urlencode({"dataset": dataset_name})
+    api_url = f"https://datasets-server.huggingface.co/parquet?dataset={quote(dataset_name, safe='/')}"
     try:
         with urlopen(api_url, timeout=60) as response:
             payload = json.load(response)
-    except OSError as exc:
-        raise ConfigError(f"Could not fetch Hugging Face parquet metadata for {dataset_name!r}: {exc}") from exc
+    except OSError:
+        return _hf_parquet_repo_urls(dataset_name)
 
     files = payload.get("parquet_files")
     if not isinstance(files, list):
-        raise ConfigError(f"Unexpected Hugging Face parquet metadata for {dataset_name!r}.")
+        return _hf_parquet_repo_urls(dataset_name)
 
     urls: dict[tuple[str, str], list[str]] = {}
     for item in files:
@@ -245,6 +245,46 @@ def _hf_parquet_api_urls(dataset_name: str) -> dict[tuple[str, str], list[str]]:
         url = _as_text(item.get("url"))
         if config and split and url:
             urls.setdefault((config, split), []).append(url)
+    return urls
+
+
+def _split_from_parquet_path(path: str) -> tuple[str, str] | None:
+    parts = path.split("/")
+    if len(parts) < 2 or not path.endswith(".parquet"):
+        return None
+    config = parts[0]
+    if len(parts) >= 3:
+        return config, parts[1]
+
+    filename = parts[1].lower()
+    if "validation" in filename:
+        return config, "validation"
+    if "train" in filename:
+        return config, "train"
+    if "test" in filename:
+        return config, "test"
+    return None
+
+
+def _hf_parquet_repo_urls(dataset_name: str) -> dict[tuple[str, str], list[str]]:
+    try:
+        from huggingface_hub import list_repo_files
+    except ImportError as exc:  # pragma: no cover
+        raise ConfigError("huggingface-hub is required. Run: uv sync --group dev") from exc
+
+    try:
+        files = list_repo_files(dataset_name, repo_type="dataset", revision="refs/convert/parquet")
+    except Exception as exc:
+        raise ConfigError(f"Could not list Hugging Face parquet files for {dataset_name!r}: {exc}") from exc
+
+    urls: dict[tuple[str, str], list[str]] = {}
+    for path in files:
+        parsed = _split_from_parquet_path(path)
+        if parsed is None:
+            continue
+        encoded_path = quote(path, safe="/")
+        url = f"https://huggingface.co/datasets/{dataset_name}/resolve/refs%2Fconvert%2Fparquet/{encoded_path}"
+        urls.setdefault(parsed, []).append(url)
     return urls
 
 
