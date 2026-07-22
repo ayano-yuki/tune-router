@@ -40,9 +40,43 @@ def _as_text(value: Any) -> str:
     return str(value).strip()
 
 
-def _first_text(record: dict[str, Any], fields: Iterable[str]) -> str:
+def _conversation_role(value: str) -> str:
+    roles = {
+        "human": "user",
+        "gpt": "assistant",
+    }
+    return roles.get(value, value)
+
+
+def _conversation_to_text(value: Any) -> str:
+    if not isinstance(value, list):
+        return ""
+
+    turns = []
+    for item in value:
+        if not isinstance(item, dict):
+            return ""
+        role = _conversation_role(_as_text(item.get("role") or item.get("from")))
+        content = _as_text(item.get("content") or item.get("value"))
+        if not content:
+            return ""
+        turns.append((role, content))
+
+    if len(turns) == 1:
+        return turns[0][1]
+    return "\n".join(f"{role}: {content}" if role else content for role, content in turns)
+
+
+def _field_text(record: dict[str, Any], field: str | None) -> str:
+    value = _lookup(record, field)
+    if isinstance(value, list):
+        return _conversation_to_text(value)
+    return _as_text(value)
+
+
+def _first_text(record: dict[str, Any], fields: Iterable[str | None]) -> str:
     for field in fields:
-        value = _as_text(_lookup(record, field))
+        value = _field_text(record, field)
         if value:
             return value
     return ""

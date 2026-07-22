@@ -7,6 +7,6 @@ license_note: Check the upstream dataset card before publishing derived artifact
 normalization:
   target_format: preference
   fields:
-    prompt: prompt
+    prompt: conversations
     chosen: chosen
     rejected: rejected

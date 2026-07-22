@@ -36,6 +36,51 @@ def test_normalize_preference_record() -> None:
     assert normalize_record(record, config) == record
 
 
+def test_normalize_preference_record_from_conversations() -> None:
+    config = {
+        "id": "hh_rlhf_12k_ja",
+        "normalization": {
+            "target_format": "preference",
+            "fields": {"prompt": "conversations", "chosen": "chosen", "rejected": "rejected"},
+        },
+    }
+    record = {
+        "conversations": [{"from": "human", "value": "説明してください。"}],
+        "chosen": "よい回答",
+        "rejected": "悪い回答",
+        "source": "helpful-base",
+    }
+
+    assert normalize_record(record, config) == {
+        "prompt": "説明してください。",
+        "chosen": "よい回答",
+        "rejected": "悪い回答",
+    }
+
+
+def test_normalize_preference_record_from_multi_turn_conversations() -> None:
+    config = {
+        "id": "hh_rlhf_12k_ja",
+        "normalization": {
+            "target_format": "preference",
+            "fields": {"prompt": "conversations", "chosen": "chosen", "rejected": "rejected"},
+        },
+    }
+    record = {
+        "conversations": [
+            {"from": "human", "value": "最初の質問"},
+            {"from": "gpt", "value": "途中の回答"},
+            {"from": "human", "value": "追加の質問"},
+        ],
+        "chosen": "よい回答",
+        "rejected": "悪い回答",
+    }
+
+    assert normalize_record(record, config)["prompt"] == (
+        "user: 最初の質問\nassistant: 途中の回答\nuser: 追加の質問"
+    )
+
+
 def test_sample_records_is_deterministic() -> None:
     records = [{"id": index} for index in range(10)]
 
@@ -51,4 +96,3 @@ def test_write_jsonl_uses_utf8_json_lines(tmp_path) -> None:
     assert count == 2
     lines = path.read_text(encoding="utf-8").splitlines()
     assert json.loads(lines[0]) == {"text": "日本語"}
-
