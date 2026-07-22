@@ -1,3 +1,5 @@
+import json
+
 from tunescope.evaluation import _load_hf_dataset, exact_match, macro_f1, pearsonr, rouge_scores, token_f1
 
 
@@ -27,10 +29,36 @@ def test_pearsonr_for_similarity_scores() -> None:
 def test_load_hf_dataset_can_use_parquet_api(monkeypatch) -> None:
     calls = []
 
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, traceback):
+            return False
+
+        def read(self):
+            return json.dumps(
+                {
+                    "parquet_files": [
+                        {
+                            "config": "MARC-ja",
+                            "split": "validation",
+                            "url": "https://huggingface.co/datasets/shunk031/JGLUE/resolve/refs%2Fconvert%2Fparquet/MARC-ja/jglue-validation.parquet",
+                        }
+                    ]
+                }
+            ).encode()
+
+    def fake_urlopen(url, timeout):
+        assert url == "https://datasets-server.huggingface.co/parquet?dataset=shunk031%2FJGLUE"
+        assert timeout == 60
+        return FakeResponse()
+
     def fake_load_dataset(name, *args, **kwargs):
         calls.append((name, args, kwargs))
         return [{"label": 1, "sentence": "テスト"}]
 
+    monkeypatch.setattr("tunescope.evaluation.urlopen", fake_urlopen)
     monkeypatch.setattr("datasets.load_dataset", fake_load_dataset)
 
     records = _load_hf_dataset(
@@ -50,5 +78,7 @@ def test_load_hf_dataset_can_use_parquet_api(monkeypatch) -> None:
     assert calls[0][0] == "parquet"
     assert calls[0][2]["split"] == "validation"
     assert calls[0][2]["data_files"] == {
-        "validation": "https://huggingface.co/api/datasets/shunk031/JGLUE/parquet/MARC-ja/validation/0.parquet"
+        "validation": [
+            "https://huggingface.co/datasets/shunk031/JGLUE/resolve/refs%2Fconvert%2Fparquet/MARC-ja/jglue-validation.parquet"
+        ]
     }

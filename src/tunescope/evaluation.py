@@ -10,7 +10,8 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote
+from urllib.parse import urlencode
+from urllib.request import urlopen
 
 from tunescope.artifacts import ensure_dir, resolve_output_dir, run_metadata, write_json, write_yaml
 from tunescope.config import ConfigError, get_experiment, load_all
@@ -223,10 +224,28 @@ def _load_hf_dataset(
     return _sample(loaded, sample_count, seed)
 
 
-def _hf_parquet_api_url(dataset_name: str, subset: str, split: str, index: int = 0) -> str:
-    quoted_subset = quote(subset, safe="")
-    quoted_split = quote(split, safe="")
-    return f"https://huggingface.co/api/datasets/{dataset_name}/parquet/{quoted_subset}/{quoted_split}/{index}.parquet"
+def _hf_parquet_api_urls(dataset_name: str) -> dict[tuple[str, str], list[str]]:
+    api_url = "https://datasets-server.huggingface.co/parquet?" + urlencode({"dataset": dataset_name})
+    try:
+        with urlopen(api_url, timeout=60) as response:
+            payload = json.load(response)
+    except OSError as exc:
+        raise ConfigError(f"Could not fetch Hugging Face parquet metadata for {dataset_name!r}: {exc}") from exc
+
+    files = payload.get("parquet_files")
+    if not isinstance(files, list):
+        raise ConfigError(f"Unexpected Hugging Face parquet metadata for {dataset_name!r}.")
+
+    urls: dict[tuple[str, str], list[str]] = {}
+    for item in files:
+        if not isinstance(item, dict):
+            continue
+        config = _as_text(item.get("config"))
+        split = _as_text(item.get("split"))
+        url = _as_text(item.get("url"))
+        if config and split and url:
+            urls.setdefault((config, split), []).append(url)
+    return urls
 
 
 def _load_hf_parquet_api_dataset(
@@ -242,16 +261,27 @@ def _load_hf_parquet_api_dataset(
 
     subsets = dataset_config.get("subsets")
     subset = dataset_config.get("subset")
+    parquet_urls = _hf_parquet_api_urls(str(dataset_config["name"]))
     loaded: list[dict[str, Any]] = []
     if isinstance(subsets, list):
         for item in subsets:
             subset_name = str(item)
-            url = _hf_parquet_api_url(str(dataset_config["name"]), subset_name, split)
-            dataset = load_dataset("parquet", data_files={split: url}, split=split)
+            urls = parquet_urls.get((subset_name, split))
+            if not urls:
+                raise ConfigError(
+                    f"No parquet files found for dataset {dataset_config.get('id')!r}, "
+                    f"subset {subset_name!r}, split {split!r}."
+                )
+            dataset = load_dataset("parquet", data_files={split: urls}, split=split)
             loaded.extend([{"_subset": subset_name, **dict(record)} for record in dataset])
     elif subset:
-        url = _hf_parquet_api_url(str(dataset_config["name"]), str(subset), split)
-        dataset = load_dataset("parquet", data_files={split: url}, split=split)
+        urls = parquet_urls.get((str(subset), split))
+        if not urls:
+            raise ConfigError(
+                f"No parquet files found for dataset {dataset_config.get('id')!r}, "
+                f"subset {subset!r}, split {split!r}."
+            )
+        dataset = load_dataset("parquet", data_files={split: urls}, split=split)
         loaded = [dict(record) for record in dataset]
     else:
         raise ConfigError(f"Dataset {dataset_config.get('id')!r} uses hf_parquet_api but has no subset list.")
