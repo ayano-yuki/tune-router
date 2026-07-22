@@ -1,12 +1,18 @@
 import json
 from pathlib import Path
 
+from tunescope.artifacts import normalize_cli_path
 from tunescope.dashboard import generate_dashboard
 from tunescope.export import export_metrics
 from tunescope.judge import judge_elyza
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_normalize_cli_path_accepts_windows_separators_on_posix() -> None:
+    assert normalize_cli_path(r"experiments\results\Q1", platform_name="posix") == "experiments/results/Q1"
+    assert normalize_cli_path(r"experiments\results\Q1", platform_name="nt") == r"experiments\results\Q1"
 
 
 def write_report_json(path: Path) -> None:
@@ -72,4 +78,3 @@ def test_judge_elyza_heuristic(tmp_path) -> None:
     assert scores.exists()
     aggregate = json.loads((output_dir / "eval_metrics.json").read_text(encoding="utf-8"))
     assert aggregate["elyza_judge_score"] >= 1.0
-

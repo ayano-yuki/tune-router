@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -59,8 +60,14 @@ def default_output_dir(root: Path, experiment: dict[str, Any]) -> Path:
     return root / "experiments" / "results" / str(experiment["id"])
 
 
+def normalize_cli_path(value: str, platform_name: str = os.name) -> str:
+    if platform_name != "nt":
+        return value.replace("\\", "/")
+    return value
+
+
 def resolve_output_dir(root: Path, experiment: dict[str, Any], output_dir: str | None) -> Path:
-    return Path(output_dir).resolve() if output_dir else default_output_dir(root, experiment)
+    return Path(normalize_cli_path(output_dir)).resolve() if output_dir else default_output_dir(root, experiment)
 
 
 def prepared_dataset_path(root: Path, experiment: dict[str, Any]) -> Path | None:
@@ -117,4 +124,3 @@ def load_report_matrix(root: Path, matrix_path: str | None) -> dict[str, Any]:
     if matrix_path:
         return load_yaml(root / matrix_path)
     return load_yaml(root / "experiments" / "manifests" / "initial_matrix.yaml")
-
