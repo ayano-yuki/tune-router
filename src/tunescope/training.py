@@ -69,6 +69,10 @@ def _model_revision(experiment: dict[str, Any], model_name: str) -> str | None:
     return str(revision) if revision else None
 
 
+def _is_peft_adapter_path(model_name: str) -> bool:
+    return (Path(model_name) / "adapter_config.json").exists()
+
+
 def _filter_kwargs(cls: type, values: dict[str, Any]) -> dict[str, Any]:
     allowed = set(inspect.signature(cls).parameters)
     return {key: value for key, value in values.items() if key in allowed and value is not None}
@@ -288,6 +292,46 @@ def _dpo_model_path(root: Path, experiment: dict[str, Any], output_dir: Path) ->
     return base_model
 
 
+def _dpo_tokenizer_name(model_name: str) -> str:
+    if not _is_peft_adapter_path(model_name):
+        return model_name
+    try:
+        from peft import PeftConfig
+    except ImportError as exc:  # pragma: no cover
+        raise ConfigError("peft is required. Run: uv sync --group dev") from exc
+
+    peft_config = PeftConfig.from_pretrained(model_name)
+    base_model = str(getattr(peft_config, "base_model_name_or_path", "") or "")
+    if not base_model and not (Path(model_name) / "tokenizer_config.json").exists():
+        raise ConfigError(f"{model_name} is a PEFT adapter but does not define base_model_name_or_path.")
+    return model_name if (Path(model_name) / "tokenizer_config.json").exists() else base_model
+
+
+def _dpo_model(model_name: str, config: dict[str, Any], revision: str | None) -> tuple[Any, Any | None]:
+    if not _is_peft_adapter_path(model_name):
+        return model_name, _lora_config(config)
+
+    try:
+        from peft import PeftConfig, PeftModel
+    except ImportError as exc:  # pragma: no cover
+        raise ConfigError("peft is required. Run: uv sync --group dev") from exc
+
+    from transformers import AutoModelForCausalLM
+
+    peft_config = PeftConfig.from_pretrained(model_name)
+    base_model = str(getattr(peft_config, "base_model_name_or_path", "") or "")
+    if not base_model:
+        raise ConfigError(f"{model_name} is a PEFT adapter but does not define base_model_name_or_path.")
+
+    base = AutoModelForCausalLM.from_pretrained(
+        base_model,
+        revision=revision,
+        trust_remote_code=True,
+        device_map="auto",
+    )
+    return PeftModel.from_pretrained(base, model_name, is_trainable=True), None
+
+
 def default_source_dir(root: Path, experiment: dict[str, Any]) -> Path:
     from tunescope.artifacts import default_output_dir
 
@@ -334,7 +378,8 @@ def train_dpo(
     from trl import DPOConfig, DPOTrainer
 
     revision = _model_revision(experiment, model_name)
-    tokenizer = AutoTokenizer.from_pretrained(model_name, revision=revision, trust_remote_code=True)
+    tokenizer_name = _dpo_tokenizer_name(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, revision=revision, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     dataset_path = prepared_dataset_path(root, experiment)
@@ -364,13 +409,14 @@ def train_dpo(
     if max_steps is not None:
         args_values["max_steps"] = max_steps
     training_args = DPOConfig(**_filter_kwargs(DPOConfig, args_values))
+    model, peft_config = _dpo_model(model_name, config, revision)
 
     trainer = DPOTrainer(
-        model=model_name,
+        model=model,
         args=training_args,
         train_dataset=train_dataset,
         processing_class=tokenizer,
-        peft_config=_lora_config(config),
+        peft_config=peft_config,
     )
     result = trainer.train(resume_from_checkpoint=resolved_resume)
     trainer.save_model(str(output_dir / "model"))
