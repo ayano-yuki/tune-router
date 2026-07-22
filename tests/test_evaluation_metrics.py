@@ -1,4 +1,4 @@
-from tunescope.evaluation import exact_match, macro_f1, pearsonr, rouge_scores, token_f1
+from tunescope.evaluation import _load_hf_dataset, exact_match, macro_f1, pearsonr, rouge_scores, token_f1
 
 
 def test_exact_match_ignores_spaces() -> None:
@@ -22,3 +22,33 @@ def test_rouge_scores_are_bounded() -> None:
 
 def test_pearsonr_for_similarity_scores() -> None:
     assert pearsonr([1.0, 2.0, 3.0], [1.0, 2.0, 3.0]) == 1.0
+
+
+def test_load_hf_dataset_can_use_parquet_api(monkeypatch) -> None:
+    calls = []
+
+    def fake_load_dataset(name, *args, **kwargs):
+        calls.append((name, args, kwargs))
+        return [{"label": 1, "sentence": "テスト"}]
+
+    monkeypatch.setattr("datasets.load_dataset", fake_load_dataset)
+
+    records = _load_hf_dataset(
+        {
+            "id": "jglue",
+            "name": "shunk031/JGLUE",
+            "split": "validation",
+            "load_mode": "hf_parquet_api",
+            "subsets": ["MARC-ja"],
+        },
+        sample_count=None,
+        seed=42,
+        allow_floating_revision=False,
+    )
+
+    assert records == [{"_subset": "MARC-ja", "label": 1, "sentence": "テスト"}]
+    assert calls[0][0] == "parquet"
+    assert calls[0][2]["split"] == "validation"
+    assert calls[0][2]["data_files"] == {
+        "validation": "https://huggingface.co/api/datasets/shunk031/JGLUE/parquet/MARC-ja/validation/0.parquet"
+    }

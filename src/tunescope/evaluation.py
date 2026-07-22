@@ -10,6 +10,7 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from tunescope.artifacts import ensure_dir, resolve_output_dir, run_metadata, write_json, write_yaml
 from tunescope.config import ConfigError, get_experiment, load_all
@@ -196,7 +197,10 @@ def _load_hf_dataset(
             )
         revision = None
 
-    split = dataset_config.get("split", "test")
+    split = str(dataset_config.get("split", "test"))
+    if dataset_config.get("load_mode") == "hf_parquet_api":
+        return _load_hf_parquet_api_dataset(dataset_config, split, sample_count, seed)
+
     kwargs: dict[str, Any] = {"split": split}
     if revision:
         kwargs["revision"] = revision
@@ -216,6 +220,41 @@ def _load_hf_dataset(
     else:
         dataset = load_dataset(dataset_config["name"], **kwargs)
         loaded = [dict(record) for record in dataset]
+    return _sample(loaded, sample_count, seed)
+
+
+def _hf_parquet_api_url(dataset_name: str, subset: str, split: str, index: int = 0) -> str:
+    quoted_subset = quote(subset, safe="")
+    quoted_split = quote(split, safe="")
+    return f"https://huggingface.co/api/datasets/{dataset_name}/parquet/{quoted_subset}/{quoted_split}/{index}.parquet"
+
+
+def _load_hf_parquet_api_dataset(
+    dataset_config: dict[str, Any],
+    split: str,
+    sample_count: int | None,
+    seed: int,
+) -> list[dict[str, Any]]:
+    try:
+        from datasets import load_dataset
+    except ImportError as exc:  # pragma: no cover
+        raise ConfigError("datasets is required. Run: uv sync --group dev") from exc
+
+    subsets = dataset_config.get("subsets")
+    subset = dataset_config.get("subset")
+    loaded: list[dict[str, Any]] = []
+    if isinstance(subsets, list):
+        for item in subsets:
+            subset_name = str(item)
+            url = _hf_parquet_api_url(str(dataset_config["name"]), subset_name, split)
+            dataset = load_dataset("parquet", data_files={split: url}, split=split)
+            loaded.extend([{"_subset": subset_name, **dict(record)} for record in dataset])
+    elif subset:
+        url = _hf_parquet_api_url(str(dataset_config["name"]), str(subset), split)
+        dataset = load_dataset("parquet", data_files={split: url}, split=split)
+        loaded = [dict(record) for record in dataset]
+    else:
+        raise ConfigError(f"Dataset {dataset_config.get('id')!r} uses hf_parquet_api but has no subset list.")
     return _sample(loaded, sample_count, seed)
 
 

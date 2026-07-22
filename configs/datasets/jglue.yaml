@@ -3,7 +3,7 @@ name: shunk031/JGLUE
 revision: 41cc99f1c01d41b1ab13435ae97b7076c2199f4c
 split: validation
 usage: evaluation
-trust_remote_code: true
+load_mode: hf_parquet_api
 subsets:
   - MARC-ja
   - JCoLA
