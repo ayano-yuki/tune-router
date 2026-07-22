@@ -19,6 +19,7 @@ class PreparedDataset:
     manifest_path: Path
     record_count: int
     skipped: bool = False
+    invalid_record_count: int = 0
 
 
 def _lookup(record: dict[str, Any], path: str | None) -> Any:
@@ -219,11 +220,18 @@ def write_manifest(
     sample_count: int | str,
     seed: int,
     floating_revision: bool,
+    invalid_record_count: int = 0,
 ) -> None:
     try:
         import yaml
     except ImportError as exc:  # pragma: no cover - depends on local environment
         raise ConfigError("PyYAML is required. Run: uv sync --group dev") from exc
+
+    normalization = dataset_config.get("normalization", {"target_format": "raw"})
+    if isinstance(normalization, dict):
+        normalization = dict(normalization)
+        if invalid_record_count:
+            normalization["skipped_invalid_records"] = invalid_record_count
 
     manifest = {
         "dataset": {
@@ -242,7 +250,7 @@ def write_manifest(
             "format": "jsonl",
             "records": record_count,
         },
-        "normalization": dataset_config.get("normalization", {"target_format": "raw"}),
+        "normalization": normalization,
     }
 
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -300,7 +308,19 @@ def prepare_dataset(
 
     records = _load_hf_records(dataset_config, allow_floating_revision)
     sampled = sample_records(records, sample_count, seed)
-    normalized = [normalize_record(record, dataset_config) for record in sampled]
+    normalization = dataset_config.get("normalization")
+    skip_invalid = isinstance(normalization, dict) and bool(normalization.get("skip_invalid"))
+    normalized = []
+    invalid_record_count = 0
+    for record in sampled:
+        try:
+            normalized.append(normalize_record(record, dataset_config))
+        except ConfigError:
+            if not skip_invalid:
+                raise
+            invalid_record_count += 1
+    if not normalized:
+        raise ConfigError(f"Dataset {dataset_id!r} has no valid records after normalization.")
     record_count = write_jsonl(output_path, normalized)
     write_manifest(
         manifest_path,
@@ -310,8 +330,9 @@ def prepare_dataset(
         sample_count,
         seed,
         floating_revision=dataset_config.get("revision") == TODO_REVISION and allow_floating_revision,
+        invalid_record_count=invalid_record_count,
     )
-    return PreparedDataset(dataset_id, output_path, manifest_path, record_count)
+    return PreparedDataset(dataset_id, output_path, manifest_path, record_count, invalid_record_count=invalid_record_count)
 
 
 def _count_jsonl(path: Path) -> int:

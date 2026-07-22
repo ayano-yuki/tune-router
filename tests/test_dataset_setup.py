@@ -1,6 +1,6 @@
 import json
 
-from tunescope.dataset_setup import normalize_record, sample_records, write_jsonl
+from tunescope.dataset_setup import normalize_record, prepare_dataset, sample_records, write_jsonl
 
 
 def test_normalize_messages_combines_instruction_and_input() -> None:
@@ -79,6 +79,53 @@ def test_normalize_preference_record_from_multi_turn_conversations() -> None:
     assert normalize_record(record, config)["prompt"] == (
         "user: 最初の質問\nassistant: 途中の回答\nuser: 追加の質問"
     )
+
+
+def test_prepare_dataset_skips_invalid_preference_records(tmp_path, monkeypatch) -> None:
+    dataset_dir = tmp_path / "configs" / "datasets"
+    dataset_dir.mkdir(parents=True)
+    (dataset_dir / "hh.yaml").write_text(
+        """
+id: hh
+name: example/hh
+revision: abc
+split: train
+normalization:
+  target_format: preference
+  skip_invalid: true
+  fields:
+    prompt: conversations
+    chosen: chosen
+    rejected: rejected
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    def fake_load_hf_records(dataset_config, allow_floating_revision):
+        return [
+            {
+                "conversations": [{"from": "human", "value": "質問"}],
+                "chosen": "よい回答",
+                "rejected": "悪い回答",
+            },
+            {
+                "conversations": [{"from": "human", "value": "空の回答"}],
+                "chosen": "",
+                "rejected": "悪い回答",
+            },
+        ]
+
+    monkeypatch.setattr("tunescope.dataset_setup._load_hf_records", fake_load_hf_records)
+
+    result = prepare_dataset(tmp_path, "hh", "all", seed=42)
+
+    assert result.record_count == 1
+    assert result.invalid_record_count == 1
+    lines = result.output_path.read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 1
+    assert json.loads(lines[0]) == {"prompt": "質問", "chosen": "よい回答", "rejected": "悪い回答"}
+    manifest = result.manifest_path.read_text(encoding="utf-8")
+    assert "skipped_invalid_records: 1" in manifest
 
 
 def test_sample_records_is_deterministic() -> None:

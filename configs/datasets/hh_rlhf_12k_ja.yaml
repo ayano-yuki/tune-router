@@ -6,6 +6,7 @@ usage: dpo
 license_note: Check the upstream dataset card before publishing derived artifacts.
 normalization:
   target_format: preference
+  skip_invalid: true
   fields:
     prompt: conversations
     chosen: chosen

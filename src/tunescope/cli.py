@@ -141,6 +141,8 @@ def cmd_prepare_dataset(args: argparse.Namespace) -> int:
     action = "skipped" if result.skipped else "prepared"
     print(f"{action}: {result.dataset_id}")
     print(f"records: {result.record_count}")
+    if result.invalid_record_count:
+        print(f"skipped invalid records: {result.invalid_record_count}")
     print(f"jsonl: {result.output_path}")
     print(f"manifest: {result.manifest_path}")
     return 0
@@ -171,7 +173,8 @@ def cmd_setup_datasets(args: argparse.Namespace) -> int:
             force=args.force,
         )
         action = "skipped" if result.skipped else "prepared"
-        print(f"{action}: {dataset_id} ({sample_count}, seed={seed}) -> {result.output_path}")
+        suffix = f"; skipped invalid: {result.invalid_record_count}" if result.invalid_record_count else ""
+        print(f"{action}: {dataset_id} ({sample_count}, seed={seed}) -> {result.output_path}{suffix}")
     return 0
 
 
