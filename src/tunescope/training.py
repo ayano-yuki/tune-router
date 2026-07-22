@@ -97,7 +97,7 @@ def _quantization_config(config: dict[str, Any]) -> Any | None:
     try:
         import bitsandbytes  # noqa: F401
     except ImportError as exc:
-        raise ConfigError("QLoRA requires bitsandbytes. Install a GPU-compatible bitsandbytes build.") from exc
+        raise ConfigError("QLoRA requires bitsandbytes. Run: uv sync --group dev") from exc
 
     import torch
     from transformers import BitsAndBytesConfig
