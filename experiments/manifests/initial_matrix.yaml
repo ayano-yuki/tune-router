@@ -1,0 +1,21 @@
+id: initial_matrix
+description: First TuneScope experiment matrix for Japanese instruction tuning comparison.
+priority:
+  - B0
+  - Q2
+  - Q3
+experiments:
+  - B0
+  - Q1
+  - Q2
+  - Q3
+  - Q4
+  - R1
+  - R2
+  - R3
+  - L1
+  - D1
+  - F1
+deduplication_notes:
+  - R2 reuses Q3 because both are QLoRA, 2,000 samples, rank 32.
+

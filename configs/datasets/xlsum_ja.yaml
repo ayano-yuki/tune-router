@@ -1,0 +1,10 @@
+id: xlsum_ja
+name: csebuetnlp/xlsum
+revision: 30fece425f9a3866e04321773ca7a80056d55ca6
+split: test
+subset: japanese
+usage: evaluation
+metrics:
+  - rouge1
+  - rouge2
+  - rougeL

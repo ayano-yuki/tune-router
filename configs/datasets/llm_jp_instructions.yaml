@@ -1,0 +1,17 @@
+id: llm_jp_instructions
+name: llm-jp/llm-jp-instructions
+revision: 93d6a615c1e0836668cfb682273124624b103cda
+split: train
+usage: sft
+license_note: Check the upstream dataset card before publishing derived artifacts.
+normalization:
+  target_format: messages
+  fields:
+    user: instruction
+    assistant: output
+  output_schema:
+    messages:
+      - role: user
+        content: string
+      - role: assistant
+        content: string

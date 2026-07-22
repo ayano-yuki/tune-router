@@ -1,0 +1,41 @@
+id: default
+generation:
+  max_new_tokens: 512
+  temperature: 0.0
+  top_p: 1.0
+  do_sample: false
+tasks:
+  - id: jglue
+    dataset: jglue
+    metrics:
+      - accuracy
+      - f1
+  - id: elyza_tasks_100
+    dataset: elyza_tasks_100
+    metrics:
+      - llm_judge_score
+      - response_length
+      - refusal_rate
+      - format_following
+  - id: xlsum_ja
+    dataset: xlsum_ja
+    sample_count: 100
+    seed: 42
+    metrics:
+      - rouge1
+      - rouge2
+      - rougeL
+  - id: format_following
+    dataset: internal_prompts
+    sample_count: 50
+    metrics:
+      - json_valid_rate
+      - exact_format_rate
+  - id: inference_cost
+    dataset: internal_prompts
+    sample_count: 50
+    metrics:
+      - tokens_per_second
+      - max_vram_gb
+      - mean_output_tokens
+

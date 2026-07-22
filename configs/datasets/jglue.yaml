@@ -1,0 +1,20 @@
+id: jglue
+name: shunk031/JGLUE
+revision: 41cc99f1c01d41b1ab13435ae97b7076c2199f4c
+split: validation
+usage: evaluation
+trust_remote_code: true
+subsets:
+  - MARC-ja
+  - JCoLA
+  - JSTS
+  - JNLI
+  - JSQuAD
+  - JCommonsenseQA
+metrics:
+  - accuracy
+  - f1
+  - exact_match
+  - qa_f1
+notes:
+  - Do not evaluate on tasks whose train split was included in SFT data.

@@ -1,0 +1,12 @@
+id: B0
+name: base_model_baseline
+phase: 0
+method: base
+base_model: llm-jp/llm-jp-3-1.8b
+base_model_revision: 60acda32e07c72b82ce5a73d60b21b3d65e0c810
+dataset: null
+sample_count: 0
+train_config: null
+evaluation_config: default
+outputs:
+  result_dir: experiments/results/B0
