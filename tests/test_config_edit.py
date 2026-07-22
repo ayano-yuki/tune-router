@@ -31,6 +31,17 @@ def test_set_base_model_updates_selected_method(tmp_path, monkeypatch) -> None:
     assert configs["B0"]["base_model"] == "llm-jp/llm-jp-3-1.8b"
 
 
+def test_set_base_model_normalizes_posix_windows_separators(tmp_path, monkeypatch) -> None:
+    root = copy_config_tree(tmp_path)
+    monkeypatch.setattr("tunescope.artifacts.os.name", "posix")
+
+    changes = set_base_model(root, r"experiments\results\Q3\model", experiment_ids=["D1"])
+
+    configs = load_all(root)["experiments"]
+    assert changes == [{"id": "D1", "status": "updated", "base_model": "experiments/results/Q3/model"}]
+    assert configs["D1"]["base_model"] == "experiments/results/Q3/model"
+
+
 def test_pin_dataset_revisions_updates_todo(tmp_path, monkeypatch) -> None:
     root = copy_config_tree(tmp_path)
     monkeypatch.setattr("tunescope.config_edit._hf_dataset_sha", lambda repo_id: "dataset-sha")

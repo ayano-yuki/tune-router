@@ -60,7 +60,8 @@ def default_output_dir(root: Path, experiment: dict[str, Any]) -> Path:
     return root / "experiments" / "results" / str(experiment["id"])
 
 
-def normalize_cli_path(value: str, platform_name: str = os.name) -> str:
+def normalize_cli_path(value: str, platform_name: str | None = None) -> str:
+    platform_name = platform_name or os.name
     if platform_name != "nt":
         return value.replace("\\", "/")
     return value

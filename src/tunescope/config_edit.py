@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from tunescope.artifacts import normalize_cli_path
 from tunescope.config import ConfigError, load_all, load_yaml
 from tunescope.dataset_setup import TODO_REVISION
 
@@ -78,6 +79,7 @@ def set_base_model(
     configs = load_all(root)["experiments"]
     selected = experiment_ids or sorted(configs)
     method_filter = set(methods or [])
+    model = normalize_cli_path(model)
     model_revision = _hf_model_sha(model) if validate_model or pin_revision else None
     changes: list[dict[str, str]] = []
 
@@ -98,4 +100,3 @@ def set_base_model(
         _dump_yaml(path, data)
         changes.append({"id": experiment_id, "status": "updated", "base_model": model})
     return changes
-
