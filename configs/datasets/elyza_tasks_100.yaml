@@ -1,9 +1,0 @@
-id: elyza_tasks_100
-name: elyza/ELYZA-tasks-100
-revision: 240fc800c4695d86ce0f32a713e199cd2ba66ab6
-split: test
-usage: evaluation
-metrics:
-  - llm_judge_score
-  - response_length
-  - format_following
