@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+artifacts_uv_test/
+artifacts_ft_test/
+artifacts_uv_json_test/
+artifacts_oss_test/
+artifacts_refactor_test/
+artifacts_flat_src_test/
