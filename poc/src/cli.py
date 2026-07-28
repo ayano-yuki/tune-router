@@ -14,6 +14,7 @@ from qwen_router import (
     load_qwen_router,
     tokenize_records,
     training_args_kwargs,
+    trainer_processing_kwargs,
 )
 from reporting import report_markdown
 from splitting import split_dataset
@@ -90,9 +91,9 @@ def cmd_train_qwen(args: argparse.Namespace) -> None:
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=dev_dataset,
-        tokenizer=tokenizer,
         data_collator=deps["DataCollatorWithPadding"](tokenizer=tokenizer),
         compute_metrics=compute_metrics_builder(deps["np"]),
+        **trainer_processing_kwargs(deps["Trainer"], tokenizer),
     )
     trainer.train()
     trainer.save_model(str(args.output))

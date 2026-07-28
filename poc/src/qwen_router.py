@@ -96,6 +96,15 @@ def training_args_kwargs(training_args_cls, args: argparse.Namespace) -> dict:
     return kwargs
 
 
+def trainer_processing_kwargs(trainer_cls, tokenizer) -> dict:
+    signature = inspect.signature(trainer_cls.__init__)
+    if "processing_class" in signature.parameters:
+        return {"processing_class": tokenizer}
+    if "tokenizer" in signature.parameters:
+        return {"tokenizer": tokenizer}
+    return {}
+
+
 def tokenize_records(records: list[dict], tokenizer, dataset_cls, max_length: int):
     label2id = {label: index for index, label in enumerate(LABELS)}
     dataset = dataset_cls.from_list(
