@@ -66,6 +66,76 @@ def extract_user_text(row: dict, source_config: dict, label: str) -> str:
     return "\n".join(fallback_parts[:3]).strip()
 
 
+def normalize_extracted_text(text: str, label: str) -> str:
+    text = re.sub(r"\s+", " ", text).strip()
+    if label == "security_log":
+        marker = "principle of defense only."
+        marker_index = text.find(marker)
+        if marker_index >= 0:
+            text = text[marker_index + len(marker) :].strip()
+        question_index = text.find("?")
+        if question_index >= 0:
+            text = text[: question_index + 1].strip()
+    return text
+
+
+def is_usable_for_label(text: str, label: str) -> bool:
+    lowered = text.lower()
+    if len(text) < 12:
+        return False
+    if label == "code":
+        negative_intents = [
+            "summarize",
+            "classify the following",
+            "gather information",
+            "write a review",
+            "translate",
+            "sentiment",
+            "one sentence",
+        ]
+        positive_terms = [
+            "code",
+            "script",
+            "function",
+            "program",
+            "algorithm",
+            "debug",
+            "sql",
+            "api",
+            "python",
+            "javascript",
+            "typescript",
+            "java",
+            "rust",
+            "go ",
+            "c++",
+            "class",
+            "data structure",
+        ]
+        if any(term in lowered for term in negative_intents):
+            return False
+        return any(term in lowered for term in positive_terms)
+    if label == "security_log":
+        positive_terms = [
+            "security",
+            "log",
+            "cve",
+            "vulnerability",
+            "threat",
+            "incident",
+            "attack",
+            "malware",
+            "metasploit",
+            "credential",
+            "mitre",
+            "nist",
+            "detection",
+            "countermeasure",
+        ]
+        return any(term in lowered for term in positive_terms)
+    return True
+
+
 def iter_source_rows(source_config: dict, *, seed: int, streaming: bool, cache_dir: str | None):
     load_dataset = import_dataset_deps()
     dataset = load_dataset(
@@ -108,10 +178,9 @@ def build_oss_dataset(
                 break
             if not isinstance(row, dict):
                 row = dict(row)
-            text = extract_user_text(row, source_config, label)
-            if len(text) < 12:
+            text = normalize_extracted_text(extract_user_text(row, source_config, label), label)
+            if not is_usable_for_label(text, label):
                 continue
-            text = re.sub(r"\s+", " ", text).strip()
             source_record_id = stringify_field(
                 row.get("id")
                 or row.get("task_id")
