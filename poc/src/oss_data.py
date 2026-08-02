@@ -14,6 +14,40 @@ IAC_GENERIC_INSTRUCTION_MARKERS = [
     "provide remediation guidance",
 ]
 
+IAC_SOURCE_HINTS = ["terraform", "iac", "kubernetes", "k8s", "cloudformation"]
+IAC_CODE_FIELDS = {"terraform_code", "code", "input"}
+
+
+def is_generic_iac_instruction(text: str) -> bool:
+    lowered = text.lower()
+    return all(marker in lowered for marker in IAC_GENERIC_INSTRUCTION_MARKERS)
+
+
+def is_iac_source(source_config: dict) -> bool:
+    source_blob = " ".join(
+        stringify_field(source_config.get(field))
+        for field in ("dataset", "url", "template_id")
+    ).lower()
+    prompt_fields = set(source_config.get("prompt_fields", []))
+    return any(hint in source_blob for hint in IAC_SOURCE_HINTS) or bool(
+        prompt_fields & {"terraform_code", "kubernetes_yaml"}
+    )
+
+
+def preferred_prompt_fields(source_config: dict, label: str) -> list[str]:
+    if label == "Coding" and is_iac_source(source_config):
+        return [
+            "terraform_code",
+            "kubernetes_yaml",
+            "code",
+            "input",
+            "text",
+            "instruction",
+            "prompt",
+            "question",
+        ]
+    return source_config["prompt_fields"]
+
 
 def import_dataset_deps():
     enable_system_cert_store()
@@ -55,31 +89,20 @@ def extract_user_text(row: dict, source_config: dict, label: str) -> str:
                 if text:
                     return text
 
-    # For IaC records, prefer concrete config/code fields over generic instructions.
-    preferred_fields = source_config["prompt_fields"]
-    if label == "iac_text":
-        preferred_fields = [
-            "terraform_code",
-            "code",
-            "input",
-            "text",
-            "instruction",
-            "prompt",
-            "question",
-        ]
-
-    for field in preferred_fields:
+    source_is_iac = is_iac_source(source_config)
+    for field in preferred_prompt_fields(source_config, label):
         text = stringify_field(row.get(field))
         if text:
-            lowered = text.lower()
-            if label == "iac_text" and field in {"instruction", "prompt", "question"}:
-                if all(marker in lowered for marker in IAC_GENERIC_INSTRUCTION_MARKERS):
-                    continue
-            if label == "iac_text" and field in {"code", "terraform_code"}:
+            if (
+                label == "Coding"
+                and source_is_iac
+                and field in {"instruction", "prompt", "question"}
+                and is_generic_iac_instruction(text)
+            ):
+                continue
+            if label == "Coding" and source_is_iac and field in IAC_CODE_FIELDS:
                 return f"Review this Terraform/IaC configuration and explain the operational risk:\n{text}"
-            if label == "iac_text" and field == "input":
-                return f"Review this Terraform/IaC configuration and explain the operational risk:\n{text}"
-            if label == "security" and field in {"text", "input"} and "log" not in text.lower():
+            if label == "Security" and field in {"text", "input"} and "log" not in text.lower():
                 return f"Analyze this security event or alert:\n{text}"
             return text
 
@@ -94,7 +117,7 @@ def extract_user_text(row: dict, source_config: dict, label: str) -> str:
 
 def normalize_extracted_text(text: str, label: str) -> str:
     text = re.sub(r"\s+", " ", text).strip()
-    if label == "security":
+    if label == "Security":
         marker = "principle of defense only."
         marker_index = text.find(marker)
         if marker_index >= 0:
@@ -109,9 +132,45 @@ def is_usable_for_label(text: str, label: str) -> bool:
     lowered = text.lower()
     if len(text) < 12:
         return False
-    if label == "iac_text" and all(marker in lowered for marker in IAC_GENERIC_INSTRUCTION_MARKERS):
+    if label == "Coding" and is_generic_iac_instruction(text):
         return False
-    if label == "code":
+    if label == "Storage":
+        positive_terms = [
+            "ceph",
+            "zfs",
+            "raid",
+            "nas",
+            "san",
+            "iscsi",
+            "nfs",
+            "smb",
+            "storage",
+            "disk",
+            "volume",
+            "snapshot",
+            "backup",
+        ]
+        return any(term in lowered for term in positive_terms)
+    if label == "Network":
+        positive_terms = [
+            "bgp",
+            "ospf",
+            "vlan",
+            "dns",
+            "dhcp",
+            "mtu",
+            "vpn",
+            "l2",
+            "l3",
+            "ping",
+            "network",
+            "routing",
+            "packet",
+            "switch",
+            "firewall",
+        ]
+        return any(term in lowered for term in positive_terms)
+    if label == "Coding":
         negative_intents = [
             "summarize",
             "classify the following",
@@ -130,6 +189,14 @@ def is_usable_for_label(text: str, label: str) -> bool:
             "debug",
             "sql",
             "api",
+            "terraform",
+            "kubernetes",
+            "dockerfile",
+            "docker compose",
+            "yaml",
+            "ansible",
+            "cloudformation",
+            "helm",
             "python",
             "javascript",
             "typescript",
@@ -143,7 +210,7 @@ def is_usable_for_label(text: str, label: str) -> bool:
         if any(term in lowered for term in negative_intents):
             return False
         return any(term in lowered for term in positive_terms)
-    if label == "security":
+    if label == "Security":
         positive_terms = [
             "security",
             "log",
@@ -159,6 +226,23 @@ def is_usable_for_label(text: str, label: str) -> bool:
             "nist",
             "detection",
             "countermeasure",
+        ]
+        return any(term in lowered for term in positive_terms)
+    if label == "Database":
+        positive_terms = [
+            "postgres",
+            "postgresql",
+            "mysql",
+            "oracle",
+            "redis",
+            "mongodb",
+            "database",
+            "sql",
+            "query",
+            "index",
+            "replication",
+            "transaction",
+            "deadlock",
         ]
         return any(term in lowered for term in positive_terms)
     return True
@@ -239,7 +323,7 @@ def build_oss_dataset(
                     "split_group": f"{source_config['dataset']}:{source_record_id}",
                     "split": "",
                     "rubric": {
-                        "minimum_quality": 0.75 if label != "general" else 0.65,
+                        "minimum_quality": 0.65 if label == "General" else 0.75,
                         "requires_human_review": False,
                     },
                 }

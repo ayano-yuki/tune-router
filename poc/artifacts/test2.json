@@ -1,205 +1,4836 @@
-### 1. code
-1. Write a sample simple REST API using FastAPI in Python.
-2. Show me code to fetch data from an API using `useEffect` in React.
-3. Create a Dockerfile to set up a Node.js environment.
-4. Write an SQL query that performs an `INNER JOIN` on two tables and extracts data from a specific date onwards.
-5. Generate a configuration file to create an AWS S3 bucket using Terraform.
-6. What is the fastest way to remove duplicates from a list in Python?
-7. Write a YAML file to launch 3 replicas of Nginx in a Kubernetes Deployment.
-8. Show an example of defining an interface using generics in TypeScript.
-9. What is the Git command to modify the most recent commit message?
-10. Write code to filter list elements using the Stream API in Java.
-11. Explain the basic usage of the Vue 3 Composition API.
-12. Show a sample of concurrent processing using goroutines in Go.
-13. Explain how to use `EXPLAIN` to check if a MySQL index is being utilized.
-14. List three ways to center an element on the screen using plain CSS.
-15. Explain the steps to create a custom user model in Django.
-16. How do I create a deployment package for running Python on AWS Lambda?
-17. What is the Linux command to identify the process using a specific port number?
-18. How do I fetch data from a Server Component using the Next.js App Router?
-19. Write an example of defining an asynchronous method (`async`/`await`) in C#.
-20. Create a configuration file to connect a web container and a database container using Docker Compose.
-21. Write code to read a CSV file and fill in missing values ​​using pandas in Python.
-22. Write a Bash script to delete only files with the `.txt` extension within a directory.
-23. What is the PostgreSQL query to search for a specific key within a `JSONB` column? 24. What is the command to generate a new controller in Ruby on Rails?
-25. Write the code for a simple Flutter app where the count increases when a button is pressed.
-26. What are the steps and precautions for changing an AWS EC2 instance type?
-27. Create a GitHub Actions workflow file to automatically run Node.js tests.
-28. Provide an example of secure PHP code for hashing and storing passwords.
-29. Write an example of using the `Result` type for error handling in Rust.
-30. Show the Nginx configuration to block access from a specific IP address.
-31. Write Terraform code to create an AWS VPC and a public subnet.
-32. Show the code to send a POST request using the Python `requests` library.
-33. Write a JavaScript function to randomly shuffle the contents of an array.
-34. Create a YAML file to define a Kubernetes Service (LoadBalancer).
-35. What is the MongoDB query to search for documents that contain a specific field?
-36. What is the Redis command to save data and automatically delete it after 5 minutes (TTL setting)?
-37. Which package should be used to launch the smartphone camera in React Native, and what is an implementation example?
-38. Explain how to use smart pointers in C++ to prevent memory leaks.
-39. What is the Linux `find` command to search only for files larger than 100MB?
-40. Write a Java configuration class in Spring Boot to apply CORS settings globally.
-41. Write Python code to create a custom decorator that measures a function's execution time.
-42. Create a JSON policy for an AWS IAM role that grants read-only access to S3.
-43. Show an example of pagination using the SQL window function `ROW_NUMBER`.
-44. Create a responsive 3-column grid layout using Tailwind CSS.
-45. Write a Dockerfile that uses multi-stage builds to reduce the size of a Go binary. 46. ​​Write an Ansible playbook to install Nginx on multiple servers.
-47. Explain how to use TypeScript Utility Types (like Omit and Pick) with code examples.
-48. What is the Elasticsearch query for performing a full-text search for documents containing a specific keyword?
-49. Write code to fetch JSON using URLSession in an iOS app (Swift).
-50. Provide the command to deploy a Node.js function to GCP Cloud Functions.
----
-### 2. security 
-1. Explain the difference between Reflected and Stored Cross-Site Scripting (XSS) in terms of attack vectors and impact scope.
-2. Compare and contrast CSRF (Cross-Site Request Forgery) and SSRF (Server-Side Request Forgery).
-3. Describe the role of a "salt" in password hashing and how it defends against rainbow table attacks.
-4. Explain how Zero Trust Architecture differs from traditional perimeter-based security models.
-5. Detail the sequential steps involved in a standard TLS 1.3 handshake.
-6. What is the difference between Symmetric and Asymmetric encryption, and in what scenarios is each best applied?
-7. Describe the core components of a JSON Web Token (JWT) and discuss its common security vulnerabilities.
-8. Explain the principle of least privilege and how it applies to cloud Identity and Access Management (IAM).
-9. Define Content Security Policy (CSP) and explain how it helps mitigate XSS attacks.
-10. Compare Role-Based Access Control (RBAC) with Attribute-Based Access Control (ABAC).
-11. What is the STRIDE threat modeling framework, and how is it used during the software development lifecycle?
-12. Explain the concept of Forward Secrecy in cryptographic protocols.
-13. Describe the mechanics of a Buffer Overflow attack and how modern operating systems attempt to prevent it.
-14. What are the key differences between a Web Application Firewall (WAF) and an Intrusion Prevention System (IPS)?
-15. Explain how a Man-in-the-Middle (MitM) attack works and how HSTS helps prevent it.
-16. Describe the security implications of running Docker containers as the root user.
-17. What is DNSSEC, and how does it protect against DNS spoofing or cache poisoning?
-18. Explain the difference between OAuth 2.0 and OpenID Connect (OIDC).
-19. Discuss the common techniques attackers use to bypass Multi-Factor Authentication (MFA).
-20. What is a Distributed Denial of Service (DDoS) attack, and what are the primary network-level strategies to mitigate it?
-21. Explain the concept of End-to-End Encryption (E2EE) and its limitations regarding metadata.
-22. Define Spear Phishing and Whaling, and contrast them with standard phishing campaigns.
-23. Describe the risks associated with insecure deserialization in web applications.
-24. What is a supply chain attack in the context of software development, and how can organizations detect it?
-25. Explain the importance of key rotation and how a Key Management Service (KMS) facilitates it.
-26. An employee reports that their computer is extremely slow and their files have `.encrypted` extensions. Detail the top 3 initial response steps to contain this suspected ransomware incident.
-27. An automated alert indicates that an AWS IAM access key has been leaked on a public GitHub repository. Outline your immediate remediation steps.
-28. We have detected a series of "impossible travel" logins for the CEO's account (e.g., logins from Tokyo and New York within a 10-minute window). What actions should the SOC take to investigate and secure the account?
-29. A server's EDR agent has flagged a newly created PHP file in the web root as a potential web shell. How would you investigate this finding without tipping off the attacker?
-30. A user clicked a link in a suspicious email and downloaded a `.zip` file. They executed the contents but nothing visually happened. Explain your investigation process using the endpoint's telemetry logs.
-31. The SIEM has triggered an alert for high-volume DNS requests with unusually long subdomains originating from a single internal host. What type of attack does this suggest, and how should it be contained?
-32. You observe a massive spike in outbound traffic from a database server to an unknown external IP address over port 443. Describe your incident response plan to address this potential data exfiltration.
-33. An alert shows that a standard user account suddenly gained Domain Admin privileges in Active Directory. Outline the steps to investigate this privilege escalation attempt.
-34. Your team discovers a cryptominer running inside a production Kubernetes Pod. Explain the containment and eradication process for this containerized environment.
-35. An unauthenticated external IP is repeatedly sending malformed JNDI lookup strings to your web application. How do you triage and respond to this Log4Shell exploit activity?
-36. Identify the malicious payload and its intent from the following obfuscated PowerShell script execution log. [Log attached]
-37. An employee reports losing an encrypted company laptop while traveling. Determine the regulatory and security implications, and outline the necessary procedural steps.
-38. A threat actor has defaced the company's public-facing website. What is the immediate incident response protocol to restore the site and investigate the root cause?
-39. You receive a report from a third-party vendor that a shared S3 bucket containing your customer data was left publicly accessible. Outline your response strategy.
-40. An internal endpoint is receiving multiple MFA push notifications back-to-back, and the user eventually accepted one. Explain how you would respond to this suspected MFA fatigue attack.
-41. Analyze the following packet capture (PCAP) snippet to determine if the lateral movement attempt was successful. [PCAP attached]
-42. A sudden surge of HTTP 500 Internal Server Errors is observed in the web access logs, originating from a single IP address attempting various SQL injection payloads. What is your containment strategy?
-43. A rogue Wi-Fi access point spoofing the corporate SSID has been detected in the headquarters building. Describe the steps to locate, isolate, and mitigate this physical security threat.
-44. Investigate a potential insider threat based on an alert showing an employee downloading unusually large volumes of sensitive source code right before their resignation date.
-45. Following a successful phishing attack, an attacker set up an inbox rule to forward all of a manager's emails to an external address. Detail the steps to detect, eradicate, and recover from this Business Email Compromise (BEC).
-46. A critical system binary on a Linux server shows a recent modification date and a mismatched file hash. Outline your forensic investigation steps to determine if it is a rootkit.
-47. Analyze the following EDR alert JSON payload to determine the attack vector and the process tree of the suspicious activity. [JSON attached]
-48. Your organization receives a ransom email threatening a massive DDoS attack unless a Bitcoin payment is made. Outline your emergency response and communication plan.
-49. A popular open-source dependency used in your main application was reported to contain a malicious backdoor. Describe the steps you would take to identify exposure and remediate the risk.
-50. Evaluate the following Windows Security Event logs (Event ID 4624 and 4625) to determine if the threat actor successfully brute-forced the Administrator account. [Log attached] 
----
-### 3. iac_text
-1. [Sun Dec 04 04:47:44 2005] [notice] workerEnv.init() ok /etc/httpd/conf/workers2.properties[Sun Dec 04 04:47:44 2005] [error] mod_jk child workerEnv in error state 6[Sun Dec 04 04:51:08 2005] [notice] jk2_init() Found child 6725 in scoreboard slot 10
-2. 192.168.1.105 - - [12/May/2023:10:15:32 +0000] "GET /.env HTTP/1.1" 404 208192.168.1.105 - - [12/May/2023:10:15:33 +0000] "GET /wp-login.php HTTP/1.1" 404 208192.168.1.105 - - [12/May/2023:10:15:35 +0000] "GET /config.json HTTP/1.1" 404 208
-3. [error] [client 10.0.0.15] Server reached MaxClients setting, consider raising the MaxClients setting[error] [client 10.0.0.16] (70007)The timeout specified has expired: ap_content_length_filter: apr_bucket_read failed
-4. [error] [client 172.16.0.42] SSL Library Error: 218529960 error:0906D06C:PEM routines:PEM_read_bio:no start line
-5. [error] [client 192.168.1.50] (13)Permission denied: file permissions deny server access: /var/www/html/secret.html
-6. [12345.6789] Out of memory: Kill process 4321 (mysqld) score 850 or sacrifice child[12345.6790] Killed process 4321(mysqld) total-vm:4194304kB, anon-rss:2097152kB, file-rss:0kB
-7. sda: Current: sense key:Medium Error, Additional sense: Unrecovered read error - auto reallocate failedEXT4-fs error (device sda1): ext4_lookup: deleted inode referenced: 12345
-8. systemd[1]: nginx.service: Main process exited, code=exited, status=1/FAILUREsystemd[1]: nginx.service: Failed with result 'exit-code'.
-9. CRON[8921]: (root) CMD (/usr/local/bin/backup.sh > /dev/null 2>&1)CRON[8920]: (CRON) error (can't fork)
-10. Kernel panic - not syncing: VFS:Unable to mount root fs on unknown-block(0,0)CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.10.0-8-amd64 #1
-11. Failed password for invalid user admin from 198.51.100.45 port 52341 ssh2 Failed password for invalid user root from 198.51.100.45 port 52342 ssh2 Failed password for invalid user test from 198.51.100.45 port 52343 ssh2
-12. Accepted publickey for ubuntu from 10.0.1.20 port 49152 ssh2: RSA SHA256:abc123xyz...pam_unix(sshd:session): session opened for user ubuntu by (uid=0)
-13. Connection closed by authenticating user root 203.0.113.10 port 38920 [preauth]
-14. Host key verification failed.fatal: Could not read from remote repository.
-15. Received disconnect from 192.168.1.80 port 51112:2: Too many authentication failuresDisconnected from authenticating user deploy 192.168.1.80 port 51112 [preauth]
-16. sudo:   alice : TTY=pts/0 ; PWD=/home/alice ; USER=root ; COMMAND=/bin/su -pam_unix(sudo:session): session opened for user root by alice(uid=1001)
-17. FATAL org.apache.hadoop.mapred.TaskTracker: Error running child : java.lang.OutOfMemoryError: Java heap space at java.util.Arrays.copyOf(Arrays.java:3210)
-18. WARN org.apache.hadoop.hdfs.server.datanode.DataNode: Volume /mnt/hadoop/dfs/data is failed. Remaining active volumes: 0
-19. INFO org.apache.hadoop.hdfs.StateChange: STATE* SafeMode is ON. The reported blocks 1000 needs additional 200 blocks to reach total expected blocks 1200.
-20. ERROR org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Could not renew lease for[DFSClient_NONMAPREDUCE_12345] on /user/hadoop/file.txt
-21. INFO org.apache.hadoop.yarn.server.nodemanager.NodeManager: NodeManager marked UNHEALTHY by HealthChecker.Disk utilization on /tmp exceeded threshold 90%.
-22. WARN org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Block BP-12345:blk_1073741825_1001 is UNDER REPLICATED. Expected: 3, Actual: 1
-23. Log Name: Security, Event ID: 4625, Keywords: Audit Failure Account For Which Logon Failed: Target Account Name: Administrator Failure Reason: Unknown user name or bad password.
-24. Log Name: System, Source: Service Control Manager, Event ID: 7031 The Print Spooler service terminated unexpectedly. It has done this 1 time(s).
-25. Log Name: System, Source: Microsoft-Windows-Kernel-Power, Event ID: 41 The system has rebooted without cleanly shutting down first. This error could be caused if the system stopped responding, crashed, or lost power unexpectedly.
-26. Log Name: Security, Event ID: 4672, Keywords: Audit Success Special privileges assigned to new logon. Account Name: SYSTEM,Privileges: SeSecurityPrivilege, SeTakeOwnershipPrivilege
-27. Log Name: Application, Source: Application Error, Event ID: 1000 Faulting application name: app.exe, version: 1.0.0.0, Faulting module name: ntdll.dll, Exception code: 0xc0000005
-28. Log Name: System, Source: Disk, Event ID: 7 The device, \Device\Harddisk0\DR0, has a bad block.
-29. Events:Type     Reason     Age                From               Message----     ------     ----               ----               -------Warning  BackOff    5s (x3 over 30s)   kubelet Back-off restarting failed container web-app in pod web-app-7d4b8f5d68-x9z2p
-30. State:          Terminated Reason:OOMKilled Exit Code:    137 Started:      Mon, 01 Aug 2026 10:00:00 +0000 Finished:     Mon, 01 Aug 2026 10:05:00 +0000
-31. 0/3 nodes are available: 3 Insufficient cpu. preemption: 0/3 nodes are available: 3 No preemption victims found for incoming pod.
-32. Failed to pull image "myrepo/backend:v2.1": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/myrepo/backend:v2.1": Error response from daemon: manifest for myrepo/backend:v2.1 not found
-33. Warning  Unhealthy  2m (x5 over 3m)  kubelet  Readiness probe failed: HTTP probe failed with statuscode: 500
-34. JSON{"eventTime": "2026-08-01T12:00:00Z","eventName": "GetObject","errorCode": "AccessDenied","errorMessage": "Access Denied","userIdentity": { "type": "IAMUser", "userName": "test-user" },"requestParameters": { "bucketName": "company-confidential-logs", "key": "data.csv" }}
-35. JSON{"eventName": "ConsoleLogin","userIdentity": { "type": "IAMUser", "userName": "admin" },"responseElements": { "ConsoleLogin": "Success" },"additionalEventData": { "MFAUsed": "No" },"sourceIPAddress": "198.51.100.99"}
-36. JSON{"eventName": "AttachUserPolicy","userIdentity": { "type": "IAMUser", "userName": "dev-user" },"requestParameters": {"userName": "dev-user","policyArn": "arn:aws:iam::aws:policy/AdministratorAccess"}}
-37. JSON{"eventName":"AuthorizeSecurityGroupIngress","errorCode": "UnauthorizedOperation","errorMessage": "You are not authorized to perform this operation.","sourceIPAddress": "203.0.113.50"}
-38. JSON{"eventName": "AssumeRole","userIdentity": { "type": "AWSAccount", "accountId": "111122223333" },"resources": [{ "ARN": "arn:aws:iam::444455556666:role/CrossAccountAdminRole" }],"responseElements": { "credentials": { "accessKeyId": "ASIA..." } }}
-39. JSON{"eventName": "DeleteBucketPolicy","userIdentity": { "type": "IAMUser", "userName": "contractor" },"requestParameters": { "bucketName": "production-backups" }}
-40. date=2026-08-01 time=14:22:01 devid=FW01 action=deny srcip=45.33.32.156 dstip=192.168.1.10 srcport=41002 dstport=23 proto=6 policyid=1 dstintf="internal"
-41. date=2026-08-01 time=15:10:05 action=allow srcip=192.168.1.105 dstip=185.220.101.5 dstport=443 proto=6 sentbyte=1024 rcvdbyte=4096 threat="Known Malicious IP"
-42. action=drop srcip=10.0.0.50 dstip=10.0.0.1 dstport=80 flags=SYN action=drop srcip=10.0.0.50 dstip=10.0.0.1 dstport=81 flags=SYN action=drop srcip=10.0.0.50 dstip=10.0.0.1 dstport=82 flags=SYN
-43. ike 0:VPN_TUNNEL: phase 1 negotiation failed due to time outike 0:VPN_TUNNEL: deleting IKE SA state
-44. nat: src 192.168.1.20:50123 -> translated 203.0.113.1:10050, dst 8.8.8.8:53 -> translated 8.8.8.8:53, proto UDP
-45. action=deny srcip=192.168.1.88 dstip=1.1.1.1 dstport=53 proto=17 reason="DNS query rate limit exceeded"
-46. JSON{"timestamp": "2026-08-01T16:00:00Z","query_time_sec": 12.45,"rows_examined": 1500000,"rows_returned": 10,"sql_text": "SELECT * FROM orders WHERE user_id = 98765 ORDER BY created_at DESC;"}
-47. LATEST DETECTED DEADLOCK:Transaction (1) waiting for lock on table `users` record; Transaction (2) waiting for lock on table `orders` record.
-48. [ERROR] [MY-010914] [Server] Aborted connection 1234 to db: 'production' user: 'app_user' host: '10.0.2.15'[ERROR] Too many connections
-49. JSON{"status": "ERROR","error_code": 1064,"message": "You have an error in your SQL syntax near 'WHERE FROM users' at line 1","query": "SELECT name WHERE FROM users WHERE id = 1"}
-50. [WARNING] InnoDB: Buffer pool size (128MB) is smaller than recommended for database size (10GB). High disk I/O reads detected.
----
-### 4. general
-1. Good morning. Let's give it our best today.
-2. Thank you, that was a huge help!
-3. Good work. How are things going?
-4. Nice to meet you. Please briefly explain what you can do.
-5. Good evening! Are you still up?
-6. What is 1 + 1?
-7. Goodbye, see you tomorrow!
-8. I hope the weather is nice today.
-9. What is your name?
-10. Is the IP address "192.168.1.1" a private IP or a public IP?
-11. What is 15% of $100?
-12. Sorry, I made a mistake in my last question. Please disregard it.
-13. Great! Keep up the good work.
-14. How many kilometers are in a mile?
-15. Hi! How are you doing?
-16. About how long does it take to travel from Tokyo to Osaka by Shinkansen?
-17. Thank you for the excellent answer!
-18. Calculate the square root of 128.
-19. I'm bored; tell me a funny joke.
-20. Merry Christmas!
-21. Happy New Year. Looking forward to another great year.
-22. Excuse me, could you tell me something?
-23. This is a test message. No reply needed.
-24. What is 35 degrees Celsius in Fahrenheit?
-25. Good morning! Have you had your coffee?
-26. I'm sorry, but your previous answer was hard to understand.
-27. How many bytes are in a kilobyte?
-28. Care for a little casual chat?
-29. Good night. Sweet dreams.
-30. Thanks for always supporting me!
-31. For the Pomodoro Technique, how many minutes do you work and how many do you rest?
-32. Bye-bye!
-33. Hello, can you hear me?
-34. Calculate the factorial of 5 (5!).
-35. I'm feeling down today. Please cheer me up.
-36. What is the capital of Japan?
-37. Check if 13 is a prime number. Is it?
-38. Good work! I'm calling it a day.
-39. You're welcome!
-40. What does the HTTP status code "404" mean? Tell me in a nutshell. 
-41. I'd like to take a quick break.
-42. What is the `ping` command used to check? In a nutshell.
-43. What is 2 to the 10th power?
-44. Understood! That's perfect.
-45. Tell me an interesting piece of trivia.
-46. I'm hungry.
-47. I look forward to working with you!
-48. Yes, that's fine. No problem.
-49. How do you say "Good morning" in English?
-50. Hello! Looking forward to working with you today.
+{
+  "metadata": {
+    "format": "tune-router-json-v1",
+    "data_origin": "manual_test2_pr_remapped",
+    "router_base_model": "Qwen/Qwen2.5-0.5B",
+    "labels": [
+      "Storage",
+      "Network",
+      "Coding",
+      "Security",
+      "Database",
+      "General"
+    ],
+    "target_models": {
+      "Storage": "storage-specialist",
+      "Network": "network-specialist",
+      "Coding": "coding-specialist",
+      "Security": "security-specialist",
+      "Database": "database-specialist",
+      "General": "general-fallback"
+    },
+    "split": "test",
+    "source_revision": "manual_test2_prompt_list_remapped_to_target_labels",
+    "label_counts": {
+      "Coding": 53,
+      "Database": 19,
+      "Storage": 6,
+      "Network": 6,
+      "Security": 66,
+      "General": 50
+    },
+    "total_records": 200
+  },
+  "records": [
+    {
+      "question_id": "manual-test2-coding-000001",
+      "text": "Write a sample simple REST API using FastAPI in Python.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:1",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:1",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000002",
+      "text": "Show me code to fetch data from an API using `useEffect` in React.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:2",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:2",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000003",
+      "text": "Create a Dockerfile to set up a Node.js environment.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:3",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:3",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000004",
+      "text": "Write an SQL query that performs an `INNER JOIN` on two tables and extracts data from a specific date onwards.",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:4",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:4",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-storage-000005",
+      "text": "Generate a configuration file to create an AWS S3 bucket using Terraform.",
+      "gold_label": "Storage",
+      "label_id": 0,
+      "target_model": "storage-specialist",
+      "tags": [
+        "Storage",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:5",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:5",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000006",
+      "text": "What is the fastest way to remove duplicates from a list in Python?",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:6",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:6",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000007",
+      "text": "Write a YAML file to launch 3 replicas of Nginx in a Kubernetes Deployment.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:7",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:7",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000008",
+      "text": "Show an example of defining an interface using generics in TypeScript.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:8",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:8",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000009",
+      "text": "What is the Git command to modify the most recent commit message?",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:9",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:9",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000010",
+      "text": "Write code to filter list elements using the Stream API in Java.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:10",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:10",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000011",
+      "text": "Explain the basic usage of the Vue 3 Composition API.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:11",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:11",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000012",
+      "text": "Show a sample of concurrent processing using goroutines in Go.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:12",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:12",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000013",
+      "text": "Explain how to use `EXPLAIN` to check if a MySQL index is being utilized.",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:13",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:13",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000014",
+      "text": "List three ways to center an element on the screen using plain CSS.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:14",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:14",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000015",
+      "text": "Explain the steps to create a custom user model in Django.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:15",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:15",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000016",
+      "text": "How do I create a deployment package for running Python on AWS Lambda?",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:16",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:16",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000017",
+      "text": "What is the Linux command to identify the process using a specific port number?",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:17",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:17",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-network-000018",
+      "text": "How do I fetch data from a Server Component using the Next.js App Router?",
+      "gold_label": "Network",
+      "label_id": 1,
+      "target_model": "network-specialist",
+      "tags": [
+        "Network",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:18",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:18",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000019",
+      "text": "Write an example of defining an asynchronous method (`async`/`await`) in C#.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:19",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:19",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000020",
+      "text": "Create a configuration file to connect a web container and a database container using Docker Compose.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:20",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:20",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000021",
+      "text": "Write code to read a CSV file and fill in missing values ​​using pandas in Python.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:21",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:21",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000022",
+      "text": "Write a Bash script to delete only files with the `.txt` extension within a directory.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:22",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:22",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000023",
+      "text": "What is the PostgreSQL query to search for a specific key within a `JSONB` column?",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:23",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:23",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000024",
+      "text": "What is the command to generate a new controller in Ruby on Rails?",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:24",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:24",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000025",
+      "text": "Write the code for a simple Flutter app where the count increases when a button is pressed.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:25",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:25",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000026",
+      "text": "What are the steps and precautions for changing an AWS EC2 instance type?",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:26",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:26",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000027",
+      "text": "Create a GitHub Actions workflow file to automatically run Node.js tests.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:27",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:27",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000028",
+      "text": "Provide an example of secure PHP code for hashing and storing passwords.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:28",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:28",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000029",
+      "text": "Write an example of using the `Result` type for error handling in Rust.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:29",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:29",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000030",
+      "text": "Show the Nginx configuration to block access from a specific IP address.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:30",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:30",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000031",
+      "text": "Write Terraform code to create an AWS VPC and a public subnet.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:31",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:31",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000032",
+      "text": "Show the code to send a POST request using the Python `requests` library.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:32",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:32",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000033",
+      "text": "Write a JavaScript function to randomly shuffle the contents of an array.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:33",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:33",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000034",
+      "text": "Create a YAML file to define a Kubernetes Service (LoadBalancer).",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:34",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:34",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000035",
+      "text": "What is the MongoDB query to search for documents that contain a specific field?",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:35",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:35",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000036",
+      "text": "What is the Redis command to save data and automatically delete it after 5 minutes (TTL setting)?",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:36",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:36",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-network-000037",
+      "text": "Which package should be used to launch the smartphone camera in React Native, and what is an implementation example?",
+      "gold_label": "Network",
+      "label_id": 1,
+      "target_model": "network-specialist",
+      "tags": [
+        "Network",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:37",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:37",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000038",
+      "text": "Explain how to use smart pointers in C++ to prevent memory leaks.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:38",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:38",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000039",
+      "text": "What is the Linux `find` command to search only for files larger than 100MB?",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:39",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:39",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000040",
+      "text": "Write a Java configuration class in Spring Boot to apply CORS settings globally.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:40",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:40",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000041",
+      "text": "Write Python code to create a custom decorator that measures a function's execution time.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:41",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:41",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000042",
+      "text": "Create a JSON policy for an AWS IAM role that grants read-only access to S3.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:42",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:42",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000043",
+      "text": "Show an example of pagination using the SQL window function `ROW_NUMBER`.",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:43",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:43",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000044",
+      "text": "Create a responsive 3-column grid layout using Tailwind CSS.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:44",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:44",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000045",
+      "text": "Write a Dockerfile that uses multi-stage builds to reduce the size of a Go binary.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:45",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:45",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000046",
+      "text": "​​Write an Ansible playbook to install Nginx on multiple servers.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:46",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:46",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000047",
+      "text": "Explain how to use TypeScript Utility Types (like Omit and Pick) with code examples.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:47",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:47",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000048",
+      "text": "What is the Elasticsearch query for performing a full-text search for documents containing a specific keyword?",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:48",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:48",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000049",
+      "text": "Write code to fetch JSON using URLSession in an iOS app (Swift).",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:49",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:49",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000050",
+      "text": "Provide the command to deploy a Node.js function to GCP Cloud Functions.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:50",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:50",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000051",
+      "text": "Explain the difference between Reflected and Stored Cross-Site Scripting (XSS) in terms of attack vectors and impact scope.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:1",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:1",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000052",
+      "text": "Compare and contrast CSRF (Cross-Site Request Forgery) and SSRF (Server-Side Request Forgery).",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:2",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:2",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000053",
+      "text": "Describe the role of a \"salt\" in password hashing and how it defends against rainbow table attacks.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:3",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:3",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000054",
+      "text": "Explain how Zero Trust Architecture differs from traditional perimeter-based security models.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:4",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:4",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000055",
+      "text": "Detail the sequential steps involved in a standard TLS 1.3 handshake.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:5",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:5",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000056",
+      "text": "What is the difference between Symmetric and Asymmetric encryption, and in what scenarios is each best applied?",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:6",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:6",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000057",
+      "text": "Describe the core components of a JSON Web Token (JWT) and discuss its common security vulnerabilities.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:7",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:7",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000058",
+      "text": "Explain the principle of least privilege and how it applies to cloud Identity and Access Management (IAM).",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:8",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:8",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000059",
+      "text": "Define Content Security Policy (CSP) and explain how it helps mitigate XSS attacks.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:9",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:9",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000060",
+      "text": "Compare Role-Based Access Control (RBAC) with Attribute-Based Access Control (ABAC).",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:10",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:10",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000061",
+      "text": "What is the STRIDE threat modeling framework, and how is it used during the software development lifecycle?",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:11",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:11",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000062",
+      "text": "Explain the concept of Forward Secrecy in cryptographic protocols.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:12",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:12",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000063",
+      "text": "Describe the mechanics of a Buffer Overflow attack and how modern operating systems attempt to prevent it.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:13",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:13",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000064",
+      "text": "What are the key differences between a Web Application Firewall (WAF) and an Intrusion Prevention System (IPS)?",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:14",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:14",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000065",
+      "text": "Explain how a Man-in-the-Middle (MitM) attack works and how HSTS helps prevent it.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:15",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:15",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000066",
+      "text": "Describe the security implications of running Docker containers as the root user.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:16",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:16",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000067",
+      "text": "What is DNSSEC, and how does it protect against DNS spoofing or cache poisoning?",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:17",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:17",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000068",
+      "text": "Explain the difference between OAuth 2.0 and OpenID Connect (OIDC).",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:18",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:18",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000069",
+      "text": "Discuss the common techniques attackers use to bypass Multi-Factor Authentication (MFA).",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:19",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:19",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000070",
+      "text": "What is a Distributed Denial of Service (DDoS) attack, and what are the primary network-level strategies to mitigate it?",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:20",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:20",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000071",
+      "text": "Explain the concept of End-to-End Encryption (E2EE) and its limitations regarding metadata.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:21",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:21",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000072",
+      "text": "Define Spear Phishing and Whaling, and contrast them with standard phishing campaigns.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:22",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:22",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000073",
+      "text": "Describe the risks associated with insecure deserialization in web applications.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:23",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:23",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000074",
+      "text": "What is a supply chain attack in the context of software development, and how can organizations detect it?",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:24",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:24",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000075",
+      "text": "Explain the importance of key rotation and how a Key Management Service (KMS) facilitates it.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:25",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:25",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000076",
+      "text": "An employee reports that their computer is extremely slow and their files have `.encrypted` extensions. Detail the top 3 initial response steps to contain this suspected ransomware incident.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:26",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:26",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000077",
+      "text": "An automated alert indicates that an AWS IAM access key has been leaked on a public GitHub repository. Outline your immediate remediation steps.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:27",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:27",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000078",
+      "text": "We have detected a series of \"impossible travel\" logins for the CEO's account (e.g., logins from Tokyo and New York within a 10-minute window). What actions should the SOC take to investigate and secure the account?",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:28",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:28",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000079",
+      "text": "A server's EDR agent has flagged a newly created PHP file in the web root as a potential web shell. How would you investigate this finding without tipping off the attacker?",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:29",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:29",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000080",
+      "text": "A user clicked a link in a suspicious email and downloaded a `.zip` file. They executed the contents but nothing visually happened. Explain your investigation process using the endpoint's telemetry logs.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:30",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:30",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000081",
+      "text": "The SIEM has triggered an alert for high-volume DNS requests with unusually long subdomains originating from a single internal host. What type of attack does this suggest, and how should it be contained?",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:31",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:31",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000082",
+      "text": "You observe a massive spike in outbound traffic from a database server to an unknown external IP address over port 443. Describe your incident response plan to address this potential data exfiltration.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:32",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:32",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000083",
+      "text": "An alert shows that a standard user account suddenly gained Domain Admin privileges in Active Directory. Outline the steps to investigate this privilege escalation attempt.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:33",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:33",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000084",
+      "text": "Your team discovers a cryptominer running inside a production Kubernetes Pod. Explain the containment and eradication process for this containerized environment.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:34",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:34",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000085",
+      "text": "An unauthenticated external IP is repeatedly sending malformed JNDI lookup strings to your web application. How do you triage and respond to this Log4Shell exploit activity?",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:35",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:35",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000086",
+      "text": "Identify the malicious payload and its intent from the following obfuscated PowerShell script execution log. [Log attached]",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:36",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:36",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000087",
+      "text": "An employee reports losing an encrypted company laptop while traveling. Determine the regulatory and security implications, and outline the necessary procedural steps.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:37",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:37",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000088",
+      "text": "A threat actor has defaced the company's public-facing website. What is the immediate incident response protocol to restore the site and investigate the root cause?",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:38",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:38",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000089",
+      "text": "You receive a report from a third-party vendor that a shared S3 bucket containing your customer data was left publicly accessible. Outline your response strategy.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:39",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:39",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000090",
+      "text": "An internal endpoint is receiving multiple MFA push notifications back-to-back, and the user eventually accepted one. Explain how you would respond to this suspected MFA fatigue attack.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:40",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:40",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000091",
+      "text": "Analyze the following packet capture (PCAP) snippet to determine if the lateral movement attempt was successful. [PCAP attached]",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:41",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:41",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000092",
+      "text": "A sudden surge of HTTP 500 Internal Server Errors is observed in the web access logs, originating from a single IP address attempting various SQL injection payloads. What is your containment strategy?",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:42",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:42",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000093",
+      "text": "A rogue Wi-Fi access point spoofing the corporate SSID has been detected in the headquarters building. Describe the steps to locate, isolate, and mitigate this physical security threat.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:43",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:43",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000094",
+      "text": "Investigate a potential insider threat based on an alert showing an employee downloading unusually large volumes of sensitive source code right before their resignation date.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:44",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:44",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000095",
+      "text": "Following a successful phishing attack, an attacker set up an inbox rule to forward all of a manager's emails to an external address. Detail the steps to detect, eradicate, and recover from this Business Email Compromise (BEC).",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:45",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:45",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000096",
+      "text": "A critical system binary on a Linux server shows a recent modification date and a mismatched file hash. Outline your forensic investigation steps to determine if it is a rootkit.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:46",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:46",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000097",
+      "text": "Analyze the following EDR alert JSON payload to determine the attack vector and the process tree of the suspicious activity. [JSON attached]",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:47",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:47",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000098",
+      "text": "Your organization receives a ransom email threatening a massive DDoS attack unless a Bitcoin payment is made. Outline your emergency response and communication plan.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:48",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:48",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000099",
+      "text": "A popular open-source dependency used in your main application was reported to contain a malicious backdoor. Describe the steps you would take to identify exposure and remediate the risk.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:49",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:49",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000100",
+      "text": "Evaluate the following Windows Security Event logs (Event ID 4624 and 4625) to determine if the threat actor successfully brute-forced the Administrator account. [Log attached]",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Security:50",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Security:50",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000101",
+      "text": "[Sun Dec 04 04:47:44 2005] [notice] workerEnv.init() ok /etc/httpd/conf/workers2.properties[Sun Dec 04 04:47:44 2005] [error] mod_jk child workerEnv in error state 6[Sun Dec 04 04:51:08 2005] [notice] jk2_init() Found child 6725 in scoreboard slot 10",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:1",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:1",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000102",
+      "text": "192.168.1.105 - - [12/May/2023:10:15:32 +0000] \"GET /.env HTTP/1.1\" 404 208192.168.1.105 - - [12/May/2023:10:15:33 +0000] \"GET /wp-login.php HTTP/1.1\" 404 208192.168.1.105 - - [12/May/2023:10:15:35 +0000] \"GET /config.json HTTP/1.1\" 404 208",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:2",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:2",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000103",
+      "text": "[error] [client 10.0.0.15] Server reached MaxClients setting, consider raising the MaxClients setting[error] [client 10.0.0.16] (70007)The timeout specified has expired: ap_content_length_filter: apr_bucket_read failed",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:3",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:3",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000104",
+      "text": "[error] [client 172.16.0.42] SSL Library Error: 218529960 error:0906D06C:PEM routines:PEM_read_bio:no start line",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:4",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:4",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000105",
+      "text": "[error] [client 192.168.1.50] (13)Permission denied: file permissions deny server access: /var/www/html/secret.html",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:5",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:5",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000106",
+      "text": "[12345.6789] Out of memory: Kill process 4321 (mysqld) score 850 or sacrifice child[12345.6790] Killed process 4321(mysqld) total-vm:4194304kB, anon-rss:2097152kB, file-rss:0kB",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:6",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:6",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-storage-000107",
+      "text": "sda: Current: sense key:Medium Error, Additional sense: Unrecovered read error - auto reallocate failedEXT4-fs error (device sda1): ext4_lookup: deleted inode referenced: 12345",
+      "gold_label": "Storage",
+      "label_id": 0,
+      "target_model": "storage-specialist",
+      "tags": [
+        "Storage",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:7",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:7",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000108",
+      "text": "systemd[1]: nginx.service: Main process exited, code=exited, status=1/FAILUREsystemd[1]: nginx.service: Failed with result 'exit-code'.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:8",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:8",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-storage-000109",
+      "text": "CRON[8921]: (root) CMD (/usr/local/bin/backup.sh > /dev/null 2>&1)CRON[8920]: (CRON) error (can't fork)",
+      "gold_label": "Storage",
+      "label_id": 0,
+      "target_model": "storage-specialist",
+      "tags": [
+        "Storage",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:9",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:9",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-storage-000110",
+      "text": "Kernel panic - not syncing: VFS:Unable to mount root fs on unknown-block(0,0)CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.10.0-8-amd64 #1",
+      "gold_label": "Storage",
+      "label_id": 0,
+      "target_model": "storage-specialist",
+      "tags": [
+        "Storage",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:10",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:10",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000111",
+      "text": "Failed password for invalid user admin from 198.51.100.45 port 52341 ssh2 Failed password for invalid user root from 198.51.100.45 port 52342 ssh2 Failed password for invalid user test from 198.51.100.45 port 52343 ssh2",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:11",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:11",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000112",
+      "text": "Accepted publickey for ubuntu from 10.0.1.20 port 49152 ssh2: RSA SHA256:abc123xyz...pam_unix(sshd:session): session opened for user ubuntu by (uid=0)",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:12",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:12",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000113",
+      "text": "Connection closed by authenticating user root 203.0.113.10 port 38920 [preauth]",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:13",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:13",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000114",
+      "text": "Host key verification failed.fatal: Could not read from remote repository.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:14",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:14",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000115",
+      "text": "Received disconnect from 192.168.1.80 port 51112:2: Too many authentication failuresDisconnected from authenticating user deploy 192.168.1.80 port 51112 [preauth]",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:15",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:15",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000116",
+      "text": "sudo:   alice : TTY=pts/0 ; PWD=/home/alice ; USER=root ; COMMAND=/bin/su -pam_unix(sudo:session): session opened for user root by alice(uid=1001)",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:16",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:16",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000117",
+      "text": "FATAL org.apache.hadoop.mapred.TaskTracker: Error running child : java.lang.OutOfMemoryError: Java heap space at java.util.Arrays.copyOf(Arrays.java:3210)",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:17",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:17",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000118",
+      "text": "WARN org.apache.hadoop.hdfs.server.datanode.DataNode: Volume /mnt/hadoop/dfs/data is failed. Remaining active volumes: 0",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:18",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:18",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000119",
+      "text": "INFO org.apache.hadoop.hdfs.StateChange: STATE* SafeMode is ON. The reported blocks 1000 needs additional 200 blocks to reach total expected blocks 1200.",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:19",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:19",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000120",
+      "text": "ERROR org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Could not renew lease for[DFSClient_NONMAPREDUCE_12345] on /user/hadoop/file.txt",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:20",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:20",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000121",
+      "text": "INFO org.apache.hadoop.yarn.server.nodemanager.NodeManager: NodeManager marked UNHEALTHY by HealthChecker.Disk utilization on /tmp exceeded threshold 90%.",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:21",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:21",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000122",
+      "text": "WARN org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Block BP-12345:blk_1073741825_1001 is UNDER REPLICATED. Expected: 3, Actual: 1",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:22",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:22",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000123",
+      "text": "Log Name: Security, Event ID: 4625, Keywords: Audit Failure Account For Which Logon Failed: Target Account Name: Administrator Failure Reason: Unknown user name or bad password.",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:23",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:23",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-network-000124",
+      "text": "Log Name: System, Source: Service Control Manager, Event ID: 7031 The Print Spooler service terminated unexpectedly. It has done this 1 time(s).",
+      "gold_label": "Network",
+      "label_id": 1,
+      "target_model": "network-specialist",
+      "tags": [
+        "Network",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:24",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:24",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000125",
+      "text": "Log Name: System, Source: Microsoft-Windows-Kernel-Power, Event ID: 41 The system has rebooted without cleanly shutting down first. This error could be caused if the system stopped responding, crashed, or lost power unexpectedly.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:25",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:25",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000126",
+      "text": "Log Name: Security, Event ID: 4672, Keywords: Audit Success Special privileges assigned to new logon. Account Name: SYSTEM,Privileges: SeSecurityPrivilege, SeTakeOwnershipPrivilege",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:26",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:26",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000127",
+      "text": "Log Name: Application, Source: Application Error, Event ID: 1000 Faulting application name: app.exe, version: 1.0.0.0, Faulting module name: ntdll.dll, Exception code: 0xc0000005",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:27",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:27",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-storage-000128",
+      "text": "Log Name: System, Source: Disk, Event ID: 7 The device, \\Device\\Harddisk0\\DR0, has a bad block.",
+      "gold_label": "Storage",
+      "label_id": 0,
+      "target_model": "storage-specialist",
+      "tags": [
+        "Storage",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:28",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:28",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000129",
+      "text": "Events:Type     Reason     Age                From               Message----     ------     ----               ----               -------Warning  BackOff    5s (x3 over 30s)   kubelet Back-off restarting failed container web-app in pod web-app-7d4b8f5d68-x9z2p",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:29",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:29",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-network-000130",
+      "text": "State:          Terminated Reason:OOMKilled Exit Code:    137 Started:      Mon, 01 Aug 2026 10:00:00 +0000 Finished:     Mon, 01 Aug 2026 10:05:00 +0000",
+      "gold_label": "Network",
+      "label_id": 1,
+      "target_model": "network-specialist",
+      "tags": [
+        "Network",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:30",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:30",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000131",
+      "text": "0/3 nodes are available: 3 Insufficient cpu. preemption: 0/3 nodes are available: 3 No preemption victims found for incoming pod.",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:31",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:31",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000132",
+      "text": "Failed to pull image \"myrepo/backend:v2.1\": rpc error: code = NotFound desc = failed to pull and unpack image \"docker.io/myrepo/backend:v2.1\": Error response from daemon: manifest for myrepo/backend:v2.1 not found",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:32",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:32",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000133",
+      "text": "Warning  Unhealthy  2m (x5 over 3m)  kubelet  Readiness probe failed: HTTP probe failed with statuscode: 500",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:33",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:33",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000134",
+      "text": "JSON{\"eventTime\": \"2026-08-01T12:00:00Z\",\"eventName\": \"GetObject\",\"errorCode\": \"AccessDenied\",\"errorMessage\": \"Access Denied\",\"userIdentity\": { \"type\": \"IAMUser\", \"userName\": \"test-user\" },\"requestParameters\": { \"bucketName\": \"company-confidential-logs\", \"key\": \"data.csv\" }}",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:34",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:34",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000135",
+      "text": "JSON{\"eventName\": \"ConsoleLogin\",\"userIdentity\": { \"type\": \"IAMUser\", \"userName\": \"admin\" },\"responseElements\": { \"ConsoleLogin\": \"Success\" },\"additionalEventData\": { \"MFAUsed\": \"No\" },\"sourceIPAddress\": \"198.51.100.99\"}",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:35",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:35",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000136",
+      "text": "JSON{\"eventName\": \"AttachUserPolicy\",\"userIdentity\": { \"type\": \"IAMUser\", \"userName\": \"dev-user\" },\"requestParameters\": {\"userName\": \"dev-user\",\"policyArn\": \"arn:aws:iam::aws:policy/AdministratorAccess\"}}",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:36",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:36",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000137",
+      "text": "JSON{\"eventName\":\"AuthorizeSecurityGroupIngress\",\"errorCode\": \"UnauthorizedOperation\",\"errorMessage\": \"You are not authorized to perform this operation.\",\"sourceIPAddress\": \"203.0.113.50\"}",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:37",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:37",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000138",
+      "text": "JSON{\"eventName\": \"AssumeRole\",\"userIdentity\": { \"type\": \"AWSAccount\", \"accountId\": \"111122223333\" },\"resources\": [{ \"ARN\": \"arn:aws:iam::444455556666:role/CrossAccountAdminRole\" }],\"responseElements\": { \"credentials\": { \"accessKeyId\": \"ASIA...\" } }}",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:38",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:38",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-storage-000139",
+      "text": "JSON{\"eventName\": \"DeleteBucketPolicy\",\"userIdentity\": { \"type\": \"IAMUser\", \"userName\": \"contractor\" },\"requestParameters\": { \"bucketName\": \"production-backups\" }}",
+      "gold_label": "Storage",
+      "label_id": 0,
+      "target_model": "storage-specialist",
+      "tags": [
+        "Storage",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:39",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:39",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000140",
+      "text": "date=2026-08-01 time=14:22:01 devid=FW01 action=deny srcip=45.33.32.156 dstip=192.168.1.10 srcport=41002 dstport=23 proto=6 policyid=1 dstintf=\"internal\"",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:40",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:40",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000141",
+      "text": "date=2026-08-01 time=15:10:05 action=allow srcip=192.168.1.105 dstip=185.220.101.5 dstport=443 proto=6 sentbyte=1024 rcvdbyte=4096 threat=\"Known Malicious IP\"",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:41",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:41",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-coding-000142",
+      "text": "action=drop srcip=10.0.0.50 dstip=10.0.0.1 dstport=80 flags=SYN action=drop srcip=10.0.0.50 dstip=10.0.0.1 dstport=81 flags=SYN action=drop srcip=10.0.0.50 dstip=10.0.0.1 dstport=82 flags=SYN",
+      "gold_label": "Coding",
+      "label_id": 2,
+      "target_model": "coding-specialist",
+      "tags": [
+        "Coding",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:42",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:42",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-network-000143",
+      "text": "ike 0:VPN_TUNNEL: phase 1 negotiation failed due to time outike 0:VPN_TUNNEL: deleting IKE SA state",
+      "gold_label": "Network",
+      "label_id": 1,
+      "target_model": "network-specialist",
+      "tags": [
+        "Network",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:43",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:43",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-network-000144",
+      "text": "nat: src 192.168.1.20:50123 -> translated 203.0.113.1:10050, dst 8.8.8.8:53 -> translated 8.8.8.8:53, proto UDP",
+      "gold_label": "Network",
+      "label_id": 1,
+      "target_model": "network-specialist",
+      "tags": [
+        "Network",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:44",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:44",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000145",
+      "text": "action=deny srcip=192.168.1.88 dstip=1.1.1.1 dstport=53 proto=17 reason=\"DNS query rate limit exceeded\"",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:45",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:45",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000146",
+      "text": "JSON{\"timestamp\": \"2026-08-01T16:00:00Z\",\"query_time_sec\": 12.45,\"rows_examined\": 1500000,\"rows_returned\": 10,\"sql_text\": \"SELECT * FROM orders WHERE user_id = 98765 ORDER BY created_at DESC;\"}",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:46",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:46",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000147",
+      "text": "LATEST DETECTED DEADLOCK:Transaction (1) waiting for lock on table `users` record; Transaction (2) waiting for lock on table `orders` record.",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:47",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:47",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-security-000148",
+      "text": "[ERROR] [MY-010914] [Server] Aborted connection 1234 to db: 'production' user: 'app_user' host: '10.0.2.15'[ERROR] Too many connections",
+      "gold_label": "Security",
+      "label_id": 3,
+      "target_model": "security-specialist",
+      "tags": [
+        "Security",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:48",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:48",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000149",
+      "text": "JSON{\"status\": \"ERROR\",\"error_code\": 1064,\"message\": \"You have an error in your SQL syntax near 'WHERE FROM users' at line 1\",\"query\": \"SELECT name WHERE FROM users WHERE id = 1\"}",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:49",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:49",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-database-000150",
+      "text": "[WARNING] InnoDB: Buffer pool size (128MB) is smaller than recommended for database size (10GB). High disk I/O reads detected.",
+      "gold_label": "Database",
+      "label_id": 4,
+      "target_model": "database-specialist",
+      "tags": [
+        "Database",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_Coding:50",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:Coding:50",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.75,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000151",
+      "text": "Good morning. Let's give it our best today.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:1",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:1",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000152",
+      "text": "Thank you, that was a huge help!",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:2",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:2",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000153",
+      "text": "Good work. How are things going?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:3",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:3",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000154",
+      "text": "Nice to meet you. Please briefly explain what you can do.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:4",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:4",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000155",
+      "text": "Good evening! Are you still up?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:5",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:5",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000156",
+      "text": "What is 1 + 1?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:6",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:6",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000157",
+      "text": "Goodbye, see you tomorrow!",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:7",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:7",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000158",
+      "text": "I hope the weather is nice today.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:8",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:8",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000159",
+      "text": "What is your name?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:9",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:9",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000160",
+      "text": "Is the IP address \"192.168.1.1\" a private IP or a public IP?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:10",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:10",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000161",
+      "text": "What is 15% of $100?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:11",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:11",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000162",
+      "text": "Sorry, I made a mistake in my last question. Please disregard it.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:12",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:12",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000163",
+      "text": "Great! Keep up the good work.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:13",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:13",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000164",
+      "text": "How many kilometers are in a mile?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:14",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:14",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000165",
+      "text": "Hi! How are you doing?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:15",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:15",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000166",
+      "text": "About how long does it take to travel from Tokyo to Osaka by Shinkansen?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:16",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:16",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000167",
+      "text": "Thank you for the excellent answer!",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:17",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:17",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000168",
+      "text": "Calculate the square root of 128.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:18",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:18",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000169",
+      "text": "I'm bored; tell me a funny joke.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:19",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:19",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000170",
+      "text": "Merry Christmas!",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:20",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:20",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000171",
+      "text": "Happy New Year. Looking forward to another great year.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:21",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:21",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000172",
+      "text": "Excuse me, could you tell me something?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:22",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:22",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000173",
+      "text": "This is a test message. No reply needed.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:23",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:23",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000174",
+      "text": "What is 35 degrees Celsius in Fahrenheit?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:24",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:24",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000175",
+      "text": "Good morning! Have you had your coffee?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:25",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:25",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000176",
+      "text": "I'm sorry, but your previous answer was hard to understand.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:26",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:26",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000177",
+      "text": "How many bytes are in a kilobyte?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:27",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:27",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000178",
+      "text": "Care for a little casual chat?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:28",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:28",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000179",
+      "text": "Good night. Sweet dreams.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:29",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:29",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000180",
+      "text": "Thanks for always supporting me!",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:30",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:30",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000181",
+      "text": "For the Pomodoro Technique, how many minutes do you work and how many do you rest?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:31",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:31",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000182",
+      "text": "Bye-bye!",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:32",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:32",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000183",
+      "text": "Hello, can you hear me?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:33",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:33",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000184",
+      "text": "Calculate the factorial of 5 (5!).",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:34",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:34",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000185",
+      "text": "I'm feeling down today. Please cheer me up.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:35",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:35",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000186",
+      "text": "What is the capital of Japan?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:36",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:36",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000187",
+      "text": "Check if 13 is a prime number. Is it?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:37",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:37",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000188",
+      "text": "Good work! I'm calling it a day.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:38",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:38",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000189",
+      "text": "You're welcome!",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:39",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:39",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000190",
+      "text": "What does the HTTP status code \"404\" mean? Tell me in a nutshell.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:40",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:40",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000191",
+      "text": "I'd like to take a quick break.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:41",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:41",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000192",
+      "text": "What is the `ping` command used to check? In a nutshell.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:42",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:42",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000193",
+      "text": "What is 2 to the 10th power?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:43",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:43",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000194",
+      "text": "Understood! That's perfect.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:44",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:44",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000195",
+      "text": "Tell me an interesting piece of trivia.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:45",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:45",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000196",
+      "text": "I'm hungry.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:46",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:46",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000197",
+      "text": "I look forward to working with you!",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:47",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:47",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000198",
+      "text": "Yes, that's fine. No problem.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:48",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:48",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000199",
+      "text": "How do you say \"Good morning\" in English?",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:49",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:49",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    },
+    {
+      "question_id": "manual-test2-general-000200",
+      "text": "Hello! Looking forward to working with you today.",
+      "gold_label": "General",
+      "label_id": 5,
+      "target_model": "general-fallback",
+      "tags": [
+        "General",
+        "manual",
+        "test2"
+      ],
+      "importance": "normal",
+      "source": "manual_test2",
+      "source_url": "local_manual_prompt_list",
+      "source_license": "unknown",
+      "source_record_id": "section_General:50",
+      "template_id": "manual_test2",
+      "split_group": "manual_test2:General:50",
+      "split": "test",
+      "rubric": {
+        "minimum_quality": 0.65,
+        "requires_human_review": false
+      }
+    }
+  ]
+}

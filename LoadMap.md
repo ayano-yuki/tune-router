@@ -23,7 +23,21 @@ TuneRouter は、入力ごとに品質・速度・VRAM効率のバランスが�
 - 専門家モデルを更新した場合は、評価結果とルータの教師ラベルを作り直す
 - 学習用、開発用、最終評価用データを分離し、最終評価用データは固定する
 
-## 3. 成功指標
+## 3. 初期モデル候補
+
+| ラベル | 主候補 | 比較候補 | 選定理由 |
+| --- | --- | --- | --- |
+| Router | Qwen3-0.6B / Qwen3-1.7B | TinySwallow-1.5B-Instruct / Llama-3.2-1B-Instruct | 低VRAM・低レイテンシで分類だけを担当させる |
+| Storage | Qwen2.5-7B-Instruct-1M | Qwen2.5-14B-Instruct-1M / EvoLLM-JP-v1-10B | 障害調査、ログ読解、手順整理を長文コンテキストで扱う |
+| Network | Qwen2.5-7B-Instruct-1M | Qwen2.5-14B-Instruct-1M / Llama-3.1-8B-Instruct | 経路、DNS、VPN、設定差分などのRCAを扱う |
+| Coding | Qwen2.5-Coder-7B | Qwen2.5-Coder-14B / DeepSeek-Coder-V2-Lite-Instruct / Mamba-Codestral-7B | コード、CLI設定、Dockerfile、スクリプト生成に特化させる |
+| Security | Qwen2.5-7B-Instruct-1M | Qwen2.5-14B-Instruct-1M / Phi-3.5-MoE-instruct / gemma-2-9b-it | CVE評価、ログ解析、インシデント調査で長文入力を扱う |
+| Database | Qwen2.5-7B-Instruct-1M | Qwen2.5-14B-Instruct-1M / Llama-3.1-8B-Instruct | クエリ改善、ロック、レプリケーション、運用手順を扱う |
+| General | Qwen3-0.6B / Qwen3-1.7B | TinySwallow-1.5B-Instruct / google/gemma-2b | 軽量・即答タスクとフォールバックを低コストで処理する |
+
+Storage / Network / Database は初期段階では同系統の長文Instructモデルを候補に含める。Phase 1の実測で勝ち領域が分かれない場合は、モデルを分けずに同一モデルへ集約する。
+
+## 4. 成功指標
 
 主要指標は、単純なルーティング正解率ではなく、システム全体の効用とする。
 
@@ -50,7 +64,7 @@ oracle_capture =
   / (utility_oracle - utility_baseline)
 ```
 
-## 4. フェーズ構成
+## 5. フェーズ構成
 
 ### Phase 0: 評価設計
 
@@ -67,7 +81,7 @@ oracle_capture =
 - 候補モデルとバージョンを固定する
 - 共通の生成パラメータとモデル別プロンプトを固定する
 - 品質、レイテンシ、VRAM、失敗ペナルティの定義を決める
-- コード、セキュリティログ、IaC、一般質問を含む評価問題を作る
+- `Storage`、`Network`、`Coding`、`Security`、`Database`、`General` を含む評価問題を作る
 - 複数領域にまたがる質問、曖昧な質問、簡単な質問も含める
 - 採点ルーブリックと最低品質条件を定義する
 - 問題の出典やテンプレート単位で train/dev/test に分割する
@@ -344,7 +358,7 @@ Oracleルーティングでも失敗した問題を集め、原因ごとに分�
 - 旧構成に対する品質とコストの回帰が説明できる
 - 次回評価に使用できる失敗データが蓄積されている
 
-## 5. フェーズ判定一覧
+## 6. フェーズ判定一覧
 
 | 判定地点 | Go | No-Go |
 | --- | --- | --- |
@@ -355,7 +369,7 @@ Oracleルーティングでも失敗した問題を集め、原因ごとに分�
 | Phase 4完了 | 対象領域が改善し、回帰が許容範囲内 | 改善が小さい、または他領域が劣化する |
 | Phase 5完了 | 更新後のモデル構成でも基準を満たす | 教師ラベルが古く、再現性がない |
 
-## 6. 初期スコープの完了定義
+## 7. 初期スコープの完了定義
 
 初期スコープは、次の状態に到達した時点で完了とする。
 

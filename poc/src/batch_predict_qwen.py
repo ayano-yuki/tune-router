@@ -38,12 +38,15 @@ def _extract_prompts_from_text(content: str) -> list[str]:
         if re.match(r"^\d+\.\s+.*\(\d+\s+items\)\s*$", line):
             continue
 
-        if re.match(r"^\d+\.\s+", line):
+        if re.match(r"^\d{1,2}\.\s+", line):
             chunks = _split_numbered_line(line)
             prompts.extend(chunks)
             continue
 
-        prompts.append(line)
+        if prompts:
+            prompts[-1] = f"{prompts[-1]} {line}"
+        else:
+            prompts.append(line)
 
     cleaned: list[str] = []
     for prompt in prompts:
