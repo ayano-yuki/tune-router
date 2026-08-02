@@ -12,6 +12,27 @@
 | dev | 170 | 202 | 121 | 191 | 197 | 211 | 1092 |
 | test | 138 | 108 | 99 | 167 | 160 | 195 | 867 |
 
+## 精度
+
+| split | accuracy | macro_f1 | correct / total |
+| --- | ---: | ---: | ---: |
+| test | 1.000 | 1.000 | 867 / 867 |
+
+## Test Confusion Matrix
+
+| actual \ predicted | Storage | Network | Coding | Security | Database | General |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Storage | 138 | 0 | 0 | 0 | 0 | 0 |
+| Network | 0 | 108 | 0 | 0 | 0 | 0 |
+| Coding | 0 | 0 | 99 | 0 | 0 | 0 |
+| Security | 0 | 0 | 0 | 167 | 0 | 0 |
+| Database | 0 | 0 | 0 | 0 | 160 | 0 |
+| General | 0 | 0 | 0 | 0 | 0 | 195 |
+
+## 誤分類例
+
+誤分類はありませんでした。実データではここに境界の悪い質問が出る想定です。
+
 ## 次の判断
 
 - カテゴリ境界が下流アプリのRouter設定と一致しているか、実データで確認する
