@@ -8,6 +8,13 @@ from config import LABELS, OSS_SOURCES
 from utils import enable_system_cert_store, stable_int
 
 
+IAC_GENERIC_INSTRUCTION_MARKERS = [
+    "you are a terraform security expert",
+    "analyze the following terraform configuration",
+    "provide remediation guidance",
+]
+
+
 def import_dataset_deps():
     enable_system_cert_store()
     try:
@@ -48,12 +55,31 @@ def extract_user_text(row: dict, source_config: dict, label: str) -> str:
                 if text:
                     return text
 
-    for field in source_config["prompt_fields"]:
+    # For IaC records, prefer concrete config/code fields over generic instructions.
+    preferred_fields = source_config["prompt_fields"]
+    if label == "iac_text":
+        preferred_fields = [
+            "terraform_code",
+            "code",
+            "input",
+            "text",
+            "instruction",
+            "prompt",
+            "question",
+        ]
+
+    for field in preferred_fields:
         text = stringify_field(row.get(field))
         if text:
+            lowered = text.lower()
+            if label == "iac_text" and field in {"instruction", "prompt", "question"}:
+                if all(marker in lowered for marker in IAC_GENERIC_INSTRUCTION_MARKERS):
+                    continue
             if label == "iac_text" and field in {"code", "terraform_code"}:
                 return f"Review this Terraform/IaC configuration and explain the operational risk:\n{text}"
-            if label == "security_log" and field in {"text", "input"} and "log" not in text.lower():
+            if label == "iac_text" and field == "input":
+                return f"Review this Terraform/IaC configuration and explain the operational risk:\n{text}"
+            if label == "security" and field in {"text", "input"} and "log" not in text.lower():
                 return f"Analyze this security event or alert:\n{text}"
             return text
 
@@ -68,7 +94,7 @@ def extract_user_text(row: dict, source_config: dict, label: str) -> str:
 
 def normalize_extracted_text(text: str, label: str) -> str:
     text = re.sub(r"\s+", " ", text).strip()
-    if label == "security_log":
+    if label == "security":
         marker = "principle of defense only."
         marker_index = text.find(marker)
         if marker_index >= 0:
@@ -82,6 +108,8 @@ def normalize_extracted_text(text: str, label: str) -> str:
 def is_usable_for_label(text: str, label: str) -> bool:
     lowered = text.lower()
     if len(text) < 12:
+        return False
+    if label == "iac_text" and all(marker in lowered for marker in IAC_GENERIC_INSTRUCTION_MARKERS):
         return False
     if label == "code":
         negative_intents = [
@@ -115,7 +143,7 @@ def is_usable_for_label(text: str, label: str) -> bool:
         if any(term in lowered for term in negative_intents):
             return False
         return any(term in lowered for term in positive_terms)
-    if label == "security_log":
+    if label == "security":
         positive_terms = [
             "security",
             "log",
@@ -161,6 +189,7 @@ def build_oss_dataset(
 ) -> list[dict]:
     records: list[dict] = []
     label_names = list(LABELS)
+    seen_texts_by_label: dict[str, set[str]] = {label: set() for label in label_names}
     for label in label_names:
         source_config = OSS_SOURCES[label]
         count = 0
@@ -181,6 +210,10 @@ def build_oss_dataset(
             text = normalize_extracted_text(extract_user_text(row, source_config, label), label)
             if not is_usable_for_label(text, label):
                 continue
+            dedupe_key = text.lower()
+            if dedupe_key in seen_texts_by_label[label]:
+                continue
+            seen_texts_by_label[label].add(dedupe_key)
             source_record_id = stringify_field(
                 row.get("id")
                 or row.get("task_id")

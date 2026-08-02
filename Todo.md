@@ -36,7 +36,7 @@
 - [ ] 実行する
 - 依存: なし
 - 作業:
-  - `code`、`security_log`、`iac_text`、`general` の対象範囲を定義する
+  - `code`、`security`、`iac_text`、`general` の対象範囲を定義する
   - 複数領域にまたがるタスクの扱いを定義する
   - 誤答時の影響を `critical`、`high`、`normal` などに分類する
   - 簡単な質問と専門家を必要とする質問の境界例を作る

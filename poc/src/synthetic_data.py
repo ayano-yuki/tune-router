@@ -14,11 +14,11 @@ SEED_TEMPLATES = {
         ("code.sql", "{db}で{metric}を集計するSQLを作ってください。"),
         ("code.review", "この{lang}コードのバグになりそうな箇所をレビューしてください。"),
     ],
-    "security_log": [
-        ("security_log.cve", "{product}の{cve}について、影響範囲と一次対応を整理してください。"),
-        ("security_log.alert", "{source}ログに{indicator}が大量に出ています。攻撃か誤検知かを見たいです。"),
-        ("security_log.siem", "SIEMで{alert}が発火しました。優先度とトリアージ観点を整理してください。"),
-        ("security_log.rule", "{tool}向けに{attack}を検知するルールの考え方を作ってください。"),
+    "security": [
+        ("security.cve", "{product}の{cve}について、影響範囲と一次対応を整理してください。"),
+        ("security.alert", "{source}ログに{indicator}が大量に出ています。攻撃か誤検知かを見たいです。"),
+        ("security.siem", "SIEMで{alert}が発火しました。優先度とトリアージ観点を整理してください。"),
+        ("security.rule", "{tool}向けに{attack}を検知するルールの考え方を作ってください。"),
     ],
     "iac_text": [
         ("iac_text.terraform", "Terraformで{cloud}の{resource}を作る構成例と注意点を教えて。"),

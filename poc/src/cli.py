@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
+from collections import Counter
 from pathlib import Path
 
 from config import LABELS, OSS_SOURCES, ROUTER_BASE_MODEL
@@ -21,6 +23,15 @@ from splitting import split_dataset
 from synthetic_data import build_synthetic_dataset
 
 
+FIXED_EPOCHS = 2.0
+FIXED_LEARNING_RATE = 2e-5
+FIXED_MAX_LENGTH = 256
+FIXED_LORA_R = 8
+FIXED_LORA_ALPHA = 16
+FIXED_FP16 = False
+FIXED_BF16 = False
+
+
 def cmd_prepare_data(args: argparse.Namespace) -> None:
     out_dir = Path(args.out)
     records = build_oss_dataset(
@@ -31,6 +42,7 @@ def cmd_prepare_data(args: argparse.Namespace) -> None:
         max_source_scan=args.max_source_scan,
     )
     splits = split_dataset(records)
+    validate_split_text_diversity(splits)
     write_dataset_files(out_dir, splits, args.per_label, args.seed, data_origin="oss_huggingface")
     (out_dir / "report.md").write_text(
         report_markdown(splits["train"], splits["dev"], splits["test"]),
@@ -47,6 +59,7 @@ def cmd_prepare_synthetic_data(args: argparse.Namespace) -> None:
     out_dir = Path(args.out)
     records = build_synthetic_dataset(args.per_label, args.seed)
     splits = split_dataset(records)
+    validate_split_text_diversity(splits)
     write_dataset_files(out_dir, splits, args.per_label, args.seed, data_origin="synthetic_poc")
     (out_dir / "report.md").write_text(
         report_markdown(splits["train"], splits["dev"], splits["test"]),
@@ -65,7 +78,37 @@ def print_data_outputs(out_dir: Path, per_label: int) -> None:
     print(f"requested per label: about {per_label}")
 
 
+def validate_split_text_diversity(splits: dict[str, list[dict]]) -> None:
+    for split_name, rows in splits.items():
+        by_label: dict[str, list[str]] = {label: [] for label in LABELS}
+        for row in rows:
+            label = row.get("gold_label")
+            text = str(row.get("text", "")).strip()
+            if label in by_label and text:
+                by_label[label].append(text)
+
+        for label, texts in by_label.items():
+            if not texts:
+                continue
+            unique_count = len(Counter(text.lower() for text in texts))
+            if len(texts) >= 20 and unique_count <= 1:
+                raise RuntimeError(
+                    f"Low text diversity detected: split={split_name} label={label} "
+                    f"count={len(texts)} unique={unique_count}. "
+                    "Likely selecting a constant prompt field from source data."
+                )
+
+
 def cmd_train_qwen(args: argparse.Namespace) -> None:
+    # Enforce file-defined hyperparameters regardless of CLI overrides.
+    args.epochs = FIXED_EPOCHS
+    args.learning_rate = FIXED_LEARNING_RATE
+    args.max_length = FIXED_MAX_LENGTH
+    args.lora_r = FIXED_LORA_R
+    args.lora_alpha = FIXED_LORA_ALPHA
+    args.fp16 = FIXED_FP16
+    args.bf16 = FIXED_BF16
+
     deps = import_training_deps()
     deps["set_seed"](args.seed)
 
@@ -96,6 +139,16 @@ def cmd_train_qwen(args: argparse.Namespace) -> None:
         **trainer_processing_kwargs(deps["Trainer"], tokenizer),
     )
     trainer.train()
+
+    # Abort if training diverged; do not save a collapsed adapter.
+    for entry in trainer.state.log_history:
+        eval_loss = entry.get("eval_loss")
+        if eval_loss is not None and not math.isfinite(float(eval_loss)):
+            raise RuntimeError(
+                "Training diverged: eval_loss is non-finite (NaN/Inf). "
+                "Retry without mixed precision and with a fresh output directory."
+            )
+
     trainer.save_model(str(args.output))
     tokenizer.save_pretrained(str(args.output))
     write_json(
@@ -216,16 +269,16 @@ def cmd_run(args: argparse.Namespace) -> None:
 
 def add_training_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--base-model", default=ROUTER_BASE_MODEL)
-    parser.add_argument("--epochs", type=float, default=1.0)
-    parser.add_argument("--learning-rate", type=float, default=2e-4)
+    parser.add_argument("--epochs", type=float, default=FIXED_EPOCHS)
+    parser.add_argument("--learning-rate", type=float, default=FIXED_LEARNING_RATE)
     parser.add_argument("--weight-decay", type=float, default=0.01)
     parser.add_argument("--batch-size", type=int, default=2)
     parser.add_argument("--eval-batch-size", type=int, default=4)
     parser.add_argument("--gradient-accumulation-steps", type=int, default=8)
-    parser.add_argument("--max-length", type=int, default=256)
+    parser.add_argument("--max-length", type=int, default=FIXED_MAX_LENGTH)
     parser.add_argument("--logging-steps", type=int, default=10)
-    parser.add_argument("--lora-r", type=int, default=8)
-    parser.add_argument("--lora-alpha", type=int, default=16)
+    parser.add_argument("--lora-r", type=int, default=FIXED_LORA_R)
+    parser.add_argument("--lora-alpha", type=int, default=FIXED_LORA_ALPHA)
     parser.add_argument("--lora-dropout", type=float, default=0.05)
     parser.add_argument("--fp16", action="store_true")
     parser.add_argument("--bf16", action="store_true")

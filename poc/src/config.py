@@ -5,7 +5,7 @@ LABELS = {
         "target_model": "qwen2.5-coder-7b",
         "description": "code generation, debugging, SQL, API implementation",
     },
-    "security_log": {
+    "security": {
         "target_model": "llama-3.1-8b-security-log",
         "description": "CVE, security logs, detections, incident triage",
     },
@@ -27,7 +27,7 @@ OSS_SOURCES = {
         "url": "https://huggingface.co/datasets/SoyMaycol/CodeInstruct-20K",
         "prompt_fields": ["question", "prompt", "instruction", "text"],
     },
-    "security_log": {
+    "security": {
         "dataset": "Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
         "split": "train",
         "license": "apache-2.0",
@@ -52,7 +52,7 @@ OSS_SOURCES = {
 
 EXTRA_TAGS = {
     "code": ["implementation", "debug", "test", "review", "sql"],
-    "security_log": ["cve", "log", "incident", "detection", "triage"],
+    "security": ["cve", "log", "incident", "detection", "triage"],
     "iac_text": ["iac", "cloud", "kubernetes", "docs", "runbook"],
     "general": ["explain", "summary", "writing", "planning", "compare"],
 }

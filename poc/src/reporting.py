@@ -29,13 +29,13 @@ def report_markdown(
         "",
         "## データ件数",
         "",
-        "| split | code | security_log | iac_text | general | total |",
+        "| split | code | security | iac_text | general | total |",
         "| --- | ---: | ---: | ---: | ---: | ---: |",
     ]
     for name, rows in [("train", train), ("dev", dev), ("test", test)]:
         counts = summarize_counts(rows)
         lines.append(
-            f"| {name} | {counts['code']} | {counts['security_log']} | {counts['iac_text']} | {counts['general']} | {len(rows)} |"
+            f"| {name} | {counts['code']} | {counts['security']} | {counts['iac_text']} | {counts['general']} | {len(rows)} |"
         )
 
     if test_metrics and confusion:
@@ -50,14 +50,14 @@ def report_markdown(
                 "",
                 "## Test Confusion Matrix",
                 "",
-                "| actual \\ predicted | code | security_log | iac_text | general |",
+                "| actual \\ predicted | code | security | iac_text | general |",
                 "| --- | ---: | ---: | ---: | ---: |",
             ]
         )
         for actual in LABELS:
             row = confusion[actual]
             lines.append(
-                f"| {actual} | {row['code']} | {row['security_log']} | {row['iac_text']} | {row['general']} |"
+                f"| {actual} | {row['code']} | {row['security']} | {row['iac_text']} | {row['general']} |"
             )
 
         lines.extend(["", "## 誤分類例", ""])

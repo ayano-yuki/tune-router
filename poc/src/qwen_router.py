@@ -83,6 +83,14 @@ def training_args_kwargs(training_args_cls, args: argparse.Namespace) -> dict:
         "save_strategy": "epoch",
         "report_to": "none",
         "remove_unused_columns": False,
+        "warmup_ratio": 0.1,
+        "max_grad_norm": 0.3,
+        "lr_scheduler_type": "cosine",
+        "optim": "adamw_torch",
+        "load_best_model_at_end": True,
+        "metric_for_best_model": "macro_f1",
+        "greater_is_better": True,
+        "save_total_limit": 2,
     }
     signature = inspect.signature(training_args_cls.__init__)
     if "eval_strategy" in signature.parameters:
@@ -128,11 +136,19 @@ def load_qwen_router(base_model: str, adapter: Path | None, deps: dict):
         num_labels=len(LABELS),
         id2label=id2label,
         label2id=label2id,
+        torch_dtype=deps["torch"].float32,
         trust_remote_code=True,
     )
     model.config.pad_token_id = tokenizer.pad_token_id
     if adapter:
-        model = deps["PeftModel"].from_pretrained(model, adapter)
+        adapter_path = Path(adapter)
+        config_path = adapter_path / "adapter_config.json"
+        if not config_path.exists():
+            raise FileNotFoundError(
+                f"adapter_config.json not found in adapter path: {adapter_path}. "
+                "Use a directory that contains a full PEFT adapter, such as a checkpoint directory."
+            )
+        model = deps["PeftModel"].from_pretrained(model, str(adapter_path))
     return tokenizer, model
 
 

@@ -2,7 +2,7 @@
 
 このPoCは、OSS由来の4分類データセットをローカルJSONへ正規化し、そのデータで `Qwen/Qwen2.5-0.5B` をルータ分類器としてFine-Tuningするためのものです。
 
-専門モデル本体をSFTするのではなく、ユーザー質問を `code`、`security_log`、`iac_text`、`general` のどれに送るかを判定する小型ルータをFTします。
+専門モデル本体をSFTするのではなく、ユーザー質問を `code`、`security`、`iac_text`、`general` のどれに送るかを判定する小型ルータをFTします。
 
 ## 方針
 
@@ -17,7 +17,7 @@
 | ラベル | データセット | ライセンス |
 | --- | --- | --- |
 | `code` | `SoyMaycol/CodeInstruct-20K` | `cc-by-4.0` |
-| `security_log` | `Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset` | `apache-2.0` |
+| `security` | `Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset` | `apache-2.0` |
 | `iac_text` | `galcan/terraform_sec` | `apache-2.0` |
 | `general` | `databricks/databricks-dolly-15k` | `cc-by-sa-3.0` |
 
@@ -28,7 +28,7 @@
 | ラベル | 想定ルート |
 | --- | --- |
 | `code` | コード生成、デバッグ、SQL、API実装 |
-| `security_log` | CVE、ログ分析、検知、インシデント調査 |
+| `security` | CVE、ログ分析、検知、インシデント調査 |
 | `iac_text` | Terraform、Kubernetes、Docker、IaC、技術文書作成 |
 | `general` | 一般質問、説明、相談、要約 |
 
@@ -128,7 +128,7 @@ PoC本体は `src/` 配下に責務別で分けています。
     "format": "tune-router-json-v1",
     "data_origin": "oss_huggingface",
     "router_base_model": "Qwen/Qwen2.5-0.5B",
-    "labels": ["code", "security_log", "iac_text", "general"],
+    "labels": ["code", "security", "iac_text", "general"],
     "split": "train",
     "requested_per_label": 1000,
     "seed": 42
