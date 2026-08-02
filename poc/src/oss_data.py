@@ -51,9 +51,7 @@ def extract_user_text(row: dict, source_config: dict, label: str) -> str:
     for field in source_config["prompt_fields"]:
         text = stringify_field(row.get(field))
         if text:
-            if label == "iac_text" and field in {"code", "terraform_code"}:
-                return f"Review this Terraform/IaC configuration and explain the operational risk:\n{text}"
-            if label == "security_log" and field in {"text", "input"} and "log" not in text.lower():
+            if label == "Security" and field in {"text", "input"} and "log" not in text.lower():
                 return f"Analyze this security event or alert:\n{text}"
             return text
 
@@ -68,7 +66,7 @@ def extract_user_text(row: dict, source_config: dict, label: str) -> str:
 
 def normalize_extracted_text(text: str, label: str) -> str:
     text = re.sub(r"\s+", " ", text).strip()
-    if label == "security_log":
+    if label == "Security":
         marker = "principle of defense only."
         marker_index = text.find(marker)
         if marker_index >= 0:
@@ -83,7 +81,43 @@ def is_usable_for_label(text: str, label: str) -> bool:
     lowered = text.lower()
     if len(text) < 12:
         return False
-    if label == "code":
+    if label == "Storage":
+        positive_terms = [
+            "ceph",
+            "zfs",
+            "raid",
+            "nas",
+            "san",
+            "iscsi",
+            "nfs",
+            "smb",
+            "storage",
+            "disk",
+            "volume",
+            "snapshot",
+            "backup",
+        ]
+        return any(term in lowered for term in positive_terms)
+    if label == "Network":
+        positive_terms = [
+            "bgp",
+            "ospf",
+            "vlan",
+            "dns",
+            "dhcp",
+            "mtu",
+            "vpn",
+            "l2",
+            "l3",
+            "ping",
+            "network",
+            "routing",
+            "packet",
+            "switch",
+            "firewall",
+        ]
+        return any(term in lowered for term in positive_terms)
+    if label == "Coding":
         negative_intents = [
             "summarize",
             "classify the following",
@@ -115,7 +149,7 @@ def is_usable_for_label(text: str, label: str) -> bool:
         if any(term in lowered for term in negative_intents):
             return False
         return any(term in lowered for term in positive_terms)
-    if label == "security_log":
+    if label == "Security":
         positive_terms = [
             "security",
             "log",
@@ -131,6 +165,23 @@ def is_usable_for_label(text: str, label: str) -> bool:
             "nist",
             "detection",
             "countermeasure",
+        ]
+        return any(term in lowered for term in positive_terms)
+    if label == "Database":
+        positive_terms = [
+            "postgres",
+            "postgresql",
+            "mysql",
+            "oracle",
+            "redis",
+            "mongodb",
+            "database",
+            "sql",
+            "query",
+            "index",
+            "replication",
+            "transaction",
+            "deadlock",
         ]
         return any(term in lowered for term in positive_terms)
     return True
@@ -206,7 +257,7 @@ def build_oss_dataset(
                     "split_group": f"{source_config['dataset']}:{source_record_id}",
                     "split": "",
                     "rubric": {
-                        "minimum_quality": 0.75 if label != "general" else 0.65,
+                        "minimum_quality": 0.65 if label == "General" else 0.75,
                         "requires_human_review": False,
                     },
                 }

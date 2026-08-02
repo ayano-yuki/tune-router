@@ -1,47 +1,69 @@
 ROUTER_BASE_MODEL = "Qwen/Qwen2.5-0.5B"
 
 LABELS = {
-    "code": {
-        "target_model": "qwen2.5-coder-7b",
-        "description": "code generation, debugging, SQL, API implementation",
+    "Storage": {
+        "target_model": "storage-specialist",
+        "description": "storage platforms, Ceph, ZFS, RAID, NAS, SAN, iSCSI, NFS",
     },
-    "security_log": {
-        "target_model": "llama-3.1-8b-security-log",
-        "description": "CVE, security logs, detections, incident triage",
+    "Network": {
+        "target_model": "network-specialist",
+        "description": "networking, BGP, OSPF, VLAN, DNS, DHCP, VPN, L2/L3 reachability",
     },
-    "iac_text": {
-        "target_model": "qwen2.5-14b-iac-text",
-        "description": "IaC, cloud config, Kubernetes, technical writing",
+    "Coding": {
+        "target_model": "coding-specialist",
+        "description": "software implementation, debugging, refactoring, builds, tests",
     },
-    "general": {
-        "target_model": "general-small-or-default",
-        "description": "general questions, explanations, summaries, casual tasks",
+    "Security": {
+        "target_model": "security-specialist",
+        "description": "vulnerabilities, incidents, authentication, TLS, WAF, hardening",
+    },
+    "Database": {
+        "target_model": "database-specialist",
+        "description": "PostgreSQL, MySQL, Oracle, Redis, MongoDB, query tuning, replication",
+    },
+    "General": {
+        "target_model": "general-fallback",
+        "description": "fallback for questions outside the configured specialist categories",
     },
 }
 
 OSS_SOURCES = {
-    "code": {
+    "Storage": {
+        "dataset": "databricks/databricks-dolly-15k",
+        "split": "train",
+        "license": "cc-by-sa-3.0",
+        "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
+        "prompt_fields": ["instruction", "prompt", "question", "context", "text"],
+    },
+    "Network": {
+        "dataset": "databricks/databricks-dolly-15k",
+        "split": "train",
+        "license": "cc-by-sa-3.0",
+        "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
+        "prompt_fields": ["instruction", "prompt", "question", "context", "text"],
+    },
+    "Coding": {
         "dataset": "SoyMaycol/CodeInstruct-20K",
         "split": "train",
         "license": "cc-by-4.0",
         "url": "https://huggingface.co/datasets/SoyMaycol/CodeInstruct-20K",
         "prompt_fields": ["question", "prompt", "instruction", "text"],
     },
-    "security_log": {
+    "Security": {
         "dataset": "Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
         "split": "train",
         "license": "apache-2.0",
         "url": "https://huggingface.co/datasets/Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
         "prompt_fields": ["instruction", "prompt", "question", "input", "text"],
     },
-    "iac_text": {
-        "dataset": "galcan/terraform_sec",
+    "Database": {
+        "dataset": "databricks/databricks-dolly-15k",
         "split": "train",
-        "license": "apache-2.0",
-        "url": "https://huggingface.co/datasets/galcan/terraform_sec",
-        "prompt_fields": ["instruction", "prompt", "question", "input", "text", "code", "terraform_code"],
+        "license": "cc-by-sa-3.0",
+        "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
+        "prompt_fields": ["instruction", "prompt", "question", "context", "text"],
     },
-    "general": {
+    "General": {
         "dataset": "databricks/databricks-dolly-15k",
         "split": "train",
         "license": "cc-by-sa-3.0",
@@ -51,8 +73,10 @@ OSS_SOURCES = {
 }
 
 EXTRA_TAGS = {
-    "code": ["implementation", "debug", "test", "review", "sql"],
-    "security_log": ["cve", "log", "incident", "detection", "triage"],
-    "iac_text": ["iac", "cloud", "kubernetes", "docs", "runbook"],
-    "general": ["explain", "summary", "writing", "planning", "compare"],
+    "Storage": ["ceph", "zfs", "raid", "nas", "nfs", "iscsi"],
+    "Network": ["bgp", "ospf", "vlan", "dns", "dhcp", "vpn"],
+    "Coding": ["implementation", "debug", "test", "review", "build"],
+    "Security": ["cve", "incident", "tls", "waf", "auth", "hardening"],
+    "Database": ["postgresql", "mysql", "index", "query", "replication", "redis"],
+    "General": ["fallback", "explain", "summary", "planning", "compare"],
 }
