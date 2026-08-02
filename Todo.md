@@ -22,6 +22,14 @@
 - 依存: なし
 - 作業:
   - ルータ、汎用モデル、各専門家モデルの候補を列挙する
+  - 初期候補は次を起点にする
+    - Router: Qwen3-0.6B / Qwen3-1.7B / TinySwallow-1.5B-Instruct
+    - Storage: Qwen2.5-7B-Instruct-1M / Qwen2.5-14B-Instruct-1M
+    - Network: Qwen2.5-7B-Instruct-1M / Qwen2.5-14B-Instruct-1M
+    - Coding: Qwen2.5-Coder-7B / Qwen2.5-Coder-14B / DeepSeek-Coder-V2-Lite-Instruct
+    - Security: Qwen2.5-7B-Instruct-1M / Qwen2.5-14B-Instruct-1M / Phi-3.5-MoE-instruct
+    - Database: Qwen2.5-7B-Instruct-1M / Qwen2.5-14B-Instruct-1M
+    - General: Qwen3-0.6B / Qwen3-1.7B / TinySwallow-1.5B-Instruct
   - モデル名、リビジョン、量子化方式、推論ランタイムを固定する
   - コンテキスト長、ライセンス、必要VRAMを記録する
   - 比較から除外する条件を決める
@@ -36,7 +44,8 @@
 - [ ] 実行する
 - 依存: なし
 - 作業:
-  - `code`、`security_log`、`iac_text`、`general` の対象範囲を定義する
+  - `Storage`、`Network`、`Coding`、`Security`、`Database`、`General` の対象範囲を定義する
+  - `General` は専門カテゴリに該当しない入力と低信頼時のfallback候補として定義する
   - 複数領域にまたがるタスクの扱いを定義する
   - 誤答時の影響を `critical`、`high`、`normal` などに分類する
   - 簡単な質問と専門家を必要とする質問の境界例を作る
@@ -95,7 +104,7 @@
 - 依存: P0-02、P0-03、P0-05
 - 作業:
   - 全体で200〜500問を作成または収集する
-  - 各主要領域に最低50問を用意する
+  - Storage / Network / Coding / Security / Database / General の各領域に最低50問を用意する
   - 明確、曖昧、複合、情報不足、簡単、長文の問題を含める
   - 正解または採点基準を検証する
   - 同一テンプレートからの過剰な類似問題を除く
