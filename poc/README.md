@@ -78,8 +78,16 @@ uv run --project .\poc --system-certs python .\poc\src\cli.py train-qwen --bf16 
 
 ## 評価
 
+LoRA adapterを使ったFT後のルータを評価します。
+
 ```powershell
 uv run --project .\poc --system-certs python .\poc\src\cli.py evaluate-qwen --adapter .\poc\artifacts\qwen-router-lora --data .\poc\artifacts\test.json
+```
+
+FTなしの分類ヘッド初期状態を比較評価する場合:
+
+```powershell
+uv run --project .\poc --system-certs python .\poc\src\cli.py evaluate-base-qwen --data .\poc\artifacts\test.json --report .\poc\artifacts\report_base.md
 ```
 
 単発予測:
@@ -104,6 +112,7 @@ uv run --project .\poc --system-certs python .\poc\src\cli.py run --per-label 10
 | `test.json` | 固定評価用データ |
 | `qwen-router-lora/` | Qwen2.5-0.5BのLoRA adapter |
 | `report.md` | FTあり評価レポート |
+| `report_base.md` | FTなし評価レポート |
 
 ## 実装構成
 
