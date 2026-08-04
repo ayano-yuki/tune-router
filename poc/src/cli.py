@@ -8,7 +8,7 @@ from pathlib import Path
 
 from config import LABELS, OSS_SOURCES, ROUTER_BASE_MODEL
 from json_store import read_records, write_dataset_files, write_json
-from oss_data import build_oss_dataset
+from oss_data import build_partial_oss_dataset
 from qwen_router import (
     compute_metrics_builder,
     evaluate_predictions,
@@ -35,25 +35,28 @@ FIXED_BF16 = False
 
 def cmd_prepare_data(args: argparse.Namespace) -> None:
     out_dir = Path(args.out)
-    try:
-        records = build_oss_dataset(
-            args.per_label,
-            args.seed,
-            streaming=args.streaming,
-            cache_dir=args.dataset_cache_dir,
-            max_source_scan=args.max_source_scan,
-        )
-    except RuntimeError as exc:
-        raise SystemExit(str(exc)) from exc
+    oss_records, oss_counts = build_partial_oss_dataset(
+        args.per_label,
+        args.seed,
+        streaming=args.streaming,
+        cache_dir=args.dataset_cache_dir,
+        max_source_scan=args.max_source_scan,
+    )
+    synthetic_records = build_synthetic_fill_records(oss_counts, args.per_label, args.seed)
+    if synthetic_records:
+        print_synthetic_repetition_warnings(synthetic_records)
+    records = oss_records + synthetic_records
+    data_origin = "oss_huggingface+synthetic_poc" if synthetic_records else "oss_huggingface"
     splits = split_dataset(records)
     validate_split_text_diversity(splits)
-    write_dataset_files(out_dir, splits, args.per_label, args.seed, data_origin="oss_huggingface")
+    write_dataset_files(out_dir, splits, args.per_label, args.seed, data_origin=data_origin)
     (out_dir / "report.md").write_text(
         report_markdown(splits["train"], splits["dev"], splits["test"]),
         encoding="utf-8",
         newline="\n",
     )
     print_data_outputs(out_dir, args.per_label)
+    print_source_counts(oss_counts, synthetic_records, args.per_label)
     print("sources:")
     for label, source in OSS_SOURCES.items():
         print(f"  {label}: {source['dataset']} ({source['license']})")
@@ -73,6 +76,53 @@ def cmd_prepare_synthetic_data(args: argparse.Namespace) -> None:
     )
     print_data_outputs(out_dir, args.per_label)
     print("data origin: synthetic_poc")
+
+
+def build_synthetic_fill_records(
+    oss_counts: dict[str, int],
+    per_label: int,
+    seed: int,
+) -> list[dict]:
+    shortfalls = {
+        label: max(0, per_label - oss_counts.get(label, 0))
+        for label in LABELS
+    }
+    max_shortfall = max(shortfalls.values(), default=0)
+    if max_shortfall == 0:
+        return []
+
+    synthetic_pool = build_synthetic_dataset(max_shortfall, seed)
+    selected: list[dict] = []
+    selected_counts: Counter[str] = Counter()
+    for record in synthetic_pool:
+        label = record.get("gold_label")
+        if label not in shortfalls:
+            continue
+        if selected_counts[label] >= shortfalls[label]:
+            continue
+        selected.append(record)
+        selected_counts[label] += 1
+    return selected
+
+
+def print_source_counts(
+    oss_counts: dict[str, int],
+    synthetic_records: list[dict],
+    per_label: int,
+) -> None:
+    synthetic_counts = Counter(
+        record["gold_label"]
+        for record in synthetic_records
+        if record.get("gold_label") in LABELS
+    )
+    print("source counts:")
+    for label in LABELS:
+        oss_count = oss_counts.get(label, 0)
+        synthetic_count = synthetic_counts.get(label, 0)
+        print(
+            f"  {label}: oss={oss_count} synthetic={synthetic_count} "
+            f"total={oss_count + synthetic_count}/{per_label}"
+        )
 
 
 def print_synthetic_repetition_warnings(records: list[dict]) -> None:
@@ -358,7 +408,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="TuneRouter Qwen2.5-0.5B PoC")
     subparsers = parser.add_subparsers(required=True)
 
-    prepare = subparsers.add_parser("prepare-data", help="build local JSON data from OSS datasets")
+    prepare = subparsers.add_parser(
+        "prepare-data",
+        help="build local JSON data from OSS datasets with synthetic fill",
+    )
     add_oss_data_args(prepare)
     prepare.set_defaults(func=cmd_prepare_data)
 

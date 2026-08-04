@@ -42,7 +42,9 @@ def dataset_payload(
             "target_models": {
                 label: config["target_model"] for label, config in LABELS.items()
             },
-            "oss_sources": OSS_SOURCES if data_origin == "oss_huggingface" else {},
+            "oss_sources": OSS_SOURCES
+            if data_origin in {"oss_huggingface", "oss_huggingface+synthetic_poc"}
+            else {},
             "split": split,
             "requested_per_label": per_label,
             "seed": seed,

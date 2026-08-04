@@ -271,8 +271,34 @@ def build_oss_dataset(
     cache_dir: str | None,
     max_source_scan: int,
 ) -> list[dict]:
+    records, counts = build_partial_oss_dataset(
+        per_label,
+        seed,
+        streaming=streaming,
+        cache_dir=cache_dir,
+        max_source_scan=max_source_scan,
+    )
+    for label, count in counts.items():
+        if count < per_label:
+            source_config = OSS_SOURCES[label]
+            raise RuntimeError(
+                f"{source_config['dataset']} produced {count} usable records for {label}; "
+                f"requested {per_label}. Increase --max-source-scan or choose another source."
+            )
+    return records
+
+
+def build_partial_oss_dataset(
+    per_label: int,
+    seed: int,
+    *,
+    streaming: bool,
+    cache_dir: str | None,
+    max_source_scan: int,
+) -> tuple[list[dict], dict[str, int]]:
     records: list[dict] = []
     label_names = list(LABELS)
+    counts: dict[str, int] = {}
     seen_texts_by_label: dict[str, set[str]] = {label: set() for label in label_names}
     for label in label_names:
         source_config = OSS_SOURCES[label]
@@ -328,10 +354,6 @@ def build_oss_dataset(
                     },
                 }
             )
-        if count < per_label:
-            raise RuntimeError(
-                f"{source_config['dataset']} produced {count} usable records for {label}; "
-                f"requested {per_label}. Increase --max-source-scan or choose another source."
-            )
+        counts[label] = count
     random.Random(seed).shuffle(records)
-    return records
+    return records, counts
