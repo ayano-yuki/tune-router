@@ -34,13 +34,16 @@ FIXED_BF16 = False
 
 def cmd_prepare_data(args: argparse.Namespace) -> None:
     out_dir = Path(args.out)
-    records = build_oss_dataset(
-        args.per_label,
-        args.seed,
-        streaming=args.streaming,
-        cache_dir=args.dataset_cache_dir,
-        max_source_scan=args.max_source_scan,
-    )
+    try:
+        records = build_oss_dataset(
+            args.per_label,
+            args.seed,
+            streaming=args.streaming,
+            cache_dir=args.dataset_cache_dir,
+            max_source_scan=args.max_source_scan,
+        )
+    except RuntimeError as exc:
+        raise SystemExit(str(exc)) from exc
     splits = split_dataset(records)
     validate_split_text_diversity(splits)
     write_dataset_files(out_dir, splits, args.per_label, args.seed, data_origin="oss_huggingface")

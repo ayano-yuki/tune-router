@@ -1,64 +1,63 @@
 # TuneRouter PoC
 
-このPoCは、OSS由来の4分類データセットをローカルJSONへ正規化し、そのデータで `Qwen/Qwen2.5-0.5B` をルータ分類器としてFine-Tuningするためのものです。
+このPoCは、下流アプリのRouterカテゴリに合わせた分類データをローカルJSONへ正規化し、そのデータで
+`Qwen/Qwen2.5-0.5B` をルータ分類器としてFine-Tuningするためのものです。
 
-専門モデル本体をSFTするのではなく、ユーザー質問を `code`、`security`、`iac_text`、`general` のどれに送るかを判定する小型ルータをFTします。
+専門モデル本体をSFTするのではなく、ユーザー質問を `Storage`、`Network`、`Coding`、`Security`、
+`Database`、`General` のどれに送るかを判定する小型ルータをFTします。
+
+`General` はフォールバック用の教師ラベルです。下流アプリ側でカテゴリ一覧から `General` を除外し、
+照合失敗時の fallback として扱う構成でも、学習時には「該当なし」の例として持たせます。
 
 ## 方針
 
-- データ元はHugging Face上のOSS由来データセットを使う
-- `--per-label` で指定した件数程度を各分類に作る
+- データラベルは下流アプリのRouterカテゴリ名と同じ文字列にする
 - train/dev/testをJSONとして分割する
-- `Qwen/Qwen2.5-0.5B` を4ラベル分類器としてLoRA FTする
-- 精度が悪い場合は、まずデータとラベル境界を直す
-
-## OSSデータソース
-
-| ラベル | データセット | ライセンス |
-| --- | --- | --- |
-| `code` | `SoyMaycol/CodeInstruct-20K` | `cc-by-4.0` |
-| `security` | `Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset` | `apache-2.0` |
-| `iac_text` | `galcan/terraform_sec` | `apache-2.0` |
-| `general` | `databricks/databricks-dolly-15k` | `cc-by-sa-3.0` |
-
-各レコードには `source`、`source_url`、`source_license`、`source_record_id` を残します。
+- `Qwen/Qwen2.5-0.5B` を6ラベル分類器としてLoRA FTする
+- 精度が悪い場合は、まずカテゴリ境界と学習データを直す
 
 ## 分類
 
 | ラベル | 想定ルート |
 | --- | --- |
-| `code` | コード生成、デバッグ、SQL、API実装 |
-| `security` | CVE、ログ分析、検知、インシデント調査 |
-| `iac_text` | Terraform、Kubernetes、Docker、IaC、技術文書作成 |
-| `general` | 一般質問、説明、相談、要約 |
+| `Storage` | Ceph、ZFS、RAID、NAS/SAN、iSCSI、NFS、容量、ディスク障害 |
+| `Network` | BGP、OSPF、VLAN、DNS、DHCP、VPN、MTU、L2/L3疎通 |
+| `Coding` | 実装、デバッグ、テスト、リファクタリング、ビルド、API |
+| `Security` | CVE、インシデント、認証認可、TLS、WAF、脆弱性対応 |
+| `Database` | PostgreSQL、MySQL、Oracle、Redis、MongoDB、クエリ改善、レプリケーション |
+| `General` | 上記に該当しない一般質問、相談、要約、比較 |
 
 ## セットアップ
 
-`uv run` で依存関係を解決して実行します。初回はPyTorch、Transformers、PEFT、Qwen2.5-0.5Bのモデル取得が走るため時間がかかります。
+`uv run` で依存関係を解決して実行します。初回はPyTorch、Transformers、PEFT、
+Qwen2.5-0.5Bのモデル取得が走るため時間がかかります。
 
 ```powershell
-uv run --project .\poc --system-certs python .\poc\src\cli.py prepare-data --per-label 1000 --out .\poc\artifacts
+uv run --project .\poc python .\poc\src\cli.py prepare-synthetic-data --per-label 1000 --out .\poc\artifacts
 ```
 
 ## データ作成
 
-OSSデータセットから各ラベル1000件程度を抽出し、ローカルJSONを作ります。
+カテゴリの配線確認や初回FTでは、下流カテゴリに合わせた合成データから始めます。
 
 ```powershell
-uv run --project .\poc --system-certs python .\poc\src\cli.py prepare-data --per-label 1000 --out .\poc\artifacts
+uv run --project .\poc python .\poc\src\cli.py prepare-synthetic-data --per-label 1000 --out .\poc\artifacts
 ```
 
 少量で試す場合:
 
 ```powershell
-uv run --project .\poc --system-certs python .\poc\src\cli.py prepare-data --per-label 40 --out .\poc\artifacts
-```
-
-合成データで配線だけ確認したい場合:
-
-```powershell
 uv run --project .\poc python .\poc\src\cli.py prepare-synthetic-data --per-label 40 --out .\poc\artifacts
 ```
+
+OSSデータセットを使う場合:
+
+```powershell
+uv run --project .\poc --system-certs python .\poc\src\cli.py prepare-data --per-label 1000 --out .\poc\artifacts
+```
+
+中期的には、Storage / Network / Database 向けのOSSソースを見直し、実運用に近い質問ログや
+レビュー済みの手作りデータを同じJSONスキーマで追加します。
 
 ## Qwen2.5-0.5BをFT
 
@@ -83,7 +82,7 @@ uv run --project .\poc --system-certs python .\poc\src\cli.py evaluate-qwen --ad
 単発予測:
 
 ```powershell
-uv run --project .\poc --system-certs python .\poc\src\cli.py predict-qwen --adapter .\poc\artifacts\qwen-router-lora "Terraformのstate driftを検出する手順を整理して"
+uv run --project .\poc --system-certs python .\poc\src\cli.py predict-qwen --adapter .\poc\artifacts\qwen-router-lora "Cephのosdが頻繁にdownする原因を切り分けたい"
 ```
 
 データ作成、FT、評価をまとめて実行する場合:
@@ -96,13 +95,12 @@ uv run --project .\poc --system-certs python .\poc\src\cli.py run --per-label 10
 
 | ファイル | 内容 |
 | --- | --- |
-| `dataset.json` | OSS由来の全データ |
+| `dataset.json` | 全データ |
 | `train.json` | 学習用データ |
 | `dev.json` | 調整・確認用データ |
 | `test.json` | 固定評価用データ |
 | `qwen-router-lora/` | Qwen2.5-0.5BのLoRA adapter |
-| `predictions_test.json` | test予測結果 |
-| `report.md` | 件数、精度、混同行列、誤分類例 |
+| `report.md` | FTあり評価レポート |
 
 ## 実装構成
 
@@ -126,28 +124,25 @@ PoC本体は `src/` 配下に責務別で分けています。
 {
   "metadata": {
     "format": "tune-router-json-v1",
-    "data_origin": "oss_huggingface",
+    "data_origin": "synthetic_poc",
     "router_base_model": "Qwen/Qwen2.5-0.5B",
-    "labels": ["code", "security", "iac_text", "general"],
+    "labels": ["Storage", "Network", "Coding", "Security", "Database", "General"],
     "split": "train",
     "requested_per_label": 1000,
     "seed": 42
   },
   "records": [
     {
-      "question_id": "real-code-000001",
-      "text": "質問本文",
-      "gold_label": "code",
+      "question_id": "poc-storage-000001",
+      "text": "Cephのosdが頻繁にdownする原因を切り分けたい。",
+      "gold_label": "Storage",
       "label_id": 0,
-      "target_model": "qwen2.5-coder-7b",
-      "tags": ["code", "debug"],
+      "target_model": "storage-specialist",
+      "tags": ["Storage", "ceph"],
       "importance": "normal",
-      "source": "internal_export",
-      "source_url": "https://huggingface.co/datasets/example",
-      "source_license": "apache-2.0",
-      "source_record_id": "example-id",
-      "template_id": "source-or-cluster-id",
-      "split_group": "source-or-cluster-id",
+      "source": "synthetic_poc",
+      "template_id": "storage.ceph",
+      "split_group": "storage.ceph:1",
       "split": "train",
       "rubric": {
         "minimum_quality": 0.75,
@@ -158,4 +153,4 @@ PoC本体は `src/` 配下に責務別で分けています。
 }
 ```
 
-実データへ置き換えるときも、このJSON構造を保てばそのまま `train-qwen` に流せます。
+実データへ置き換えるときも、このJSON構造とカテゴリ名を保てばそのまま `train-qwen` に流せます。

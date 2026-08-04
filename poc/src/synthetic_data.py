@@ -8,29 +8,41 @@ from utils import stable_int
 
 
 SEED_TEMPLATES = {
-    "code": [
-        ("code.debug", "{lang}で{feature}を実装したら{error}になります。原因と修正案を教えて。"),
-        ("code.test", "{framework}で{feature}の単体テストを書く観点を整理してください。"),
-        ("code.sql", "{db}で{metric}を集計するSQLを作ってください。"),
-        ("code.review", "この{lang}コードのバグになりそうな箇所をレビューしてください。"),
+    "Storage": [
+        ("Storage.ceph", "Cephの{storage_component}で{storage_symptom}が起きています。切り分け手順を整理してください。"),
+        ("Storage.zfs", "ZFSの{storage_operation}が遅いです。確認すべきメトリクスと原因候補を教えて。"),
+        ("Storage.nas", "{storage_protocol}の共有で{storage_symptom}が出ます。設定とネットワーク以外で見る点は?"),
+        ("Storage.backup", "{storage_product}のバックアップ失敗時に確認するログと復旧手順をまとめてください。"),
     ],
-    "security": [
-        ("security.cve", "{product}の{cve}について、影響範囲と一次対応を整理してください。"),
-        ("security.alert", "{source}ログに{indicator}が大量に出ています。攻撃か誤検知かを見たいです。"),
-        ("security.siem", "SIEMで{alert}が発火しました。優先度とトリアージ観点を整理してください。"),
-        ("security.rule", "{tool}向けに{attack}を検知するルールの考え方を作ってください。"),
+    "Network": [
+        ("Network.bgp", "BGPピアが{network_state}になりません。確認すべきコマンドと原因候補を教えて。"),
+        ("Network.dns", "社内DNSの名前解決が{network_symptom}です。切り分け順序を整理してください。"),
+        ("Network.vlan", "VLAN間通信で{network_symptom}が発生します。L2/L3の確認観点を教えて。"),
+        ("Network.vpn", "{vpn_product}のVPN接続が不安定です。MTUや経路を含めて調査したいです。"),
     ],
-    "iac_text": [
-        ("iac_text.terraform", "Terraformで{cloud}の{resource}を作る構成例と注意点を教えて。"),
-        ("iac_text.drift", "Terraformのstate driftを検出する手順と運用上の注意点を整理してください。"),
-        ("iac_text.kubernetes", "Kubernetesの{resource}で{operation}するYAMLを作ってください。"),
-        ("iac_text.runbook", "{service}障害時のrunbookを、確認順序が分かる形で作ってください。"),
+    "Coding": [
+        ("Coding.debug", "{lang}で{feature}を実装したら{error}になります。原因と修正案を教えて。"),
+        ("Coding.test", "{framework}で{feature}の単体テストを書く観点を整理してください。"),
+        ("Coding.sql", "{db}で{metric}を集計するSQLを作ってください。"),
+        ("Coding.review", "この{lang}コードのバグになりそうな箇所をレビューしてください。"),
     ],
-    "general": [
-        ("general.explain", "{topic}とは何かを、初心者にも分かるように説明してください。"),
-        ("general.compare", "{option_a}と{option_b}の違いを比較して、選び方を教えて。"),
-        ("general.summary", "次の文章を短く要約してください。テーマは{topic}です。"),
-        ("general.plan", "{goal}を進めるための現実的な段取りを作ってください。"),
+    "Security": [
+        ("Security.cve", "{product}の{cve}について、影響範囲と一次対応を整理してください。"),
+        ("Security.alert", "{source}ログに{indicator}が大量に出ています。攻撃か誤検知かを見たいです。"),
+        ("Security.siem", "SIEMで{alert}が発火しました。優先度とトリアージ観点を整理してください。"),
+        ("Security.rule", "{tool}向けに{attack}を検知するルールの考え方を作ってください。"),
+    ],
+    "Database": [
+        ("Database.slow_query", "{db}のスロークエリが増えています。実行計画とインデックスの見方を教えて。"),
+        ("Database.replication", "{db}のレプリケーション遅延が発生しています。確認手順を整理してください。"),
+        ("Database.schema", "{db}で{db_object}を設計するときの注意点を教えて。"),
+        ("Database.cache", "{cache}のメモリ使用量が急増しています。原因調査の進め方を知りたいです。"),
+    ],
+    "General": [
+        ("General.explain", "{topic}とは何かを、初心者にも分かるように説明してください。"),
+        ("General.compare", "{option_a}と{option_b}の違いを比較して、選び方を教えて。"),
+        ("General.summary", "次の文章を短く要約してください。テーマは{topic}です。"),
+        ("General.plan", "{goal}を進めるための現実的な段取りを作ってください。"),
     ],
 }
 
@@ -49,10 +61,20 @@ VALUE_BANK = {
     "alert": ["Impossible Travel", "Privilege Escalation", "Suspicious Login", "Data Exfiltration"],
     "tool": ["Sigma", "YARA", "Suricata", "Splunk SPL", "KQL"],
     "attack": ["SQLインジェクション", "XSS", "権限昇格", "横展開", "credential stuffing"],
+    "storage_component": ["OSD", "MON", "MDS", "pool", "RBD", "journal"],
+    "storage_symptom": ["高レイテンシ", "頻繁なdown", "容量逼迫", "I/Oエラー", "スループット低下"],
+    "storage_operation": ["scrub", "snapshot", "replication", "resilver", "restore"],
+    "storage_protocol": ["NFS", "SMB", "iSCSI", "S3互換API"],
+    "storage_product": ["Ceph", "ZFS", "NAS", "SAN", "Object Storage"],
+    "network_state": ["Established", "Idle", "Active", "Connect"],
+    "network_symptom": ["タイムアウトする", "遅い", "片方向だけ疎通しない", "断続的に切れる"],
+    "vpn_product": ["WireGuard", "IPsec", "OpenVPN", "AnyConnect"],
     "cloud": ["AWS", "Azure", "GCP"],
     "resource": ["VPC", "S3 bucket", "IAM role", "ALB", "Secret"],
     "operation": ["ログ収集", "バックアップ", "権限設定", "デプロイ", "ロールバック"],
     "service": ["API", "バッチ", "DB", "認証基盤", "Webフロント"],
+    "db_object": ["テーブル", "インデックス", "パーティション", "マイグレーション", "ビュー"],
+    "cache": ["Redis", "Memcached", "ElastiCache"],
     "topic": ["生成AI", "ゼロトラスト", "在庫管理", "プロジェクト管理", "データ分析"],
     "option_a": ["Python", "Go", "SaaS", "内製", "RAG", "Fine-Tuning"],
     "option_b": ["TypeScript", "Rust", "OSS", "外注", "プロンプト改善", "ルールベース"],
@@ -89,7 +111,7 @@ def build_synthetic_dataset(per_label: int, seed: int) -> list[dict]:
                     "split_group": f"{template_id}:{variant % 20}",
                     "split": "",
                     "rubric": {
-                        "minimum_quality": 0.75 if label != "general" else 0.65,
+                        "minimum_quality": 0.75 if label != "General" else 0.65,
                         "requires_human_review": False,
                     },
                 }

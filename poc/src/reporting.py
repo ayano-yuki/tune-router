@@ -20,25 +20,29 @@ def report_markdown(
     confusion: dict | None = None,
     mistakes: list[dict] | None = None,
 ) -> str:
+    labels = list(LABELS)
+    header = "| split | " + " | ".join(labels) + " | total |"
+    separator = "| --- | " + " | ".join("---:" for _ in labels) + " | ---: |"
     lines = [
         "# TuneRouter PoC Report",
         "",
         "## 方針",
         "",
-        f"このPoCでは、OSS由来の4分類データをローカルJSONで管理し、`{ROUTER_BASE_MODEL}` をLoRAでFine-Tuningします。",
+        f"このPoCでは、{len(labels)}分類データをローカルJSONで管理し、`{ROUTER_BASE_MODEL}` をLoRAでFine-Tuningします。",
         "",
         "## データ件数",
         "",
-        "| split | code | security | iac_text | general | total |",
-        "| --- | ---: | ---: | ---: | ---: | ---: |",
+        header,
+        separator,
     ]
     for name, rows in [("train", train), ("dev", dev), ("test", test)]:
         counts = summarize_counts(rows)
-        lines.append(
-            f"| {name} | {counts['code']} | {counts['security']} | {counts['iac_text']} | {counts['general']} | {len(rows)} |"
-        )
+        count_cells = " | ".join(str(counts[label]) for label in labels)
+        lines.append(f"| {name} | {count_cells} | {len(rows)} |")
 
     if test_metrics and confusion:
+        confusion_header = "| actual \\ predicted | " + " | ".join(labels) + " |"
+        confusion_separator = "| --- | " + " | ".join("---:" for _ in labels) + " |"
         lines.extend(
             [
                 "",
@@ -50,15 +54,14 @@ def report_markdown(
                 "",
                 "## Test Confusion Matrix",
                 "",
-                "| actual \\ predicted | code | security | iac_text | general |",
-                "| --- | ---: | ---: | ---: | ---: |",
+                confusion_header,
+                confusion_separator,
             ]
         )
-        for actual in LABELS:
+        for actual in labels:
             row = confusion[actual]
-            lines.append(
-                f"| {actual} | {row['code']} | {row['security']} | {row['iac_text']} | {row['general']} |"
-            )
+            cells = " | ".join(str(row[predicted]) for predicted in labels)
+            lines.append(f"| {actual} | {cells} |")
 
         lines.extend(["", "## 誤分類例", ""])
         if not mistakes:
