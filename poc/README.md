@@ -44,6 +44,9 @@ uv run --project .\poc python .\poc\src\cli.py prepare-synthetic-data --per-labe
 uv run --project .\poc python .\poc\src\cli.py prepare-synthetic-data --per-label 1000 --out .\poc\artifacts
 ```
 
+合成データはカテゴリごとのテンプレートを再利用します。完全に同じ質問文が生成された場合や、
+テンプレート再利用が発生している場合はコマンド出力に warning / info を表示します。
+
 少量で試す場合:
 
 ```powershell

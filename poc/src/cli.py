@@ -61,6 +61,7 @@ def cmd_prepare_data(args: argparse.Namespace) -> None:
 def cmd_prepare_synthetic_data(args: argparse.Namespace) -> None:
     out_dir = Path(args.out)
     records = build_synthetic_dataset(args.per_label, args.seed)
+    print_synthetic_repetition_warnings(records)
     splits = split_dataset(records)
     validate_split_text_diversity(splits)
     write_dataset_files(out_dir, splits, args.per_label, args.seed, data_origin="synthetic_poc")
@@ -71,6 +72,47 @@ def cmd_prepare_synthetic_data(args: argparse.Namespace) -> None:
     )
     print_data_outputs(out_dir, args.per_label)
     print("data origin: synthetic_poc")
+
+
+def print_synthetic_repetition_warnings(records: list[dict]) -> None:
+    by_label: dict[str, list[dict]] = {label: [] for label in LABELS}
+    for record in records:
+        label = record.get("gold_label")
+        if label in by_label:
+            by_label[label].append(record)
+
+    warned = False
+    for label, rows in by_label.items():
+        text_counts = Counter(str(row.get("text", "")).strip().lower() for row in rows)
+        duplicate_texts = {
+            text: count for text, count in text_counts.items() if text and count > 1
+        }
+        if duplicate_texts:
+            warned = True
+            duplicate_total = sum(duplicate_texts.values()) - len(duplicate_texts)
+            print(
+                f"warning: synthetic {label} has {duplicate_total} repeated exact texts "
+                f"across {len(duplicate_texts)} unique prompts"
+            )
+
+        template_counts = Counter(str(row.get("template_id", "")) for row in rows)
+        reused_templates = {
+            template_id: count
+            for template_id, count in template_counts.items()
+            if template_id and count > 1
+        }
+        if reused_templates:
+            most_common = ", ".join(
+                f"{template_id}={count}"
+                for template_id, count in template_counts.most_common(3)
+            )
+            print(
+                f"info: synthetic {label} reuses {len(reused_templates)} templates "
+                f"because per-label exceeds template count ({most_common})"
+            )
+
+    if not warned:
+        print("synthetic repetition: no exact duplicate texts detected")
 
 
 def print_data_outputs(out_dir: Path, per_label: int) -> None:
