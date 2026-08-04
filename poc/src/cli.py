@@ -12,6 +12,7 @@ from oss_data import build_oss_dataset
 from qwen_router import (
     compute_metrics_builder,
     evaluate_predictions,
+    import_inference_deps,
     import_training_deps,
     load_qwen_router,
     tokenize_records,
@@ -216,9 +217,20 @@ def cmd_train_qwen(args: argparse.Namespace) -> None:
 
 
 def cmd_evaluate_qwen(args: argparse.Namespace) -> None:
-    deps = import_training_deps()
+    deps = import_inference_deps()
     records = read_records(Path(args.data))
     tokenizer, model = load_qwen_router(args.base_model, Path(args.adapter), deps)
+    evaluate_loaded_qwen(args, deps, records, tokenizer, model)
+
+
+def cmd_evaluate_base_qwen(args: argparse.Namespace) -> None:
+    deps = import_inference_deps()
+    records = read_records(Path(args.data))
+    tokenizer, model = load_qwen_router(args.base_model, None, deps)
+    evaluate_loaded_qwen(args, deps, records, tokenizer, model)
+
+
+def evaluate_loaded_qwen(args: argparse.Namespace, deps: dict, records: list[dict], tokenizer, model) -> None:
     torch = deps["torch"]
     model.eval()
 
@@ -265,7 +277,7 @@ def cmd_evaluate_qwen(args: argparse.Namespace) -> None:
 
 
 def cmd_predict_qwen(args: argparse.Namespace) -> None:
-    deps = import_training_deps()
+    deps = import_inference_deps()
     tokenizer, model = load_qwen_router(args.base_model, Path(args.adapter), deps)
     torch = deps["torch"]
     model.eval()
@@ -372,6 +384,16 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate.add_argument("--base-model", default=ROUTER_BASE_MODEL)
     evaluate.add_argument("--max-length", type=int, default=256)
     evaluate.set_defaults(func=cmd_evaluate_qwen)
+
+    evaluate_base = subparsers.add_parser("evaluate-base-qwen", help="evaluate Qwen without a LoRA adapter")
+    evaluate_base.add_argument("--data", default="poc/artifacts/test.json")
+    evaluate_base.add_argument("--train", default="poc/artifacts/train.json")
+    evaluate_base.add_argument("--dev", default="poc/artifacts/dev.json")
+    evaluate_base.add_argument("--predictions", default="poc/artifacts/predictions_base.json")
+    evaluate_base.add_argument("--report", default="poc/artifacts/report_base.md")
+    evaluate_base.add_argument("--base-model", default=ROUTER_BASE_MODEL)
+    evaluate_base.add_argument("--max-length", type=int, default=256)
+    evaluate_base.set_defaults(func=cmd_evaluate_base_qwen)
 
     predict = subparsers.add_parser("predict-qwen", help="route one question with a fine-tuned Qwen router")
     predict.add_argument("--adapter", default="poc/artifacts/qwen-router-lora")
