@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import random
 import re
+import time
+from html import unescape
 
 from config import LABELS, OSS_SOURCES
 from utils import enable_system_cert_store, stable_int
@@ -16,6 +18,38 @@ IAC_GENERIC_INSTRUCTION_MARKERS = [
 
 IAC_SOURCE_HINTS = ["terraform", "iac", "kubernetes", "k8s", "cloudformation"]
 IAC_CODE_FIELDS = {"terraform_code", "code", "input"}
+
+QUESTION_INTENT_MARKERS = [
+    "?",
+    "？",
+    "教えて",
+    "説明して",
+    "整理して",
+    "分析して",
+    "確認して",
+    "答えて",
+    "ください",
+    "切り分け",
+    "作って",
+    "実装",
+    "how ",
+    "what ",
+    "why ",
+    "which ",
+    "explain",
+    "analyze",
+    "review",
+    "write",
+    "implement",
+]
+
+LABEL_QUESTION_TEMPLATES = {
+    "Storage": "このストレージ関連の情報をもとに、原因切り分けや設計上の注意点を教えて:\n{text}",
+    "Network": "このネットワーク関連の情報をもとに、設定確認や原因切り分けの観点を教えて:\n{text}",
+    "Coding": "この実装タスクを解いてください:\n{text}",
+    "Security": "このセキュリティイベントまたは設定について、防御観点で分析して:\n{text}",
+    "Database": "このデータベース関連の依頼について、調査やチューニングの観点を教えて:\n{text}",
+}
 
 
 def is_generic_iac_instruction(text: str) -> bool:
@@ -32,6 +66,17 @@ def is_iac_source(source_config: dict) -> bool:
     return any(hint in source_blob for hint in IAC_SOURCE_HINTS) or bool(
         prompt_fields & {"terraform_code", "kubernetes_yaml"}
     )
+
+
+def source_configs_for_label(label: str) -> list[dict]:
+    sources = OSS_SOURCES[label]
+    if isinstance(sources, list):
+        return sources
+    return [sources]
+
+
+def source_name(source_config: dict) -> str:
+    return source_config.get("name") or source_config["dataset"]
 
 
 def preferred_prompt_fields(source_config: dict, label: str) -> list[str]:
@@ -80,6 +125,54 @@ def stringify_field(value) -> str:
     return str(value).strip()
 
 
+def strip_html(text: str) -> str:
+    text = re.sub(r"(?is)<(script|style).*?>.*?</\1>", " ", text)
+    text = re.sub(r"(?i)<br\s*/?>", "\n", text)
+    text = re.sub(r"(?i)</p\s*>", "\n", text)
+    text = re.sub(r"<[^>]+>", " ", text)
+    return unescape(text)
+
+
+def normalize_raw_text(text: str) -> str:
+    text = strip_html(text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def extract_stackexchange_question(text: str) -> str:
+    text = re.sub(r"^user\d+:\s*", "", text.strip())
+    text = re.split(r"\n\s*\nuser\d+:", text, maxsplit=1)[0]
+    return text.strip()
+
+
+def is_question_like(text: str) -> bool:
+    lowered = f" {text.lower()} "
+    return any(marker in lowered for marker in QUESTION_INTENT_MARKERS)
+
+
+def format_as_question(text: str, label: str, source_config: dict) -> str:
+    text = normalize_raw_text(text)
+    template = source_config.get("question_template")
+    if template:
+        return template.format(text=text).strip()
+    if is_question_like(text):
+        return text
+    template = LABEL_QUESTION_TEMPLATES.get(label)
+    if template:
+        return template.format(text=text).strip()
+    return text
+
+
+def metadata_matches_source(row: dict, source_config: dict) -> bool:
+    terms = source_config.get("metadata_terms")
+    if not terms:
+        return True
+    metadata_blob = " ".join(
+        stringify_field(row.get(field))
+        for field in ("metadata", "url", "source", "site", "tags")
+    ).lower()
+    return any(term.lower() in metadata_blob for term in terms)
+
+
 def extract_user_text(row: dict, source_config: dict, label: str) -> str:
     messages = row.get("messages")
     if isinstance(messages, list):
@@ -89,10 +182,20 @@ def extract_user_text(row: dict, source_config: dict, label: str) -> str:
                 if text:
                     return text
 
+    combine_fields = source_config.get("combine_fields")
+    if combine_fields:
+        parts = [normalize_raw_text(stringify_field(row.get(field))) for field in combine_fields]
+        text = "\n".join(part for part in parts if part).strip()
+        if text:
+            return format_as_question(text, label, source_config)
+
     source_is_iac = is_iac_source(source_config)
     for field in preferred_prompt_fields(source_config, label):
         text = stringify_field(row.get(field))
         if text:
+            if source_config.get("extract_stackexchange_question"):
+                text = extract_stackexchange_question(text)
+            text = normalize_raw_text(text)
             if (
                 label == "Coding"
                 and source_is_iac
@@ -101,10 +204,14 @@ def extract_user_text(row: dict, source_config: dict, label: str) -> str:
             ):
                 continue
             if label == "Coding" and source_is_iac and field in IAC_CODE_FIELDS:
-                return f"Review this Terraform/IaC configuration and explain the operational risk:\n{text}"
+                return format_as_question(
+                    f"Review this Terraform/IaC configuration and explain the operational risk:\n{text}",
+                    label,
+                    source_config,
+                )
             if label == "Security" and field in {"text", "input"} and "log" not in text.lower():
-                return f"Analyze this security event or alert:\n{text}"
-            return text
+                return format_as_question(f"Analyze this security event or alert:\n{text}", label, source_config)
+            return format_as_question(text, label, source_config)
 
     ignored = {"answer", "response", "completion", "output", "labels", "label"}
     fallback_parts = [
@@ -112,10 +219,11 @@ def extract_user_text(row: dict, source_config: dict, label: str) -> str:
         for key, value in row.items()
         if key not in ignored and stringify_field(value)
     ]
-    return "\n".join(fallback_parts[:3]).strip()
+    return format_as_question("\n".join(fallback_parts[:3]).strip(), label, source_config)
 
 
 def normalize_extracted_text(text: str, label: str) -> str:
+    text = normalize_raw_text(text)
     text = re.sub(r"\s+", " ", text).strip()
     if label == "Security":
         marker = "principle of defense only."
@@ -249,18 +357,77 @@ def is_usable_for_label(text: str, label: str) -> bool:
 
 
 def iter_source_rows(source_config: dict, *, seed: int, streaming: bool, cache_dir: str | None):
+    if source_config.get("loader") == "stackexchange_api":
+        return iter_stackexchange_api_rows(source_config)
+
     load_dataset = import_dataset_deps()
+    dataset_name = source_config.get("loader") or source_config["dataset"]
+    dataset_config = source_config.get("config")
+    load_args = [dataset_name]
+    if dataset_config:
+        load_args.append(dataset_config)
+    load_kwargs = {
+        "split": source_config["split"],
+        "streaming": streaming,
+        "cache_dir": cache_dir,
+    }
+    if source_config.get("data_files"):
+        load_kwargs["data_files"] = {"train": source_config["data_files"]}
     dataset = load_dataset(
-        source_config["dataset"],
-        split=source_config["split"],
-        streaming=streaming,
-        cache_dir=cache_dir,
+        *load_args,
+        **load_kwargs,
     )
-    if streaming:
+    if streaming and source_config.get("shuffle", source_config.get("loader") != "parquet"):
         return dataset.shuffle(seed=seed, buffer_size=10_000)
     rows = list(dataset)
     random.Random(seed).shuffle(rows)
     return rows
+
+
+def stackexchange_request(params: dict) -> dict:
+    enable_system_cert_store()
+    try:
+        import requests
+    except ImportError as exc:
+        raise SystemExit(
+            "Stack Exchange API loading requires requests, which is normally installed with datasets."
+        ) from exc
+    response = requests.get(
+        "https://api.stackexchange.com/2.3/questions",
+        params=params,
+        headers={"User-Agent": "tune-router-poc/1.0"},
+        timeout=30,
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+def iter_stackexchange_api_rows(source_config: dict):
+    for site_config in source_config.get("stackexchange_sites", []):
+        site = site_config["site"]
+        for tag in site_config.get("tags", []):
+            for page in range(1, int(source_config.get("max_pages_per_tag", 4)) + 1):
+                payload = stackexchange_request(
+                    {
+                        "site": site,
+                        "tagged": tag,
+                        "page": page,
+                        "pagesize": int(source_config.get("pagesize", 100)),
+                        "order": "desc",
+                        "sort": source_config.get("sort", "activity"),
+                        "filter": "withbody",
+                    }
+                )
+                for item in payload.get("items", []):
+                    row = dict(item)
+                    row["site"] = site
+                    row["source_tag"] = tag
+                    yield row
+                backoff = payload.get("backoff")
+                if backoff:
+                    time.sleep(float(backoff))
+                if not payload.get("has_more"):
+                    break
 
 
 def build_oss_dataset(
@@ -280,9 +447,9 @@ def build_oss_dataset(
     )
     for label, count in counts.items():
         if count < per_label:
-            source_config = OSS_SOURCES[label]
+            source_names = ", ".join(source_name(source) for source in source_configs_for_label(label))
             raise RuntimeError(
-                f"{source_config['dataset']} produced {count} usable records for {label}; "
+                f"{source_names} produced {count} usable records for {label}; "
                 f"requested {per_label}. Increase --max-source-scan or choose another source."
             )
     return records
@@ -301,59 +468,73 @@ def build_partial_oss_dataset(
     counts: dict[str, int] = {}
     seen_texts_by_label: dict[str, set[str]] = {label: set() for label in label_names}
     for label in label_names:
-        source_config = OSS_SOURCES[label]
         count = 0
-        seen = 0
-        for row in iter_source_rows(
-            source_config,
-            seed=seed + label_names.index(label),
-            streaming=streaming,
-            cache_dir=cache_dir,
-        ):
+        for source_index, source_config in enumerate(source_configs_for_label(label)):
             if count >= per_label:
                 break
-            seen += 1
-            if seen > max_source_scan:
-                break
-            if not isinstance(row, dict):
-                row = dict(row)
-            text = normalize_extracted_text(extract_user_text(row, source_config, label), label)
-            if not is_usable_for_label(text, label):
-                continue
-            dedupe_key = text.lower()
-            if dedupe_key in seen_texts_by_label[label]:
-                continue
-            seen_texts_by_label[label].add(dedupe_key)
-            source_record_id = stringify_field(
-                row.get("id")
-                or row.get("task_id")
-                or row.get("idx")
-                or row.get("index")
-                or stable_int(json.dumps(row, ensure_ascii=False, sort_keys=True))
-            )
-            count += 1
-            records.append(
-                {
-                    "question_id": f"oss-{label}-{count:06d}",
-                    "text": text[:4000],
-                    "gold_label": label,
-                    "label_id": label_names.index(label),
-                    "target_model": LABELS[label]["target_model"],
-                    "tags": [label, "oss"],
-                    "importance": "normal",
-                    "source": source_config["dataset"],
-                    "source_url": source_config["url"],
-                    "source_license": source_config["license"],
-                    "source_record_id": source_record_id,
-                    "template_id": source_config["dataset"],
-                    "split_group": f"{source_config['dataset']}:{source_record_id}",
-                    "split": "",
-                    "rubric": {
-                        "minimum_quality": 0.65 if label == "General" else 0.75,
-                        "requires_human_review": False,
-                    },
-                }
-            )
+            seen = 0
+            for row in iter_source_rows(
+                source_config,
+                seed=seed + label_names.index(label) + (source_index * 10_000),
+                streaming=streaming,
+                cache_dir=cache_dir,
+            ):
+                if count >= per_label:
+                    break
+                seen += 1
+                if seen > max_source_scan:
+                    break
+                if not isinstance(row, dict):
+                    row = dict(row)
+                if not metadata_matches_source(row, source_config):
+                    continue
+                text = normalize_extracted_text(extract_user_text(row, source_config, label), label)
+                if not is_usable_for_label(text, label):
+                    continue
+                dedupe_key = text.lower()
+                if dedupe_key in seen_texts_by_label[label]:
+                    continue
+                seen_texts_by_label[label].add(dedupe_key)
+                source_record_id = stringify_field(
+                    row.get("id")
+                    or row.get("question_id")
+                    or row.get("qid")
+                    or row.get("task_id")
+                    or row.get("raw_index")
+                    or row.get("idx")
+                    or row.get("index")
+                    or stable_int(json.dumps(row, ensure_ascii=False, sort_keys=True))
+                )
+                source_label = source_name(source_config)
+                count += 1
+                records.append(
+                    {
+                        "question_id": f"oss-{label}-{count:06d}",
+                        "text": text[:4000],
+                        "gold_label": label,
+                        "label_id": label_names.index(label),
+                        "target_model": LABELS[label]["target_model"],
+                        "tags": [label, "oss", source_label],
+                        "importance": "normal",
+                        "source": source_config["dataset"],
+                        "source_name": source_label,
+                        "source_config": source_config.get("config", ""),
+                        "source_url": source_config["url"],
+                        "source_license": source_config["license"],
+                        "source_record_id": source_record_id,
+                        "source_record_url": stringify_field(row.get("link")),
+                        "source_original_type": "question_or_prompt",
+                        "question_format": "question_or_request",
+                        "template_id": source_label,
+                        "split_group": f"{source_label}:{source_record_id}",
+                        "split": "",
+                        "rubric": {
+                            "minimum_quality": 0.65 if label == "General" else 0.75,
+                            "requires_human_review": False,
+                            "question_like": is_question_like(text),
+                        },
+                    }
+                )
         counts[label] = count
     random.Random(seed).shuffle(records)
     return records, counts

@@ -58,8 +58,12 @@ def cmd_prepare_data(args: argparse.Namespace) -> None:
     print_data_outputs(out_dir, args.per_label)
     print_source_counts(oss_counts, synthetic_records, args.per_label)
     print("sources:")
-    for label, source in OSS_SOURCES.items():
-        print(f"  {label}: {source['dataset']} ({source['license']})")
+    for label, sources in OSS_SOURCES.items():
+        source_list = sources if isinstance(sources, list) else [sources]
+        for source in source_list:
+            name = source.get("name") or source["dataset"]
+            config = f"/{source['config']}" if source.get("config") else ""
+            print(f"  {label}: {name} -> {source['dataset']}{config} ({source['license']})")
 
 
 def cmd_prepare_synthetic_data(args: argparse.Namespace) -> None:
