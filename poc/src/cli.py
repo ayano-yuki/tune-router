@@ -21,7 +21,6 @@ from qwen_router import (
 )
 from reporting import report_markdown
 from splitting import split_dataset
-from synthetic_data import build_synthetic_dataset
 
 
 FIXED_EPOCHS = 2.0
@@ -42,21 +41,18 @@ def cmd_prepare_data(args: argparse.Namespace) -> None:
         cache_dir=args.dataset_cache_dir,
         max_source_scan=args.max_source_scan,
     )
-    synthetic_records = build_synthetic_fill_records(oss_counts, args.per_label, args.seed)
-    if synthetic_records:
-        print_synthetic_repetition_warnings(synthetic_records)
-    records = oss_records + synthetic_records
-    data_origin = "oss_huggingface+synthetic_poc" if synthetic_records else "oss_huggingface"
+    validate_oss_counts(oss_counts, args.per_label)
+    records = oss_records
     splits = split_dataset(records)
     validate_split_text_diversity(splits)
-    write_dataset_files(out_dir, splits, args.per_label, args.seed, data_origin=data_origin)
+    write_dataset_files(out_dir, splits, args.per_label, args.seed, data_origin="oss_only")
     (out_dir / "report.md").write_text(
         report_markdown(splits["train"], splits["dev"], splits["test"]),
         encoding="utf-8",
         newline="\n",
     )
     print_data_outputs(out_dir, args.per_label)
-    print_source_counts(oss_counts, synthetic_records, args.per_label)
+    print_source_counts(oss_counts, args.per_label)
     print("sources:")
     for label, sources in OSS_SOURCES.items():
         source_list = sources if isinstance(sources, list) else [sources]
@@ -66,108 +62,31 @@ def cmd_prepare_data(args: argparse.Namespace) -> None:
             print(f"  {label}: {name} -> {source['dataset']}{config} ({source['license']})")
 
 
-def cmd_prepare_synthetic_data(args: argparse.Namespace) -> None:
-    out_dir = Path(args.out)
-    records = build_synthetic_dataset(args.per_label, args.seed)
-    print_synthetic_repetition_warnings(records)
-    splits = split_dataset(records)
-    validate_split_text_diversity(splits)
-    write_dataset_files(out_dir, splits, args.per_label, args.seed, data_origin="synthetic_poc")
-    (out_dir / "report.md").write_text(
-        report_markdown(splits["train"], splits["dev"], splits["test"]),
-        encoding="utf-8",
-        newline="\n",
-    )
-    print_data_outputs(out_dir, args.per_label)
-    print("data origin: synthetic_poc")
-
-
-def build_synthetic_fill_records(
+def validate_oss_counts(
     oss_counts: dict[str, int],
     per_label: int,
-    seed: int,
-) -> list[dict]:
-    shortfalls = {
-        label: max(0, per_label - oss_counts.get(label, 0))
+) -> None:
+    shortfalls = [
+        f"{label}={oss_counts.get(label, 0)}/{per_label}"
         for label in LABELS
-    }
-    max_shortfall = max(shortfalls.values(), default=0)
-    if max_shortfall == 0:
-        return []
-
-    synthetic_pool = build_synthetic_dataset(max_shortfall, seed)
-    selected: list[dict] = []
-    selected_counts: Counter[str] = Counter()
-    for record in synthetic_pool:
-        label = record.get("gold_label")
-        if label not in shortfalls:
-            continue
-        if selected_counts[label] >= shortfalls[label]:
-            continue
-        selected.append(record)
-        selected_counts[label] += 1
-    return selected
+        if oss_counts.get(label, 0) < per_label
+    ]
+    if shortfalls:
+        raise RuntimeError(
+            "OSS-only dataset is incomplete. "
+            "Increase --max-source-scan or add OSS sources: "
+            + ", ".join(shortfalls)
+        )
 
 
 def print_source_counts(
     oss_counts: dict[str, int],
-    synthetic_records: list[dict],
     per_label: int,
 ) -> None:
-    synthetic_counts = Counter(
-        record["gold_label"]
-        for record in synthetic_records
-        if record.get("gold_label") in LABELS
-    )
-    print("source counts:")
+    print("OSS source counts:")
     for label in LABELS:
         oss_count = oss_counts.get(label, 0)
-        synthetic_count = synthetic_counts.get(label, 0)
-        print(
-            f"  {label}: oss={oss_count} synthetic={synthetic_count} "
-            f"total={oss_count + synthetic_count}/{per_label}"
-        )
-
-
-def print_synthetic_repetition_warnings(records: list[dict]) -> None:
-    by_label: dict[str, list[dict]] = {label: [] for label in LABELS}
-    for record in records:
-        label = record.get("gold_label")
-        if label in by_label:
-            by_label[label].append(record)
-
-    warned = False
-    for label, rows in by_label.items():
-        text_counts = Counter(str(row.get("text", "")).strip().lower() for row in rows)
-        duplicate_texts = {
-            text: count for text, count in text_counts.items() if text and count > 1
-        }
-        if duplicate_texts:
-            warned = True
-            duplicate_total = sum(duplicate_texts.values()) - len(duplicate_texts)
-            print(
-                f"warning: synthetic {label} has {duplicate_total} repeated exact texts "
-                f"across {len(duplicate_texts)} unique prompts"
-            )
-
-        template_counts = Counter(str(row.get("template_id", "")) for row in rows)
-        reused_templates = {
-            template_id: count
-            for template_id, count in template_counts.items()
-            if template_id and count > 1
-        }
-        if reused_templates:
-            most_common = ", ".join(
-                f"{template_id}={count}"
-                for template_id, count in template_counts.most_common(3)
-            )
-            print(
-                f"info: synthetic {label} reuses {len(reused_templates)} templates "
-                f"because per-label exceeds template count ({most_common})"
-            )
-
-    if not warned:
-        print("synthetic repetition: no exact duplicate texts detected")
+        print(f"  {label}: oss={oss_count} total={oss_count}/{per_label}")
 
 
 def print_data_outputs(out_dir: Path, per_label: int) -> None:
@@ -414,14 +333,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     prepare = subparsers.add_parser(
         "prepare-data",
-        help="build local JSON data from OSS datasets with synthetic fill",
+        help="build local JSON data from OSS datasets only",
     )
     add_oss_data_args(prepare)
     prepare.set_defaults(func=cmd_prepare_data)
-
-    synthetic = subparsers.add_parser("prepare-synthetic-data", help="generate synthetic local JSON data")
-    add_data_args(synthetic)
-    synthetic.set_defaults(func=cmd_prepare_synthetic_data)
 
     train = subparsers.add_parser("train-qwen", help="fine-tune Qwen2.5-0.5B router with LoRA")
     train.add_argument("--train", default="poc/artifacts/train.json")

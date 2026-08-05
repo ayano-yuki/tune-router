@@ -43,13 +43,7 @@ QUESTION_INTENT_MARKERS = [
     "implement",
 ]
 
-LABEL_QUESTION_TEMPLATES = {
-    "Storage": "このストレージ関連の情報をもとに、原因切り分けや設計上の注意点を教えて:\n{text}",
-    "Network": "このネットワーク関連の情報をもとに、設定確認や原因切り分けの観点を教えて:\n{text}",
-    "Coding": "この実装タスクを解いてください:\n{text}",
-    "Security": "このセキュリティイベントまたは設定について、防御観点で分析して:\n{text}",
-    "Database": "このデータベース関連の依頼について、調査やチューニングの観点を教えて:\n{text}",
-}
+GENERIC_QUESTION_TEMPLATE = "以下の内容について、ユーザーの依頼として回答してください:\n{text}"
 
 
 def is_generic_iac_instruction(text: str) -> bool:
@@ -156,10 +150,7 @@ def format_as_question(text: str, label: str, source_config: dict) -> str:
         return template.format(text=text).strip()
     if is_question_like(text):
         return text
-    template = LABEL_QUESTION_TEMPLATES.get(label)
-    if template:
-        return template.format(text=text).strip()
-    return text
+    return GENERIC_QUESTION_TEMPLATE.format(text=text).strip()
 
 
 def metadata_matches_source(row: dict, source_config: dict) -> bool:
@@ -205,12 +196,12 @@ def extract_user_text(row: dict, source_config: dict, label: str) -> str:
                 continue
             if label == "Coding" and source_is_iac and field in IAC_CODE_FIELDS:
                 return format_as_question(
-                    f"Review this Terraform/IaC configuration and explain the operational risk:\n{text}",
+                    f"Review this configuration and explain the operational risk:\n{text}",
                     label,
                     source_config,
                 )
             if label == "Security" and field in {"text", "input"} and "log" not in text.lower():
-                return format_as_question(f"Analyze this security event or alert:\n{text}", label, source_config)
+                return format_as_question(f"Analyze this event or alert:\n{text}", label, source_config)
             return format_as_question(text, label, source_config)
 
     ignored = {"answer", "response", "completion", "output", "labels", "label"}

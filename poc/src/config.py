@@ -43,7 +43,6 @@ OSS_SOURCES = {
             ],
             "combine_fields": ["title", "body"],
             "prompt_fields": ["title", "body"],
-            "question_template": "このストレージ関連の質問について、原因切り分けや設計上の注意点を教えて:\n{text}",
         },
         {
             "name": "dolly-storage-fallback",
@@ -69,7 +68,6 @@ OSS_SOURCES = {
             ],
             "combine_fields": ["title", "body"],
             "prompt_fields": ["title", "body"],
-            "question_template": "このネットワーク関連の質問について、設定確認や原因切り分けの観点を教えて:\n{text}",
         },
         {
             "name": "netconfeval-config-generation",
@@ -79,7 +77,6 @@ OSS_SOURCES = {
             "license": "mit",
             "url": "https://huggingface.co/datasets/NetConfEval/NetConfEval",
             "prompt_fields": ["prompt"],
-            "question_template": "このネットワーク構成生成タスクで、要件を満たす設定方針を教えて:\n{text}",
         },
     ],
     "Coding": [
@@ -90,7 +87,6 @@ OSS_SOURCES = {
             "license": "mit",
             "url": "https://huggingface.co/datasets/ise-uiuc/Magicoder-OSS-Instruct-75K",
             "prompt_fields": ["problem"],
-            "question_template": "この実装タスクを解いてください:\n{text}",
         },
         {
             "name": "codeinstruct-20k",
@@ -113,15 +109,6 @@ OSS_SOURCES = {
     ],
     "Database": [
         {
-            "name": "gretel-synthetic-text-to-sql",
-            "dataset": "gretelai/synthetic_text_to_sql",
-            "split": "train",
-            "license": "apache-2.0",
-            "url": "https://huggingface.co/datasets/gretelai/synthetic_text_to_sql",
-            "prompt_fields": ["sql_prompt"],
-            "question_template": "このデータベース/SQLの依頼に答えてください:\n{text}",
-        },
-        {
             "name": "sql-create-context",
             "dataset": "b-mc2/sql-create-context",
             "split": "train",
@@ -142,7 +129,6 @@ OSS_SOURCES = {
             ],
             "combine_fields": ["title", "body"],
             "prompt_fields": ["title", "body"],
-            "question_template": "このデータベース運用の質問について、調査やチューニングの観点を教えて:\n{text}",
         },
     ],
     "General": [
