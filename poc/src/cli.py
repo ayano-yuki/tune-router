@@ -8,10 +8,11 @@ from pathlib import Path
 
 from config import LABELS, OSS_SOURCES, ROUTER_BASE_MODEL
 from json_store import read_records, write_dataset_files, write_json
-from oss_data import build_oss_dataset
+from oss_data import build_partial_oss_dataset
 from qwen_router import (
     compute_metrics_builder,
     evaluate_predictions,
+    import_inference_deps,
     import_training_deps,
     load_qwen_router,
     tokenize_records,
@@ -20,7 +21,6 @@ from qwen_router import (
 )
 from reporting import report_markdown
 from splitting import split_dataset
-from synthetic_data import build_synthetic_dataset
 
 
 FIXED_EPOCHS = 2.0
@@ -34,43 +34,59 @@ FIXED_BF16 = False
 
 def cmd_prepare_data(args: argparse.Namespace) -> None:
     out_dir = Path(args.out)
-    try:
-        records = build_oss_dataset(
-            args.per_label,
-            args.seed,
-            streaming=args.streaming,
-            cache_dir=args.dataset_cache_dir,
-            max_source_scan=args.max_source_scan,
-        )
-    except RuntimeError as exc:
-        raise SystemExit(str(exc)) from exc
+    oss_records, oss_counts = build_partial_oss_dataset(
+        args.per_label,
+        args.seed,
+        streaming=args.streaming,
+        cache_dir=args.dataset_cache_dir,
+        max_source_scan=args.max_source_scan,
+    )
+    validate_oss_counts(oss_counts, args.per_label)
+    records = oss_records
     splits = split_dataset(records)
     validate_split_text_diversity(splits)
-    write_dataset_files(out_dir, splits, args.per_label, args.seed, data_origin="oss_huggingface")
+    write_dataset_files(out_dir, splits, args.per_label, args.seed, data_origin="oss_only")
     (out_dir / "report.md").write_text(
         report_markdown(splits["train"], splits["dev"], splits["test"]),
         encoding="utf-8",
         newline="\n",
     )
     print_data_outputs(out_dir, args.per_label)
+    print_source_counts(oss_counts, args.per_label)
     print("sources:")
-    for label, source in OSS_SOURCES.items():
-        print(f"  {label}: {source['dataset']} ({source['license']})")
+    for label, sources in OSS_SOURCES.items():
+        source_list = sources if isinstance(sources, list) else [sources]
+        for source in source_list:
+            name = source.get("name") or source["dataset"]
+            config = f"/{source['config']}" if source.get("config") else ""
+            print(f"  {label}: {name} -> {source['dataset']}{config} ({source['license']})")
 
 
-def cmd_prepare_synthetic_data(args: argparse.Namespace) -> None:
-    out_dir = Path(args.out)
-    records = build_synthetic_dataset(args.per_label, args.seed)
-    splits = split_dataset(records)
-    validate_split_text_diversity(splits)
-    write_dataset_files(out_dir, splits, args.per_label, args.seed, data_origin="synthetic_poc")
-    (out_dir / "report.md").write_text(
-        report_markdown(splits["train"], splits["dev"], splits["test"]),
-        encoding="utf-8",
-        newline="\n",
-    )
-    print_data_outputs(out_dir, args.per_label)
-    print("data origin: synthetic_poc")
+def validate_oss_counts(
+    oss_counts: dict[str, int],
+    per_label: int,
+) -> None:
+    shortfalls = [
+        f"{label}={oss_counts.get(label, 0)}/{per_label}"
+        for label in LABELS
+        if oss_counts.get(label, 0) < per_label
+    ]
+    if shortfalls:
+        raise RuntimeError(
+            "OSS-only dataset is incomplete. "
+            "Increase --max-source-scan or add OSS sources: "
+            + ", ".join(shortfalls)
+        )
+
+
+def print_source_counts(
+    oss_counts: dict[str, int],
+    per_label: int,
+) -> None:
+    print("OSS source counts:")
+    for label in LABELS:
+        oss_count = oss_counts.get(label, 0)
+        print(f"  {label}: oss={oss_count} total={oss_count}/{per_label}")
 
 
 def print_data_outputs(out_dir: Path, per_label: int) -> None:
@@ -174,9 +190,20 @@ def cmd_train_qwen(args: argparse.Namespace) -> None:
 
 
 def cmd_evaluate_qwen(args: argparse.Namespace) -> None:
-    deps = import_training_deps()
+    deps = import_inference_deps()
     records = read_records(Path(args.data))
     tokenizer, model = load_qwen_router(args.base_model, Path(args.adapter), deps)
+    evaluate_loaded_qwen(args, deps, records, tokenizer, model)
+
+
+def cmd_evaluate_base_qwen(args: argparse.Namespace) -> None:
+    deps = import_inference_deps()
+    records = read_records(Path(args.data))
+    tokenizer, model = load_qwen_router(args.base_model, None, deps)
+    evaluate_loaded_qwen(args, deps, records, tokenizer, model)
+
+
+def evaluate_loaded_qwen(args: argparse.Namespace, deps: dict, records: list[dict], tokenizer, model) -> None:
     torch = deps["torch"]
     model.eval()
 
@@ -223,7 +250,7 @@ def cmd_evaluate_qwen(args: argparse.Namespace) -> None:
 
 
 def cmd_predict_qwen(args: argparse.Namespace) -> None:
-    deps = import_training_deps()
+    deps = import_inference_deps()
     tokenizer, model = load_qwen_router(args.base_model, Path(args.adapter), deps)
     torch = deps["torch"]
     model.eval()
@@ -304,13 +331,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="TuneRouter Qwen2.5-0.5B PoC")
     subparsers = parser.add_subparsers(required=True)
 
-    prepare = subparsers.add_parser("prepare-data", help="build local JSON data from OSS datasets")
+    prepare = subparsers.add_parser(
+        "prepare-data",
+        help="build local JSON data from OSS datasets only",
+    )
     add_oss_data_args(prepare)
     prepare.set_defaults(func=cmd_prepare_data)
-
-    synthetic = subparsers.add_parser("prepare-synthetic-data", help="generate synthetic local JSON data")
-    add_data_args(synthetic)
-    synthetic.set_defaults(func=cmd_prepare_synthetic_data)
 
     train = subparsers.add_parser("train-qwen", help="fine-tune Qwen2.5-0.5B router with LoRA")
     train.add_argument("--train", default="poc/artifacts/train.json")
@@ -330,6 +356,16 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate.add_argument("--base-model", default=ROUTER_BASE_MODEL)
     evaluate.add_argument("--max-length", type=int, default=256)
     evaluate.set_defaults(func=cmd_evaluate_qwen)
+
+    evaluate_base = subparsers.add_parser("evaluate-base-qwen", help="evaluate Qwen without a LoRA adapter")
+    evaluate_base.add_argument("--data", default="poc/artifacts/test.json")
+    evaluate_base.add_argument("--train", default="poc/artifacts/train.json")
+    evaluate_base.add_argument("--dev", default="poc/artifacts/dev.json")
+    evaluate_base.add_argument("--predictions", default="poc/artifacts/predictions_base.json")
+    evaluate_base.add_argument("--report", default="poc/artifacts/report_base.md")
+    evaluate_base.add_argument("--base-model", default=ROUTER_BASE_MODEL)
+    evaluate_base.add_argument("--max-length", type=int, default=256)
+    evaluate_base.set_defaults(func=cmd_evaluate_base_qwen)
 
     predict = subparsers.add_parser("predict-qwen", help="route one question with a fine-tuned Qwen router")
     predict.add_argument("--adapter", default="poc/artifacts/qwen-router-lora")
