@@ -28,48 +28,119 @@ LABELS = {
 }
 
 OSS_SOURCES = {
-    "Storage": {
-        "dataset": "databricks/databricks-dolly-15k",
-        "split": "train",
-        "license": "cc-by-sa-3.0",
-        "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
-        "prompt_fields": ["instruction", "prompt", "question", "context", "text"],
-    },
-    "Network": {
-        "dataset": "databricks/databricks-dolly-15k",
-        "split": "train",
-        "license": "cc-by-sa-3.0",
-        "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
-        "prompt_fields": ["instruction", "prompt", "question", "context", "text"],
-    },
-    "Coding": {
-        "dataset": "SoyMaycol/CodeInstruct-20K",
-        "split": "train",
-        "license": "cc-by-4.0",
-        "url": "https://huggingface.co/datasets/SoyMaycol/CodeInstruct-20K",
-        "prompt_fields": ["question", "prompt", "instruction", "text"],
-    },
-    "Security": {
-        "dataset": "Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
-        "split": "train",
-        "license": "apache-2.0",
-        "url": "https://huggingface.co/datasets/Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
-        "prompt_fields": ["instruction", "prompt", "question", "input", "text"],
-    },
-    "Database": {
-        "dataset": "databricks/databricks-dolly-15k",
-        "split": "train",
-        "license": "cc-by-sa-3.0",
-        "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
-        "prompt_fields": ["instruction", "prompt", "question", "context", "text"],
-    },
-    "General": {
-        "dataset": "databricks/databricks-dolly-15k",
-        "split": "train",
-        "license": "cc-by-sa-3.0",
-        "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
-        "prompt_fields": ["instruction", "prompt", "question", "context", "text"],
-    },
+    "Storage": [
+        {
+            "name": "stackexchange-storage",
+            "dataset": "Stack Exchange API",
+            "loader": "stackexchange_api",
+            "split": "train",
+            "license": "cc-by-sa-4.0",
+            "url": "https://api.stackexchange.com/docs/questions",
+            "stackexchange_sites": [
+                {"site": "serverfault", "tags": ["storage", "nfs", "raid", "zfs", "ceph", "iscsi", "nas", "backup"]},
+                {"site": "unix", "tags": ["storage", "nfs", "raid", "zfs", "ceph"]},
+                {"site": "superuser", "tags": ["storage", "backup", "raid", "nas"]},
+            ],
+            "combine_fields": ["title", "body"],
+            "prompt_fields": ["title", "body"],
+        },
+        {
+            "name": "dolly-storage-fallback",
+            "dataset": "databricks/databricks-dolly-15k",
+            "split": "train",
+            "license": "cc-by-sa-3.0",
+            "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
+            "prompt_fields": ["instruction", "prompt", "question", "context", "text"],
+        },
+    ],
+    "Network": [
+        {
+            "name": "stackexchange-network",
+            "dataset": "Stack Exchange API",
+            "loader": "stackexchange_api",
+            "split": "train",
+            "license": "cc-by-sa-4.0",
+            "url": "https://api.stackexchange.com/docs/questions",
+            "stackexchange_sites": [
+                {"site": "networkengineering", "tags": ["bgp", "ospf", "vlan", "vpn", "dns", "routing", "switching"]},
+                {"site": "serverfault", "tags": ["networking", "dns", "vpn", "dhcp", "vlan", "routing", "firewall"]},
+                {"site": "superuser", "tags": ["networking", "dns", "vpn", "router"]},
+            ],
+            "combine_fields": ["title", "body"],
+            "prompt_fields": ["title", "body"],
+        },
+        {
+            "name": "netconfeval-config-generation",
+            "dataset": "NetConfEval/NetConfEval",
+            "config": "Configuration Generation",
+            "split": "train",
+            "license": "mit",
+            "url": "https://huggingface.co/datasets/NetConfEval/NetConfEval",
+            "prompt_fields": ["prompt"],
+        },
+    ],
+    "Coding": [
+        {
+            "name": "magicoder-oss-instruct",
+            "dataset": "ise-uiuc/Magicoder-OSS-Instruct-75K",
+            "split": "train",
+            "license": "mit",
+            "url": "https://huggingface.co/datasets/ise-uiuc/Magicoder-OSS-Instruct-75K",
+            "prompt_fields": ["problem"],
+        },
+        {
+            "name": "codeinstruct-20k",
+            "dataset": "SoyMaycol/CodeInstruct-20K",
+            "split": "train",
+            "license": "cc-by-4.0",
+            "url": "https://huggingface.co/datasets/SoyMaycol/CodeInstruct-20K",
+            "prompt_fields": ["question", "prompt", "instruction", "text"],
+        },
+    ],
+    "Security": [
+        {
+            "name": "trendyol-cybersecurity-instruct",
+            "dataset": "Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
+            "split": "train",
+            "license": "apache-2.0",
+            "url": "https://huggingface.co/datasets/Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
+            "prompt_fields": ["user", "instruction", "prompt", "question", "input", "text"],
+        },
+    ],
+    "Database": [
+        {
+            "name": "sql-create-context",
+            "dataset": "b-mc2/sql-create-context",
+            "split": "train",
+            "license": "cc-by-4.0",
+            "url": "https://huggingface.co/datasets/b-mc2/sql-create-context",
+            "prompt_fields": ["question"],
+        },
+        {
+            "name": "stackexchange-database",
+            "dataset": "Stack Exchange API",
+            "loader": "stackexchange_api",
+            "split": "train",
+            "license": "cc-by-sa-4.0",
+            "url": "https://api.stackexchange.com/docs/questions",
+            "stackexchange_sites": [
+                {"site": "dba", "tags": ["postgresql", "mysql", "index", "performance", "replication", "deadlock"]},
+                {"site": "serverfault", "tags": ["postgresql", "mysql", "database", "sql-server", "mongodb"]},
+            ],
+            "combine_fields": ["title", "body"],
+            "prompt_fields": ["title", "body"],
+        },
+    ],
+    "General": [
+        {
+            "name": "dolly-general",
+            "dataset": "databricks/databricks-dolly-15k",
+            "split": "train",
+            "license": "cc-by-sa-3.0",
+            "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
+            "prompt_fields": ["instruction", "prompt", "question", "context", "text"],
+        },
+    ],
 }
 
 EXTRA_TAGS = {
