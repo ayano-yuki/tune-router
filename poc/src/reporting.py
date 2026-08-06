@@ -21,19 +21,19 @@ def report_markdown(
     mistakes: list[dict] | None = None,
 ) -> str:
     labels = list(LABELS)
-    header = "| split | " + " | ".join(labels) + " | total |"
-    separator = "| --- | " + " | ".join("---:" for _ in labels) + " | ---: |"
+    count_header = "| split | " + " | ".join(labels) + " | total |"
+    count_align = "| --- | " + " | ".join("---:" for _ in labels) + " | ---: |"
     lines = [
         "# TuneRouter PoC Report",
         "",
         "## 方針",
         "",
-        f"このPoCでは、{len(labels)}分類データをローカルJSONで管理し、`{ROUTER_BASE_MODEL}` をLoRAでFine-Tuningします。",
+        f"このPoCでは、下流アプリのRouterカテゴリに合わせた分類データをローカルJSONで管理し、`{ROUTER_BASE_MODEL}` をLoRAでFine-Tuningします。",
         "",
         "## データ件数",
         "",
-        header,
-        separator,
+        count_header,
+        count_align,
     ]
     for name, rows in [("train", train), ("dev", dev), ("test", test)]:
         counts = summarize_counts(rows)
@@ -41,8 +41,6 @@ def report_markdown(
         lines.append(f"| {name} | {count_cells} | {len(rows)} |")
 
     if test_metrics and confusion:
-        confusion_header = "| actual \\ predicted | " + " | ".join(labels) + " |"
-        confusion_separator = "| --- | " + " | ".join("---:" for _ in labels) + " |"
         lines.extend(
             [
                 "",
@@ -54,13 +52,13 @@ def report_markdown(
                 "",
                 "## Test Confusion Matrix",
                 "",
-                confusion_header,
-                confusion_separator,
+                "| actual \\ predicted | " + " | ".join(labels) + " |",
+                "| --- | " + " | ".join("---:" for _ in labels) + " |",
             ]
         )
-        for actual in labels:
+        for actual in LABELS:
             row = confusion[actual]
-            cells = " | ".join(str(row[predicted]) for predicted in labels)
+            cells = " | ".join(str(row[label]) for label in labels)
             lines.append(f"| {actual} | {cells} |")
 
         lines.extend(["", "## 誤分類例", ""])
@@ -78,7 +76,8 @@ def report_markdown(
             "",
             "## 次の判断",
             "",
-            "- OSS由来データの中身とライセンスを確認し、必要なら実データを同じJSONスキーマに追加する",
+            "- カテゴリ境界が下流アプリのRouter設定と一致しているか、実データで確認する",
+            "- 運用ログ、レビュー済み質問、ユーザー操作由来の質問を同じJSONスキーマに追加する",
             "- Qwen2.5-0.5BのLoRA FT結果で誤分類例を見る",
             "- 精度が不足する場合は、データ境界、学習率、epoch、LoRA rank、入力テンプレートを調整する",
             "- 回答品質採点とOracleラベル生成は、複数モデル運用の価値が見えてから追加する",

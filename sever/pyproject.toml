@@ -1,0 +1,16 @@
+[project]
+name = "tune-router-openai-shim"
+version = "0.1.0"
+description = "OpenAI-compatible router server for the TuneRouter classifier"
+requires-python = ">=3.11"
+dependencies = [
+  "accelerate>=0.34.0",
+  "numpy>=1.26.0",
+  "peft>=0.12.0",
+  "torch>=2.3.0",
+  "transformers>=4.45.0",
+  "truststore>=0.10.0",
+]
+
+[tool.uv]
+package = false
