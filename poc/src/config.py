@@ -1,58 +1,153 @@
 ROUTER_BASE_MODEL = "Qwen/Qwen2.5-0.5B"
 
 LABELS = {
-    "code": {
-        "target_model": "qwen2.5-coder-7b",
-        "description": "code generation, debugging, SQL, API implementation",
+    "Storage": {
+        "target_model": "storage-specialist",
+        "description": "storage platforms, Ceph, ZFS, RAID, NAS, SAN, iSCSI, NFS",
     },
-    "security": {
-        "target_model": "llama-3.1-8b-security-log",
-        "description": "CVE, security logs, detections, incident triage",
+    "Network": {
+        "target_model": "network-specialist",
+        "description": "networking, BGP, OSPF, VLAN, DNS, DHCP, VPN, L2/L3 reachability",
     },
-    "iac_text": {
-        "target_model": "qwen2.5-14b-iac-text",
-        "description": "IaC, cloud config, Kubernetes, technical writing",
+    "Coding": {
+        "target_model": "coding-specialist",
+        "description": "software implementation, debugging, refactoring, builds, tests",
     },
-    "general": {
-        "target_model": "general-small-or-default",
-        "description": "general questions, explanations, summaries, casual tasks",
+    "Security": {
+        "target_model": "security-specialist",
+        "description": "vulnerabilities, incidents, authentication, TLS, WAF, hardening",
+    },
+    "Database": {
+        "target_model": "database-specialist",
+        "description": "PostgreSQL, MySQL, Oracle, Redis, MongoDB, query tuning, replication",
+    },
+    "General": {
+        "target_model": "general-fallback",
+        "description": "fallback for questions outside the configured specialist categories",
     },
 }
 
 OSS_SOURCES = {
-    "code": {
-        "dataset": "SoyMaycol/CodeInstruct-20K",
-        "split": "train",
-        "license": "cc-by-4.0",
-        "url": "https://huggingface.co/datasets/SoyMaycol/CodeInstruct-20K",
-        "prompt_fields": ["question", "prompt", "instruction", "text"],
-    },
-    "security": {
-        "dataset": "Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
-        "split": "train",
-        "license": "apache-2.0",
-        "url": "https://huggingface.co/datasets/Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
-        "prompt_fields": ["instruction", "prompt", "question", "input", "text"],
-    },
-    "iac_text": {
-        "dataset": "galcan/terraform_sec",
-        "split": "train",
-        "license": "apache-2.0",
-        "url": "https://huggingface.co/datasets/galcan/terraform_sec",
-        "prompt_fields": ["instruction", "prompt", "question", "input", "text", "code", "terraform_code"],
-    },
-    "general": {
-        "dataset": "databricks/databricks-dolly-15k",
-        "split": "train",
-        "license": "cc-by-sa-3.0",
-        "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
-        "prompt_fields": ["instruction", "prompt", "question", "context", "text"],
-    },
+    "Storage": [
+        {
+            "name": "stackexchange-storage",
+            "dataset": "Stack Exchange API",
+            "loader": "stackexchange_api",
+            "split": "train",
+            "license": "cc-by-sa-4.0",
+            "url": "https://api.stackexchange.com/docs/questions",
+            "stackexchange_sites": [
+                {"site": "serverfault", "tags": ["storage", "nfs", "raid", "zfs", "ceph", "iscsi", "nas", "backup"]},
+                {"site": "unix", "tags": ["storage", "nfs", "raid", "zfs", "ceph"]},
+                {"site": "superuser", "tags": ["storage", "backup", "raid", "nas"]},
+            ],
+            "combine_fields": ["title", "body"],
+            "prompt_fields": ["title", "body"],
+        },
+        {
+            "name": "dolly-storage-fallback",
+            "dataset": "databricks/databricks-dolly-15k",
+            "split": "train",
+            "license": "cc-by-sa-3.0",
+            "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
+            "prompt_fields": ["instruction", "prompt", "question", "context", "text"],
+        },
+    ],
+    "Network": [
+        {
+            "name": "stackexchange-network",
+            "dataset": "Stack Exchange API",
+            "loader": "stackexchange_api",
+            "split": "train",
+            "license": "cc-by-sa-4.0",
+            "url": "https://api.stackexchange.com/docs/questions",
+            "stackexchange_sites": [
+                {"site": "networkengineering", "tags": ["bgp", "ospf", "vlan", "vpn", "dns", "routing", "switching"]},
+                {"site": "serverfault", "tags": ["networking", "dns", "vpn", "dhcp", "vlan", "routing", "firewall"]},
+                {"site": "superuser", "tags": ["networking", "dns", "vpn", "router"]},
+            ],
+            "combine_fields": ["title", "body"],
+            "prompt_fields": ["title", "body"],
+        },
+        {
+            "name": "netconfeval-config-generation",
+            "dataset": "NetConfEval/NetConfEval",
+            "config": "Configuration Generation",
+            "split": "train",
+            "license": "mit",
+            "url": "https://huggingface.co/datasets/NetConfEval/NetConfEval",
+            "prompt_fields": ["prompt"],
+        },
+    ],
+    "Coding": [
+        {
+            "name": "magicoder-oss-instruct",
+            "dataset": "ise-uiuc/Magicoder-OSS-Instruct-75K",
+            "split": "train",
+            "license": "mit",
+            "url": "https://huggingface.co/datasets/ise-uiuc/Magicoder-OSS-Instruct-75K",
+            "prompt_fields": ["problem"],
+        },
+        {
+            "name": "codeinstruct-20k",
+            "dataset": "SoyMaycol/CodeInstruct-20K",
+            "split": "train",
+            "license": "cc-by-4.0",
+            "url": "https://huggingface.co/datasets/SoyMaycol/CodeInstruct-20K",
+            "prompt_fields": ["question", "prompt", "instruction", "text"],
+        },
+    ],
+    "Security": [
+        {
+            "name": "trendyol-cybersecurity-instruct",
+            "dataset": "Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
+            "split": "train",
+            "license": "apache-2.0",
+            "url": "https://huggingface.co/datasets/Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset",
+            "prompt_fields": ["user", "instruction", "prompt", "question", "input", "text"],
+        },
+    ],
+    "Database": [
+        {
+            "name": "sql-create-context",
+            "dataset": "b-mc2/sql-create-context",
+            "split": "train",
+            "license": "cc-by-4.0",
+            "url": "https://huggingface.co/datasets/b-mc2/sql-create-context",
+            "prompt_fields": ["question"],
+        },
+        {
+            "name": "stackexchange-database",
+            "dataset": "Stack Exchange API",
+            "loader": "stackexchange_api",
+            "split": "train",
+            "license": "cc-by-sa-4.0",
+            "url": "https://api.stackexchange.com/docs/questions",
+            "stackexchange_sites": [
+                {"site": "dba", "tags": ["postgresql", "mysql", "index", "performance", "replication", "deadlock"]},
+                {"site": "serverfault", "tags": ["postgresql", "mysql", "database", "sql-server", "mongodb"]},
+            ],
+            "combine_fields": ["title", "body"],
+            "prompt_fields": ["title", "body"],
+        },
+    ],
+    "General": [
+        {
+            "name": "dolly-general",
+            "dataset": "databricks/databricks-dolly-15k",
+            "split": "train",
+            "license": "cc-by-sa-3.0",
+            "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
+            "prompt_fields": ["instruction", "prompt", "question", "context", "text"],
+        },
+    ],
 }
 
 EXTRA_TAGS = {
-    "code": ["implementation", "debug", "test", "review", "sql"],
-    "security": ["cve", "log", "incident", "detection", "triage"],
-    "iac_text": ["iac", "cloud", "kubernetes", "docs", "runbook"],
-    "general": ["explain", "summary", "writing", "planning", "compare"],
+    "Storage": ["ceph", "zfs", "raid", "nas", "nfs", "iscsi"],
+    "Network": ["bgp", "ospf", "vlan", "dns", "dhcp", "vpn"],
+    "Coding": ["implementation", "debug", "test", "review", "build"],
+    "Security": ["cve", "incident", "tls", "waf", "auth", "hardening"],
+    "Database": ["postgresql", "mysql", "index", "query", "replication", "redis"],
+    "General": ["fallback", "explain", "summary", "planning", "compare"],
 }

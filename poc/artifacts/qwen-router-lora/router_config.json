@@ -1,0 +1,27 @@
+{
+  "base_model": "Qwen/Qwen2.5-0.5B",
+  "fine_tuning": {
+    "epochs": 2.0,
+    "learning_rate": 2e-05,
+    "lora_alpha": 16,
+    "lora_r": 8,
+    "max_length": 256,
+    "method": "lora_sequence_classification"
+  },
+  "labels": [
+    "Storage",
+    "Network",
+    "Coding",
+    "Security",
+    "Database",
+    "General"
+  ],
+  "target_models": {
+    "Coding": "coding-specialist",
+    "Database": "database-specialist",
+    "General": "general-fallback",
+    "Network": "network-specialist",
+    "Security": "security-specialist",
+    "Storage": "storage-specialist"
+  }
+}

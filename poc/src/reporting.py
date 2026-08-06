@@ -20,23 +20,25 @@ def report_markdown(
     confusion: dict | None = None,
     mistakes: list[dict] | None = None,
 ) -> str:
+    labels = list(LABELS)
+    count_header = "| split | " + " | ".join(labels) + " | total |"
+    count_align = "| --- | " + " | ".join("---:" for _ in labels) + " | ---: |"
     lines = [
         "# TuneRouter PoC Report",
         "",
         "## 方針",
         "",
-        f"このPoCでは、OSS由来の4分類データをローカルJSONで管理し、`{ROUTER_BASE_MODEL}` をLoRAでFine-Tuningします。",
+        f"このPoCでは、下流アプリのRouterカテゴリに合わせた分類データをローカルJSONで管理し、`{ROUTER_BASE_MODEL}` をLoRAでFine-Tuningします。",
         "",
         "## データ件数",
         "",
-        "| split | code | security | iac_text | general | total |",
-        "| --- | ---: | ---: | ---: | ---: | ---: |",
+        count_header,
+        count_align,
     ]
     for name, rows in [("train", train), ("dev", dev), ("test", test)]:
         counts = summarize_counts(rows)
-        lines.append(
-            f"| {name} | {counts['code']} | {counts['security']} | {counts['iac_text']} | {counts['general']} | {len(rows)} |"
-        )
+        count_cells = " | ".join(str(counts[label]) for label in labels)
+        lines.append(f"| {name} | {count_cells} | {len(rows)} |")
 
     if test_metrics and confusion:
         lines.extend(
@@ -50,15 +52,14 @@ def report_markdown(
                 "",
                 "## Test Confusion Matrix",
                 "",
-                "| actual \\ predicted | code | security | iac_text | general |",
-                "| --- | ---: | ---: | ---: | ---: |",
+                "| actual \\ predicted | " + " | ".join(labels) + " |",
+                "| --- | " + " | ".join("---:" for _ in labels) + " |",
             ]
         )
         for actual in LABELS:
             row = confusion[actual]
-            lines.append(
-                f"| {actual} | {row['code']} | {row['security']} | {row['iac_text']} | {row['general']} |"
-            )
+            cells = " | ".join(str(row[label]) for label in labels)
+            lines.append(f"| {actual} | {cells} |")
 
         lines.extend(["", "## 誤分類例", ""])
         if not mistakes:
@@ -75,7 +76,8 @@ def report_markdown(
             "",
             "## 次の判断",
             "",
-            "- OSS由来データの中身とライセンスを確認し、必要なら実データを同じJSONスキーマに追加する",
+            "- カテゴリ境界が下流アプリのRouter設定と一致しているか、実データで確認する",
+            "- 運用ログ、レビュー済み質問、ユーザー操作由来の質問を同じJSONスキーマに追加する",
             "- Qwen2.5-0.5BのLoRA FT結果で誤分類例を見る",
             "- 精度が不足する場合は、データ境界、学習率、epoch、LoRA rank、入力テンプレートを調整する",
             "- 回答品質採点とOracleラベル生成は、複数モデル運用の価値が見えてから追加する",

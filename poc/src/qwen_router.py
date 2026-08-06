@@ -9,16 +9,36 @@ from types_local import Metrics
 from utils import enable_system_cert_store
 
 
-def import_training_deps():
+def import_inference_deps():
     enable_system_cert_store()
     try:
-        import numpy as np
         import torch
-        from datasets import Dataset
-        from peft import LoraConfig, PeftModel, TaskType, get_peft_model
+        from peft import PeftModel
         from transformers import (
             AutoModelForSequenceClassification,
             AutoTokenizer,
+        )
+    except ImportError as exc:
+        raise SystemExit(
+            "Inference dependencies are missing. Run with uv so pyproject dependencies are installed:\n"
+            "  uv run --project .\\poc python .\\poc\\src\\cli.py predict-qwen\n"
+            f"Missing import: {exc}"
+        ) from exc
+    return {
+        "torch": torch,
+        "PeftModel": PeftModel,
+        "AutoModelForSequenceClassification": AutoModelForSequenceClassification,
+        "AutoTokenizer": AutoTokenizer,
+    }
+
+
+def import_training_deps():
+    deps = import_inference_deps()
+    try:
+        import numpy as np
+        from datasets import Dataset
+        from peft import LoraConfig, TaskType, get_peft_model
+        from transformers import (
             DataCollatorWithPadding,
             Trainer,
             TrainingArguments,
@@ -30,21 +50,20 @@ def import_training_deps():
             "  uv run --project .\\poc python .\\poc\\src\\cli.py train-qwen\n"
             f"Missing import: {exc}"
         ) from exc
-    return {
-        "np": np,
-        "torch": torch,
-        "Dataset": Dataset,
-        "LoraConfig": LoraConfig,
-        "PeftModel": PeftModel,
-        "TaskType": TaskType,
-        "get_peft_model": get_peft_model,
-        "AutoModelForSequenceClassification": AutoModelForSequenceClassification,
-        "AutoTokenizer": AutoTokenizer,
-        "DataCollatorWithPadding": DataCollatorWithPadding,
-        "Trainer": Trainer,
-        "TrainingArguments": TrainingArguments,
-        "set_seed": set_seed,
-    }
+    deps.update(
+        {
+            "np": np,
+            "Dataset": Dataset,
+            "LoraConfig": LoraConfig,
+            "TaskType": TaskType,
+            "get_peft_model": get_peft_model,
+            "DataCollatorWithPadding": DataCollatorWithPadding,
+            "Trainer": Trainer,
+            "TrainingArguments": TrainingArguments,
+            "set_seed": set_seed,
+        }
+    )
+    return deps
 
 
 def compute_metrics_builder(np_module):
