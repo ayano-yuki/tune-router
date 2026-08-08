@@ -1,0 +1,2 @@
+{"query_id":"single-storage-001","router_id":"current-ft-router","selected_candidate_id":"storage-specialist","router_latency_ms":90,"router_cost":0.0}
+{"query_id":"boundary-storage-db-001","router_id":"current-ft-router","selected_candidate_id":"database-specialist","router_latency_ms":95,"router_cost":0.0}
