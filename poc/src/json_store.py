@@ -32,21 +32,25 @@ def dataset_payload(
     per_label: int,
     seed: int,
     data_origin: str,
+    extra_metadata: dict | None = None,
 ) -> dict:
-    return {
-        "metadata": {
-            "format": "tune-router-json-v1",
-            "data_origin": data_origin,
-            "router_base_model": ROUTER_BASE_MODEL,
-            "labels": list(LABELS),
-            "target_models": {
-                label: config["target_model"] for label, config in LABELS.items()
-            },
-            "oss_sources": OSS_SOURCES if data_origin == "oss_only" else {},
-            "split": split,
-            "requested_per_label": per_label,
-            "seed": seed,
+    metadata = {
+        "format": "tune-router-json-v1",
+        "data_origin": data_origin,
+        "router_base_model": ROUTER_BASE_MODEL,
+        "labels": list(LABELS),
+        "target_models": {
+            label: config["target_model"] for label, config in LABELS.items()
         },
+        "oss_sources": OSS_SOURCES if data_origin.startswith("oss_only") else {},
+        "split": split,
+        "requested_per_label": per_label,
+        "seed": seed,
+    }
+    if extra_metadata:
+        metadata.update(extra_metadata)
+    return {
+        "metadata": metadata,
         "records": records,
     }
 
@@ -57,6 +61,7 @@ def write_dataset_files(
     per_label: int,
     seed: int,
     data_origin: str,
+    extra_metadata: dict | None = None,
 ) -> None:
     records = [record for split in ["train", "dev", "test"] for record in splits[split]]
     write_json(
@@ -67,6 +72,7 @@ def write_dataset_files(
             per_label=per_label,
             seed=seed,
             data_origin=data_origin,
+            extra_metadata=extra_metadata,
         ),
     )
     for split, rows in splits.items():
@@ -78,5 +84,6 @@ def write_dataset_files(
                 per_label=per_label,
                 seed=seed,
                 data_origin=data_origin,
+                extra_metadata=extra_metadata,
             ),
         )
