@@ -1,0 +1,39 @@
+{
+  "records": [
+    {
+      "query_id": "single-storage-001",
+      "query": "Ceph OSDがdownした原因を切り分けたい",
+      "risk_level": "normal",
+      "router_scores": {"Storage": 0.72, "Network": 0.07, "Coding": 0.04, "Security": 0.04, "Database": 0.08, "General": 0.05},
+      "expected_graph": "single_specialist"
+    },
+    {
+      "query_id": "boundary-storage-db-001",
+      "query": "NFS上のPostgreSQLでI/O待ちが急増した",
+      "risk_level": "normal",
+      "router_scores": {"Storage": 0.35, "Network": 0.08, "Coding": 0.04, "Security": 0.03, "Database": 0.45, "General": 0.05},
+      "expected_graph": "parallel_experts"
+    },
+    {
+      "query_id": "multi-code-db-001",
+      "query": "APIのN+1クエリを修正し、SQLと実装の両方をレビューしてほしい",
+      "risk_level": "normal",
+      "router_scores": {"Storage": 0.03, "Network": 0.03, "Coding": 0.46, "Security": 0.03, "Database": 0.42, "General": 0.03},
+      "expected_graph": "parallel_experts"
+    },
+    {
+      "query_id": "security-review-001",
+      "query": "社内TLS設定を防御目的でレビューしてほしい",
+      "risk_level": "auto",
+      "router_scores": {"Storage": 0.03, "Network": 0.08, "Coding": 0.04, "Security": 0.72, "Database": 0.03, "General": 0.10},
+      "expected_graph": "specialist_with_verifier"
+    },
+    {
+      "query_id": "clarify-001",
+      "query": "動かないので直して",
+      "risk_level": "normal",
+      "router_scores": {"Storage": 0.18, "Network": 0.17, "Coding": 0.18, "Security": 0.14, "Database": 0.17, "General": 0.16},
+      "expected_graph": "clarify_first"
+    }
+  ]
+}
