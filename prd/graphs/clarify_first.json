@@ -1,0 +1,12 @@
+{
+  "id": "clarify_first",
+  "version": "0.1.0",
+  "max_steps": 1,
+  "final_node": "clarifier",
+  "nodes": [
+    {
+      "id": "clarifier",
+      "role": "clarifier"
+    }
+  ]
+}

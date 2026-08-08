@@ -1,0 +1,12 @@
+{
+  "id": "safe_refusal_or_handoff",
+  "version": "0.1.0",
+  "max_steps": 1,
+  "final_node": "policy_response",
+  "nodes": [
+    {
+      "id": "policy_response",
+      "role": "policy"
+    }
+  ]
+}
