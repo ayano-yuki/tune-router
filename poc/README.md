@@ -51,6 +51,41 @@ uv run --project .\poc --system-certs python .\poc\src\cli.py prepare-data --per
 uv run --project .\poc --system-certs python .\poc\src\cli.py prepare-data --per-label 40 --out .\poc\artifacts
 ```
 
+### 利用データセット
+
+学習データはOSS由来の質問・依頼文だけを使い、各レコードに `source_name`、`source_url`、
+`source_license`、`source_record_id` を保持します。`Stack Exchange API` 由来のデータは質問タイトルと
+本文を結合し、Hugging Face datasets 由来のデータは各データセットの質問・プロンプト系フィールドを
+抽出して、共通のルータ分類JSONへ正規化します。
+
+| ラベル | source_name | 元データセット/API | ライセンス |
+| --- | --- | --- | --- |
+| `Storage` | `stackexchange-storage` | Stack Exchange API (`serverfault`, `unix`, `superuser`) | `cc-by-sa-4.0` |
+| `Storage` | `dolly-storage-fallback` | `databricks/databricks-dolly-15k` | `cc-by-sa-3.0` |
+| `Network` | `stackexchange-network` | Stack Exchange API (`networkengineering`, `serverfault`, `superuser`) | `cc-by-sa-4.0` |
+| `Network` | `netconfeval-config-generation` | `NetConfEval/NetConfEval` (`Configuration Generation`) | `mit` |
+| `Coding` | `magicoder-oss-instruct` | `ise-uiuc/Magicoder-OSS-Instruct-75K` | `mit` |
+| `Coding` | `codeinstruct-20k` | `SoyMaycol/CodeInstruct-20K` | `cc-by-4.0` |
+| `Security` | `trendyol-cybersecurity-instruct` | `Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset` | `apache-2.0` |
+| `Database` | `sql-create-context` | `b-mc2/sql-create-context` | `cc-by-4.0` |
+| `Database` | `stackexchange-database` | Stack Exchange API (`dba`, `serverfault`) | `cc-by-sa-4.0` |
+| `General` | `dolly-general` | `databricks/databricks-dolly-15k` | `cc-by-sa-3.0` |
+
+現行の `poc/artifacts` は `--per-label 800`、`seed=42` で作成した英語ベースのOSS-onlyデータです。
+全体は4,800件で、各ラベル800件ずつ含みます。分割は `gold_label` と `split_group` から安定ハッシュで
+決めており、おおむねtrain/dev/test = 70/15/15です。
+
+| ファイル | 用途 | 件数 |
+| --- | --- | ---: |
+| `poc/artifacts/dataset.json` | 全データ | 4,800 |
+| `poc/artifacts/train.json` | 学習用 | 3,323 |
+| `poc/artifacts/dev.json` | 調整・確認用 | 716 |
+| `poc/artifacts/test.json` | 固定評価用 | 761 |
+
+`poc/artifacts-ja` には同じレコード構成の日本語版を置いています。`metadata.data_origin` は
+`oss_only_ja`、`metadata.translation.target_language` は `ja` で、元の英語データは
+`text_en`、日本語化した入力文は `text` として保持します。件数とsplitは `poc/artifacts` と同じです。
+
 中期的には、Storage / Network / Database 向けのOSSソースを見直し、実運用に近い質問ログや
 レビュー済みの手作りデータを同じJSONスキーマで追加します。
 
