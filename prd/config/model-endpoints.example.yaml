@@ -1,0 +1,23 @@
+defaults:
+  base_url: http://127.0.0.1:18002/v1
+  timeout_seconds: 30
+  input_cost_per_million: 0
+  output_cost_per_million: 0
+
+models:
+  storage-specialist:
+    model: storage-specialist
+  network-specialist:
+    model: network-specialist
+  coding-specialist:
+    model: coding-specialist
+  security-specialist:
+    model: security-specialist
+  database-specialist:
+    model: database-specialist
+  general-fallback:
+    model: general-fallback
+  verifier:
+    model: verifier
+  general-synthesizer:
+    model: general-synthesizer

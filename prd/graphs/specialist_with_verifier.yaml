@@ -1,0 +1,26 @@
+id: specialist_with_verifier
+version: 0.1.0
+max_steps: 8
+final_node: specialist
+nodes:
+  - id: specialist
+    role: specialist
+    model_selector: primary_label
+    max_tokens: 2048
+    timeout_seconds: 30
+    retries: 1
+    fallback_models: [general-fallback]
+  - id: verifier
+    role: verifier
+    model: verifier
+    dependencies: [specialist]
+    max_tokens: 1024
+    timeout_seconds: 20
+    retries: 1
+    output_schema:
+      type: object
+      required: [passed, issues]
+loop:
+  verifier_node: verifier
+  max_iterations: 1
+  repair_model_selector: primary_label

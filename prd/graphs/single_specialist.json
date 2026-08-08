@@ -1,0 +1,17 @@
+{
+  "id": "single_specialist",
+  "version": "0.1.0",
+  "max_steps": 3,
+  "final_node": "specialist",
+  "nodes": [
+    {
+      "id": "specialist",
+      "role": "specialist",
+      "model_selector": "primary_label",
+      "max_tokens": 2048,
+      "timeout_seconds": 30,
+      "retries": 1,
+      "fallback_models": ["general-fallback"]
+    }
+  ]
+}

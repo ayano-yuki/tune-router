@@ -1,0 +1,27 @@
+{
+  "id": "parallel_experts",
+  "version": "0.1.0",
+  "max_steps": 8,
+  "final_node": "synthesizer",
+  "nodes": [
+    {
+      "id": "expert",
+      "role": "specialist",
+      "model_selector": "selected_labels",
+      "fan_out": true,
+      "max_tokens": 2048,
+      "timeout_seconds": 30,
+      "fallback_models": ["general-fallback"]
+    },
+    {
+      "id": "synthesizer",
+      "role": "synthesizer",
+      "model": "general-synthesizer",
+      "dependencies": ["expert"],
+      "max_tokens": 2048,
+      "timeout_seconds": 30,
+      "retries": 1,
+      "fallback_models": ["general-fallback"]
+    }
+  ]
+}
