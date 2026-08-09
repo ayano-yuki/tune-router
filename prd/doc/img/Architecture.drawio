@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-08-09T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="tune-orchestrator-architecture" name="Tune Orchestrator Architecture">
+    <mxGraphModel dx="1900" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1300" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="&lt;b&gt;Tune Orchestrator - Fugu-like Learned Orchestration Architecture&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=24;fontColor=#202124;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1100" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="Policy-first runtime + outcome-supervised LoRA FT + deterministic fallback" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=13;fontColor=#5F6368;" vertex="1" parent="1">
+          <mxGeometry x="42" y="55" width="900" height="24" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="online-lane" value="&lt;b&gt;ONLINE RUNTIME&lt;/b&gt;  - requestごとに安全な実行graphを構成" style="swimlane;html=1;startSize=38;horizontal=1;rounded=0;strokeWidth=2;strokeColor=#5F6368;fillColor=#F8F9FA;swimlaneFillColor=#E8EAED;fontSize=14;fontColor=#3C4043;align=left;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="30" y="90" width="1940" height="630" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="user" value="&lt;b&gt;User / API&lt;/b&gt;&lt;br&gt;日本語リクエスト" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#4285F4;fillColor=#E8F0FE;fontSize=14;fontColor=#174EA6;" vertex="1" parent="1">
+          <mxGeometry x="70" y="195" width="150" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="policy" value="&lt;b&gt;Hard Policy Gate&lt;/b&gt;&lt;br&gt;破壊・認証情報窃取&lt;br&gt;権限 / scope" style="rhombus;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#D93025;fillColor=#FCE8E6;fontSize=13;fontColor=#A50E0E;" vertex="1" parent="1">
+          <mxGeometry x="270" y="180" width="145" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="safe" value="&lt;b&gt;Safe Response / Handoff&lt;/b&gt;&lt;br&gt;禁止・高リスク要求を停止" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#D93025;fillColor=#FCE8E6;fontSize=13;fontColor=#A50E0E;" vertex="1" parent="1">
+          <mxGeometry x="250" y="360" width="190" height="75" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="classifier" value="&lt;b&gt;Existing FT Classifier&lt;/b&gt;&lt;br&gt;Qwen2.5-0.5B + LoRA&lt;br&gt;6 domain probabilities" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#188038;fillColor=#E6F4EA;fontSize=13;fontColor=#137333;" vertex="1" parent="1">
+          <mxGeometry x="470" y="180" width="205" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="router-scores" value="&lt;b&gt;Routing Signals&lt;/b&gt;&lt;br&gt;Storage / Network / Coding&lt;br&gt;Security / Database / General" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;strokeWidth=2;strokeColor=#188038;fillColor=#E6F4EA;fontSize=12;fontColor=#137333;" vertex="1" parent="1">
+          <mxGeometry x="485" y="355" width="175" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="runtime-context" value="&lt;b&gt;Runtime Context&lt;/b&gt;&lt;br&gt;cost / latency / steps budget&lt;br&gt;model capability catalog&lt;br&gt;available graph allowlist" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#F9AB00;fillColor=#FEF7E0;fontSize=12;fontColor=#B06000;" vertex="1" parent="1">
+          <mxGeometry x="720" y="360" width="215" height="105" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="learned" value="&lt;b&gt;Learned Orchestrator LLM&lt;/b&gt;&lt;br&gt;Qwen2.5-1.5B-Instruct + LoRA&lt;br&gt;&lt;br&gt;graph / model / delegation&lt;br&gt;verification / synthesis" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=3;strokeColor=#E37400;fillColor=#FEEFC3;fontSize=14;fontColor=#B06000;" vertex="1" parent="1">
+          <mxGeometry x="730" y="165" width="240" height="145" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="plan" value="&lt;b&gt;Structured Plan JSON&lt;/b&gt;&lt;br&gt;graph_id&lt;br&gt;selected_labels&lt;br&gt;delegations[]&lt;br&gt;synthesis_strategy" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;strokeWidth=2;strokeColor=#A142F4;fillColor=#F3E8FD;fontSize=12;fontColor=#681DA8;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="170" width="175" height="135" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="validation" value="&lt;b&gt;Plan Validation&lt;/b&gt;&lt;br&gt;JSON schema&lt;br&gt;graph / model allowlist&lt;br&gt;high-risk constraints" style="rhombus;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#A142F4;fillColor=#F3E8FD;fontSize=12;fontColor=#681DA8;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="170" width="155" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fallback" value="&lt;b&gt;Deterministic Fallback&lt;/b&gt;&lt;br&gt;confidence / margin / risk rules&lt;br&gt;fallback_reasonをtraceへ保存" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#5F6368;fillColor=#E8EAED;fontSize=12;fontColor=#3C4043;" vertex="1" parent="1">
+          <mxGeometry x="1225" y="375" width="225" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="executor" value="&lt;b&gt;Graph Executor&lt;/b&gt;&lt;br&gt;DAG / parallel execution&lt;br&gt;retry / fallback&lt;br&gt;cost・latency・step budget&lt;br&gt;verifier / repair loop" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=3;strokeColor=#00897B;fillColor=#E0F2F1;fontSize=13;fontColor=#00695C;" vertex="1" parent="1">
+          <mxGeometry x="1500" y="165" width="225" height="145" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="graph-catalog" value="&lt;b&gt;Versioned Graph Catalog&lt;/b&gt;&lt;br&gt;single_specialist&lt;br&gt;specialist_with_verifier&lt;br&gt;parallel_experts&lt;br&gt;clarify_first&lt;br&gt;safe_refusal_or_handoff" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;strokeColor=#00897B;fillColor=#F1F8E9;fontSize=11;fontColor=#33691E;align=left;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="1490" y="375" width="235" height="145" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="agents" value="&lt;b&gt;Model / Agent Pool&lt;/b&gt;&lt;br&gt;&lt;br&gt;Storage  |  Network&lt;br&gt;Coding  |  Security&lt;br&gt;Database  |  General&lt;br&gt;&lt;br&gt;Verifier / Repair / Synthesizer" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#4285F4;fillColor=#E8F0FE;fontSize=12;fontColor=#174EA6;" vertex="1" parent="1">
+          <mxGeometry x="1770" y="140" width="170" height="190" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="answer" value="&lt;b&gt;Final Answer&lt;/b&gt;&lt;br&gt;優先手順・根拠・リスク&lt;br&gt;追加確認事項" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#4285F4;fillColor=#E8F0FE;fontSize=12;fontColor=#174EA6;" vertex="1" parent="1">
+          <mxGeometry x="1770" y="390" width="170" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="trace" value="&lt;b&gt;Outcome Trace&lt;/b&gt;&lt;br&gt;plan / nodes / quality&lt;br&gt;cost / latency / feedback" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;strokeWidth=2;strokeColor=#5F6368;fillColor=#FFFFFF;fontSize=12;fontColor=#3C4043;" vertex="1" parent="1">
+          <mxGeometry x="1515" y="565" width="195" height="105" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e-user-policy" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#4285F4;endArrow=block;endFill=1;" edge="1" parent="1" source="user" target="policy">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-policy-safe" value="blocked" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#D93025;endArrow=block;endFill=1;fontColor=#A50E0E;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="policy" target="safe">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-policy-classifier" value="allowed" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#188038;endArrow=block;endFill=1;fontColor=#137333;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="policy" target="classifier">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-classifier-scores" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#188038;endArrow=block;endFill=1;" edge="1" parent="1" source="classifier" target="router-scores">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-classifier-learned" value="label scores" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#188038;endArrow=block;endFill=1;fontColor=#137333;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="classifier" target="learned">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-context-learned" value="constraints" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#F9AB00;endArrow=block;endFill=1;fontColor=#B06000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="runtime-context" target="learned">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-learned-plan" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#E37400;endArrow=block;endFill=1;" edge="1" parent="1" source="learned" target="plan">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-plan-validation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#A142F4;endArrow=block;endFill=1;" edge="1" parent="1" source="plan" target="validation">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-valid-executor" value="valid" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#00897B;endArrow=block;endFill=1;fontColor=#00695C;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="validation" target="executor">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-invalid-fallback" value="invalid / timeout" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#5F6368;endArrow=block;endFill=1;fontColor=#3C4043;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="validation" target="fallback">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-fallback-executor" value="safe plan" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#5F6368;endArrow=block;endFill=1;fontColor=#3C4043;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="fallback" target="executor">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-catalog-executor" value="graph definition" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;strokeWidth=2;strokeColor=#00897B;endArrow=open;endFill=0;fontColor=#00695C;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="graph-catalog" target="executor">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-executor-agents" value="delegate / verify / synthesize" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#4285F4;endArrow=block;endFill=1;fontColor=#174EA6;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="executor" target="agents">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-agents-answer" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#4285F4;endArrow=block;endFill=1;" edge="1" parent="1" source="agents" target="answer">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-answer-trace" value="answer + telemetry" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#5F6368;endArrow=block;endFill=1;fontColor=#3C4043;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="answer" target="trace">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-answer-user" value="response" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;strokeWidth=2;strokeColor=#4285F4;endArrow=open;endFill=0;fontColor=#174EA6;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="answer" target="user">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1870" y="120"/>
+              <mxPoint x="145" y="120"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="offline-lane" value="&lt;b&gt;OFFLINE LEARNING LOOP&lt;/b&gt;  - outcomeで次のorchestratorを改善" style="swimlane;html=1;startSize=38;horizontal=1;rounded=0;strokeWidth=2;strokeColor=#5F6368;fillColor=#FAFAFA;swimlaneFillColor=#E8EAED;fontSize=14;fontColor=#3C4043;align=left;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="30" y="750" width="1940" height="500" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ja-dataset" value="&lt;b&gt;Japanese OSS Dataset&lt;/b&gt;&lt;br&gt;prd/artifacts/&lt;br&gt;4,800 records&lt;br&gt;6-domain supervision" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;strokeWidth=2;strokeColor=#188038;fillColor=#E6F4EA;fontSize=12;fontColor=#137333;" vertex="1" parent="1">
+          <mxGeometry x="80" y="860" width="190" height="115" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="outcomes" value="&lt;b&gt;Query x Candidate Outcomes&lt;/b&gt;&lt;br&gt;全model / graphを実行&lt;br&gt;quality / cost / latency&lt;br&gt;safety / errors" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;strokeWidth=2;strokeColor=#5F6368;fillColor=#FFFFFF;fontSize=12;fontColor=#3C4043;" vertex="1" parent="1">
+          <mxGeometry x="340" y="845" width="220" height="125" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="review" value="&lt;b&gt;Reviewed Traces&lt;/b&gt;&lt;br&gt;user_rating &amp;gt;= 4&lt;br&gt;approved / preferred only" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#5F6368;fillColor=#FFFFFF;fontSize=12;fontColor=#3C4043;" vertex="1" parent="1">
+          <mxGeometry x="350" y="1050" width="200" height="85" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="oracle" value="&lt;b&gt;Oracle / Preference Builder&lt;/b&gt;&lt;br&gt;quality tolerance: 0.02&lt;br&gt;同等品質ならcost / latency優先&lt;br&gt;chosen vs rejected plan" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#A142F4;fillColor=#F3E8FD;fontSize=12;fontColor=#681DA8;" vertex="1" parent="1">
+          <mxGeometry x="630" y="850" width="235" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ft-data" value="&lt;b&gt;FT Dataset&lt;/b&gt;&lt;br&gt;SFT train / dev JSONL&lt;br&gt;preferences JSONL&lt;br&gt;&lt;br&gt;assistant plan tokens only" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;strokeWidth=2;strokeColor=#E37400;fillColor=#FEEFC3;fontSize=12;fontColor=#B06000;" vertex="1" parent="1">
+          <mxGeometry x="935" y="845" width="205" height="135" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lora-ft" value="&lt;b&gt;LoRA SFT&lt;/b&gt;&lt;br&gt;Qwen2.5-1.5B-Instruct&lt;br&gt;r=16 / alpha=32&lt;br&gt;max length=2048&lt;br&gt;&lt;br&gt;次段: preference optimization" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=3;strokeColor=#E37400;fillColor=#FEEFC3;fontSize=12;fontColor=#B06000;" vertex="1" parent="1">
+          <mxGeometry x="1205" y="835" width="220" height="155" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="eval-gate" value="&lt;b&gt;Offline Evaluation Gate&lt;/b&gt;&lt;br&gt;valid plan &amp;gt;= 99%&lt;br&gt;policy violation = 0&lt;br&gt;regret / quality-cost Pareto&lt;br&gt;fallback rate &amp;lt; 5%" style="rhombus;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#00897B;fillColor=#E0F2F1;fontSize=11;fontColor=#00695C;" vertex="1" parent="1">
+          <mxGeometry x="1490" y="835" width="190" height="155" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="promote" value="&lt;b&gt;Shadow / A-B Promotion&lt;/b&gt;&lt;br&gt;versioned adapter&lt;br&gt;bounded rollout" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#188038;fillColor=#E6F4EA;fontSize=12;fontColor=#137333;" vertex="1" parent="1">
+          <mxGeometry x="1750" y="865" width="180" height="95" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="future" value="&lt;b&gt;Toward Fugu-like orchestration&lt;/b&gt;&lt;br&gt;capability-aware model choice  |  constrained node composition  |  trajectory preference  |  shadow exploration" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;dashed=1;strokeWidth=2;strokeColor=#5F6368;fillColor=#F8F9FA;fontSize=12;fontColor=#3C4043;" vertex="1" parent="1">
+          <mxGeometry x="820" y="1100" width="780" height="75" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e-trace-outcomes" value="execution results" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#5F6368;endArrow=block;endFill=1;fontColor=#3C4043;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="trace" target="outcomes">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1610" y="700"/>
+              <mxPoint x="450" y="700"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-trace-review" value="human feedback" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;strokeWidth=2;strokeColor=#5F6368;endArrow=open;endFill=0;fontColor=#3C4043;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="trace" target="review">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1460" y="690"/>
+              <mxPoint x="590" y="690"/>
+              <mxPoint x="590" y="1090"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-outcomes-oracle" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#A142F4;endArrow=block;endFill=1;" edge="1" parent="1" source="outcomes" target="oracle">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-review-oracle" value="approved only" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#A142F4;endArrow=block;endFill=1;fontColor=#681DA8;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="review" target="oracle">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-dataset-ftdata" value="domain bootstrap" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#188038;endArrow=block;endFill=1;fontColor=#137333;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ja-dataset" target="ft-data">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="180" y="1015"/>
+              <mxPoint x="1035" y="1015"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-oracle-ftdata" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#E37400;endArrow=block;endFill=1;" edge="1" parent="1" source="oracle" target="ft-data">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-ftdata-lora" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#E37400;endArrow=block;endFill=1;" edge="1" parent="1" source="ft-data" target="lora-ft">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-lora-eval" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#00897B;endArrow=block;endFill=1;" edge="1" parent="1" source="lora-ft" target="eval-gate">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-eval-promote" value="pass" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#188038;endArrow=block;endFill=1;fontColor=#137333;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="eval-gate" target="promote">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-eval-retrain" value="fail / improve data" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;strokeWidth=2;strokeColor=#D93025;endArrow=open;endFill=0;fontColor=#A50E0E;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="eval-gate" target="ft-data">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1585" y="1050"/>
+              <mxPoint x="1035" y="1050"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-promote-learned" value="promote adapter" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;strokeWidth=3;strokeColor=#188038;endArrow=block;endFill=1;fontColor=#137333;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="promote" target="learned">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1840" y="795"/>
+              <mxPoint x="1980" y="795"/>
+              <mxPoint x="1980" y="95"/>
+              <mxPoint x="850" y="95"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

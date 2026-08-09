@@ -1,0 +1,25 @@
+[project]
+name = "tune-orchestrator"
+version = "0.2.0"
+description = "Learned graph orchestrator and router evaluation harness for TuneRouter"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+training = [
+  "accelerate>=0.34.0,<2",
+  "peft>=0.12.0,<1",
+  "torch>=2.3.0,<3",
+  "transformers>=4.45.0,<5",
+]
+
+[project.scripts]
+tune-orchestrator = "cli:main"
+
+[build-system]
+requires = []
+build-backend = "build_backend"
+backend-path = ["."]

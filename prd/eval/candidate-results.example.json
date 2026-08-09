@@ -1,0 +1,30 @@
+{
+  "records": [
+    {
+      "query_id": "single-storage-001",
+      "query": "Ceph OSDがdownした原因を切り分けたい",
+      "domain_labels": ["Storage"],
+      "router_scores": {"Storage": 0.75, "Network": 0.05, "Coding": 0.05, "Security": 0.05, "Database": 0.05, "General": 0.05},
+      "router_latency_ms": 90,
+      "candidate_results": [
+        {"candidate_id": "storage-specialist", "candidate_type": "model", "quality": 0.90, "cost": 0.020, "latency_ms": 3000},
+        {"candidate_id": "database-specialist", "candidate_type": "model", "quality": 0.50, "cost": 0.020, "latency_ms": 3000},
+        {"candidate_id": "general-fallback", "candidate_type": "model", "quality": 0.60, "cost": 0.005, "latency_ms": 1000},
+        {"candidate_id": "parallel_experts-v0.1.0", "candidate_type": "graph", "quality": 0.91, "cost": 0.050, "latency_ms": 5000}
+      ]
+    },
+    {
+      "query_id": "boundary-storage-db-001",
+      "query": "NFS上のPostgreSQLでI/O待ちが急増した",
+      "domain_labels": ["Database", "Storage"],
+      "router_scores": {"Storage": 0.36, "Network": 0.10, "Coding": 0.04, "Security": 0.03, "Database": 0.46, "General": 0.01},
+      "router_latency_ms": 95,
+      "candidate_results": [
+        {"candidate_id": "storage-specialist", "candidate_type": "model", "quality": 0.70, "cost": 0.020, "latency_ms": 3000},
+        {"candidate_id": "database-specialist", "candidate_type": "model", "quality": 0.78, "cost": 0.020, "latency_ms": 3200},
+        {"candidate_id": "general-fallback", "candidate_type": "model", "quality": 0.50, "cost": 0.005, "latency_ms": 1000},
+        {"candidate_id": "parallel_experts-v0.1.0", "candidate_type": "graph", "quality": 0.92, "cost": 0.050, "latency_ms": 5000}
+      ]
+    }
+  ]
+}
