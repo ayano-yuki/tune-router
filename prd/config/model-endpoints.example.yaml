@@ -7,17 +7,73 @@ defaults:
 models:
   storage-specialist:
     model: storage-specialist
+    domains: [Storage]
+    strengths: [long-log-analysis, filesystems, kubernetes-pv]
+    context_window: 32768
+    latency_tier: medium
+    cost_tier: medium
+    safety_profile: normal
+    supports_json: false
   network-specialist:
     model: network-specialist
+    domains: [Network]
+    strengths: [packet-flow, dns, tls, kubernetes-networking]
+    context_window: 32768
+    latency_tier: medium
+    cost_tier: medium
+    safety_profile: normal
+    supports_json: false
   coding-specialist:
     model: coding-specialist
+    domains: [Coding]
+    strengths: [code-review, debugging, patch-planning]
+    context_window: 32768
+    latency_tier: medium
+    cost_tier: medium
+    safety_profile: normal
+    supports_json: false
   security-specialist:
     model: security-specialist
+    domains: [Security]
+    strengths: [defensive-review, threat-modeling, log-analysis]
+    context_window: 32768
+    latency_tier: medium
+    cost_tier: high
+    safety_profile: high-risk-reviewed
+    supports_json: false
   database-specialist:
     model: database-specialist
+    domains: [Database]
+    strengths: [postgresql, query-plans, locks, wait-events]
+    context_window: 32768
+    latency_tier: medium
+    cost_tier: medium
+    safety_profile: normal
+    supports_json: false
   general-fallback:
     model: general-fallback
+    domains: ["*"]
+    strengths: [general-qa, fallback, clarification]
+    context_window: 32768
+    latency_tier: low
+    cost_tier: low
+    safety_profile: normal
+    supports_json: false
   verifier:
     model: verifier
+    domains: ["*"]
+    strengths: [verification, json-output, safety-check]
+    context_window: 32768
+    latency_tier: low
+    cost_tier: low
+    safety_profile: verifier
+    supports_json: true
   general-synthesizer:
     model: general-synthesizer
+    domains: ["*"]
+    strengths: [synthesis, prioritization, conflict-resolution]
+    context_window: 32768
+    latency_tier: low
+    cost_tier: low
+    safety_profile: normal
+    supports_json: false

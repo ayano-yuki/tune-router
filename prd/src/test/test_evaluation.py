@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from tune_orchestrator.evaluation import evaluate_offline, summarize_traces, write_evaluation_outputs
+from evaluation import evaluate_offline, summarize_traces, write_evaluation_outputs
 
 
 class EvaluationTests(unittest.TestCase):
@@ -15,12 +15,79 @@ class EvaluationTests(unittest.TestCase):
                 "graph": {"id": "specialist_with_verifier", "version": "0.1.0", "stop_reason": "repaired_and_verified"},
                 "nodes": [{"role": "verifier"}, {"role": "repair"}, {"role": "verifier"}],
                 "usage": {"cost_usd": 0.02, "latency_ms": 4000},
+                "shadow_executions": [
+                    {
+                        "status": "completed",
+                        "trace": {
+                            "graph": {"id": "parallel_experts", "stop_reason": "completed"},
+                            "usage": {"cost_usd": 0.0, "latency_ms": 100},
+                        },
+                    }
+                ],
             }
         ]
         summary = summarize_traces(traces)
         self.assertEqual(1.0, summary["trace_completeness"])
         self.assertEqual(1.0, summary["repair_success_rate"])
         self.assertEqual(1.0, summary["average_loop_count"])
+        self.assertEqual(1.0, summary["shadow_trace_rate"])
+        self.assertEqual(1, summary["shadow_runs"])
+        self.assertEqual(1.0, summary["shadow_success_rate"])
+
+    def test_trace_summary_reports_bandit_application(self) -> None:
+        traces = [
+            {
+                "trace_id": "t1",
+                "router": {"scores": {"Database": 0.7}},
+                "graph": {
+                    "id": "parallel_experts",
+                    "version": "0.1.0",
+                    "selector_type": "bandit_policy",
+                    "selection_metadata": {
+                        "bandit": {
+                            "context_key": "risk=normal|top=Database|secondary=Storage",
+                            "arm_key": "graph=parallel_experts",
+                        }
+                    },
+                    "stop_reason": "completed",
+                },
+                "nodes": [{"role": "specialist"}],
+                "usage": {"cost_usd": 0.03, "latency_ms": 3000},
+            }
+        ]
+        summary = summarize_traces(traces)
+        self.assertEqual(1.0, summary["bandit_trace_rate"])
+        self.assertEqual(1, summary["bandit_switches"])
+        self.assertEqual(1, summary["bandit_contexts"])
+        self.assertEqual(1, summary["bandit_canary_eligible"])
+        self.assertEqual(1, summary["bandit_canary_sampled"])
+
+    def test_trace_summary_reports_bandit_canary_candidates(self) -> None:
+        traces = [
+            {
+                "trace_id": "t1",
+                "router": {"scores": {"Database": 0.7}},
+                "graph": {
+                    "id": "single_specialist",
+                    "version": "0.1.0",
+                    "selector_type": "deterministic",
+                    "selection_metadata": {
+                        "bandit_canary": {
+                            "context_key": "risk=normal|top=Database|secondary=Storage",
+                            "candidate_graph_id": "parallel_experts",
+                            "sampled": False,
+                        }
+                    },
+                    "stop_reason": "completed",
+                },
+                "nodes": [{"role": "specialist"}],
+                "usage": {"cost_usd": 0.01, "latency_ms": 1000},
+            }
+        ]
+        summary = summarize_traces(traces)
+        self.assertEqual(0.0, summary["bandit_trace_rate"])
+        self.assertEqual(1, summary["bandit_canary_eligible"])
+        self.assertEqual(0, summary["bandit_canary_sampled"])
 
     def test_offline_baselines_and_graph_metrics(self) -> None:
         records = [

@@ -4,8 +4,8 @@ import json
 import unittest
 from pathlib import Path
 
-from tune_orchestrator.models import RouterSignal
-from tune_orchestrator.selector import GraphSelector
+from models import RouterSignal
+from selector import GraphSelector
 
 
 def signal(**scores: float) -> RouterSignal:
@@ -56,7 +56,7 @@ class GraphSelectorTests(unittest.TestCase):
         self.assertEqual("restrict", decision.policy.action)
 
     def test_prd_selection_fixture(self) -> None:
-        fixture = Path(__file__).resolve().parents[1] / "eval" / "selection-cases.json"
+        fixture = Path(__file__).resolve().parents[2] / "eval" / "selection-cases.json"
         records = json.loads(fixture.read_text(encoding="utf-8"))["records"]
         for record in records:
             with self.subTest(query_id=record["query_id"]):

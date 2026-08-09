@@ -39,6 +39,8 @@ class RouteDecision:
     synthesis_strategy: str | None = None
     selector_type: str = "deterministic"
     fallback_reason: str | None = None
+    generated_graph: dict[str, Any] | None = None
+    selection_metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         value = asdict(self)

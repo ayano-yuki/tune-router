@@ -10,9 +10,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-from .constants import LABEL_TO_MODEL, MULTI_AGENT_GRAPHS
-from .models import RouterSignal
-from .selector import GraphSelector
+from constants import LABEL_TO_MODEL, MULTI_AGENT_GRAPHS
+from models import RouterSignal
+from selector import GraphSelector
 
 
 @dataclass(frozen=True)
@@ -147,6 +147,41 @@ def summarize_traces(traces: list[dict[str, Any]]) -> dict[str, Any]:
     verifier_traces = [trace for trace in traces if any(node.get("role") == "verifier" for node in trace.get("nodes", []))]
     repair_traces = [trace for trace in traces if any(node.get("role") == "repair" for node in trace.get("nodes", []))]
     repair_successes = sum(trace.get("graph", {}).get("stop_reason") == "repaired_and_verified" for trace in repair_traces)
+    shadow_runs = [
+        shadow
+        for trace in traces
+        for shadow in trace.get("shadow_executions", [])
+        if isinstance(shadow, dict)
+    ]
+    shadow_successes = [
+        shadow
+        for shadow in shadow_runs
+        if shadow.get("status") == "completed"
+        and shadow.get("trace", {}).get("graph", {}).get("stop_reason") in {"completed", "verifier_passed", "repaired_and_verified"}
+    ]
+    bandit_traces = [
+        trace
+        for trace in traces
+        if trace.get("graph", {}).get("selector_type") == "bandit_policy"
+        or isinstance(trace.get("graph", {}).get("selection_metadata", {}).get("bandit"), dict)
+    ]
+    bandit_contexts = {
+        str(trace.get("graph", {}).get("selection_metadata", {}).get("bandit", {}).get("context_key"))
+        for trace in bandit_traces
+        if trace.get("graph", {}).get("selection_metadata", {}).get("bandit", {}).get("context_key")
+    }
+    bandit_canary_traces = [
+        trace
+        for trace in traces
+        if isinstance(trace.get("graph", {}).get("selection_metadata", {}).get("bandit_canary"), dict)
+        or isinstance(trace.get("graph", {}).get("selection_metadata", {}).get("bandit"), dict)
+    ]
+    bandit_canary_sampled = [
+        trace
+        for trace in bandit_canary_traces
+        if trace.get("graph", {}).get("selection_metadata", {}).get("bandit_canary", {}).get("sampled")
+        or isinstance(trace.get("graph", {}).get("selection_metadata", {}).get("bandit"), dict)
+    ]
     latencies = [float(trace.get("usage", {}).get("latency_ms", 0.0)) for trace in traces]
     stop_reasons: dict[str, int] = defaultdict(int)
     graph_counts: dict[str, int] = defaultdict(int)
@@ -171,6 +206,14 @@ def summarize_traces(traces: list[dict[str, Any]]) -> dict[str, Any]:
         "average_loop_count": statistics.fmean(
             sum(node.get("role") == "repair" for node in trace.get("nodes", [])) for trace in traces
         ),
+        "shadow_trace_rate": sum(bool(trace.get("shadow_executions")) for trace in traces) / len(traces),
+        "shadow_runs": len(shadow_runs),
+        "shadow_success_rate": len(shadow_successes) / len(shadow_runs) if shadow_runs else 0.0,
+        "bandit_trace_rate": len(bandit_traces) / len(traces),
+        "bandit_switches": len(bandit_traces),
+        "bandit_contexts": len(bandit_contexts),
+        "bandit_canary_eligible": len(bandit_canary_traces),
+        "bandit_canary_sampled": len(bandit_canary_sampled),
         "graph_counts": dict(sorted(graph_counts.items())),
         "stop_reasons": dict(sorted(stop_reasons.items())),
     }
@@ -188,6 +231,11 @@ def write_trace_report(path: Path, summary: dict[str, Any]) -> None:
         f"- Verifier pass rate: {summary['verifier_pass_rate']:.1%}",
         f"- Repair trigger / success rate: {summary['repair_trigger_rate']:.1%} / {summary['repair_success_rate']:.1%}",
         f"- Average repair loops: {summary['average_loop_count']:.3f}",
+        f"- Shadow trace rate: {summary.get('shadow_trace_rate', 0.0):.1%}",
+        f"- Shadow runs / success rate: {summary.get('shadow_runs', 0)} / {summary.get('shadow_success_rate', 0.0):.1%}",
+        f"- Bandit trace rate: {summary.get('bandit_trace_rate', 0.0):.1%}",
+        f"- Bandit switches / contexts: {summary.get('bandit_switches', 0)} / {summary.get('bandit_contexts', 0)}",
+        f"- Bandit canary eligible / sampled: {summary.get('bandit_canary_eligible', 0)} / {summary.get('bandit_canary_sampled', 0)}",
         "",
         "## Graphs",
         "",

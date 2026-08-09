@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import unittest
 
-from tune_orchestrator.training import _tokenized_dataset, evaluate_adapter
+from training import _tokenized_dataset, evaluate_adapter
 
 
 class FakeDatasetBase:

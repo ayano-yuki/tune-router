@@ -10,10 +10,10 @@ from dataclasses import replace
 from datetime import UTC, datetime
 from typing import Any
 
-from .clients import ModelClient
-from .constants import LABEL_TO_MODEL
-from .graphs import GraphDefinition, NodeDefinition
-from .models import Budget, ExecutionResult, ModelResponse, NodeTrace, RouteDecision, RouterSignal
+from clients import ModelClient
+from constants import LABEL_TO_MODEL
+from graphs import GraphDefinition, NodeDefinition
+from models import Budget, ExecutionResult, ModelResponse, NodeTrace, RouteDecision, RouterSignal
 
 
 class BudgetExceeded(RuntimeError):
@@ -132,8 +132,9 @@ class GraphExecutor:
         elif graph.id == "safe_refusal_or_handoff":
             stop_reason = "policy_stop"
 
+        failure_detail = _failure_detail(traces)
         if not final_answer:
-            final_answer = self._degraded_answer(outputs, decision, stop_reason)
+            final_answer = self._degraded_answer(outputs, decision, stop_reason, failure_detail)
 
         trace = {
             "trace_id": f"orch-{datetime.now(UTC).strftime('%Y%m%d')}-{uuid.uuid4().hex[:12]}",
@@ -164,6 +165,8 @@ class GraphExecutor:
                     for item in decision.delegations
                 ],
                 "synthesis_strategy": decision.synthesis_strategy,
+                "generated_graph": decision.generated_graph,
+                "selection_metadata": decision.selection_metadata,
                 "stop_reason": stop_reason,
             },
             "nodes": [item.to_dict() for item in traces],
@@ -176,6 +179,7 @@ class GraphExecutor:
                 "user_rating": None,
                 "review_label": None,
                 "failure_type": failure_type,
+                "failure_detail": failure_detail,
             },
             "final_answer": redact_secrets(final_answer),
         }
@@ -408,7 +412,7 @@ class GraphExecutor:
                     primary = decision.primary_labels[0]
                     model = delegated_models.get(primary, LABEL_TO_MODEL[primary])
                 prompt = node.system_prompt
-                if node.role == "specialist":
+                if node.role == "specialist" and node.model_selector == "primary_label":
                     prompt = _with_objective(prompt, objectives.get(decision.primary_labels[0]), node.role)
                 elif node.role == "synthesizer":
                     prompt = _with_objective(prompt, decision.synthesis_strategy, node.role)
@@ -434,11 +438,22 @@ class GraphExecutor:
         return "この依頼は安全ポリシーにより自動実行できません。防御目的の範囲、対象環境への権限、必要な支援内容を明確にして担当者へ確認してください。"
 
     @staticmethod
-    def _degraded_answer(outputs: dict[str, str], decision: RouteDecision, reason: str) -> str:
+    def _degraded_answer(
+        outputs: dict[str, str],
+        decision: RouteDecision,
+        reason: str,
+        failure_detail: str | None = None,
+    ) -> str:
         if outputs:
             partial = next(reversed(outputs.values()))
             return f"一部の処理のみ完了しました（{reason}）。\n\n{partial}"
         labels = ", ".join(decision.selected_labels)
+        if failure_detail == "model_endpoint_unreachable":
+            return f"処理を完了できませんでした（{reason}）。実モデルのOpenAI互換endpointに接続できません。候補領域: {labels}。"
+        if failure_detail == "model_credentials_missing":
+            return f"処理を完了できませんでした（{reason}）。実モデルendpointの認証環境変数が未設定です。候補領域: {labels}。"
+        if failure_detail == "model_response_invalid":
+            return f"処理を完了できませんでした（{reason}）。実モデルendpointの応答形式を確認してください。候補領域: {labels}。"
         return f"処理を完了できませんでした（{reason}）。候補領域: {labels}。追加情報を添えて再試行してください。"
 
 
@@ -478,6 +493,23 @@ def _validate_output_schema(content: str, schema: dict[str, Any]) -> None:
         missing = [name for name in schema.get("required", ()) if name not in value]
         if missing:
             raise ValueError(f"missing required fields: {', '.join(missing)}")
+
+
+def _failure_detail(traces: list[NodeTrace]) -> str | None:
+    errors = "\n".join(node.error for node in traces if node.error)
+    if not errors:
+        return None
+    if "Connection refused" in errors or "Errno 111" in errors:
+        return "model_endpoint_unreachable"
+    if "environment variable is not set" in errors:
+        return "model_credentials_missing"
+    if "choices[0].message.content" in errors or "invalid output" in errors or "response is not valid JSON" in errors:
+        return "model_response_invalid"
+    if "HTTP 404" in errors:
+        return "model_endpoint_not_found"
+    if "model alias is not configured" in errors:
+        return "model_alias_missing"
+    return "model_execution_failed"
 
 
 def _utc_now() -> str:
