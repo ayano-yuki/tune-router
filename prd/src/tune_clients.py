@@ -8,7 +8,7 @@ from typing import Any, Protocol
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from models import ModelResponse, RouterSignal
+from tune_models import ModelResponse, RouterSignal
 
 
 def _chat_completions_url(base_url: str) -> str:

@@ -3,11 +3,11 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from clients import MockModelClient
-from graphs import load_graphs
-from models import Delegation, PolicyDecision, RouteDecision, RouterSignal
-from selector import GraphSelector
-from shadow import ShadowConfig, build_shadow_decisions, execute_shadow_decisions
+from tune_clients import MockModelClient
+from tune_graphs import load_graphs
+from tune_models import Delegation, PolicyDecision, RouteDecision, RouterSignal
+from tune_selector import GraphSelector
+from tune_shadow import ShadowConfig, build_shadow_decisions, execute_shadow_decisions
 
 
 class ShadowTests(unittest.TestCase):

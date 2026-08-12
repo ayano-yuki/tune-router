@@ -3,11 +3,11 @@ from __future__ import annotations
 import json
 import unittest
 
-from composition import graph_from_bounded_plan
-from executor import GraphExecutor
-from learned import LearnedGraphSelector
-from models import RouterSignal
-from clients import MockModelClient
+from tune_clients import MockModelClient
+from tune_composition import graph_from_bounded_plan
+from tune_executor import GraphExecutor
+from tune_learned import LearnedGraphSelector
+from tune_models import RouterSignal
 
 
 class StaticPlanClient:

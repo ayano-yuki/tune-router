@@ -4,7 +4,7 @@ import json
 import unittest
 from pathlib import Path
 
-from ft_data import FTDataConfig, build_ft_datasets
+from tune_ft_data import FTDataConfig, build_ft_datasets
 
 
 class FTDataTests(unittest.TestCase):

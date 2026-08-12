@@ -4,8 +4,8 @@ import json
 import unittest
 from pathlib import Path
 
-from models import RouterSignal
-from selector import GraphSelector
+from tune_models import RouterSignal
+from tune_selector import GraphSelector
 
 
 def signal(**scores: float) -> RouterSignal:

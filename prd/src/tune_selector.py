@@ -4,8 +4,8 @@ import math
 import re
 from dataclasses import dataclass
 
-from constants import LABELS, LABEL_TO_MODEL
-from models import Delegation, PolicyDecision, RouteDecision, RouterSignal
+from tune_constants import LABELS, LABEL_TO_MODEL
+from tune_models import Delegation, PolicyDecision, RouteDecision, RouterSignal
 
 
 _HIGH_RISK_PATTERNS = (

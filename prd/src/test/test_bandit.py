@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from bandit import (
+from tune_bandit import (
     BanditMonitorConfig,
     BanditPolicyConfig,
     BanditPromotionConfig,
@@ -30,8 +30,8 @@ from bandit import (
     validate_bandit_rollback_candidate,
     validate_bandit_runtime_bundle,
 )
-from models import Delegation, PolicyDecision, RouteDecision, RouterSignal
-from selector import GraphSelector
+from tune_models import Delegation, PolicyDecision, RouteDecision, RouterSignal
+from tune_selector import GraphSelector
 
 
 class BanditTests(unittest.TestCase):

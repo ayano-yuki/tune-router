@@ -9,7 +9,7 @@ from typing import Any
 
 import yaml
 
-from bandit import (
+from tune_bandit import (
     BanditBuildConfig,
     BanditMonitorConfig,
     BanditPolicyConfig,
@@ -50,22 +50,22 @@ from bandit import (
     write_bandit_rollout_report,
     write_bandit_state,
 )
-from clients import MockModelClient, OpenAIModelClient, OpenAIRouterClient
-from composition import graph_from_bounded_plan
-from evaluation import (
+from tune_clients import MockModelClient, OpenAIModelClient, OpenAIRouterClient
+from tune_composition import graph_from_bounded_plan
+from tune_evaluation import (
     evaluate_offline,
     load_records,
     summarize_traces,
     write_evaluation_outputs,
     write_trace_report,
 )
-from executor import GraphExecutor
-from ft_data import FTDataConfig, build_ft_datasets, write_ft_datasets
-from graphs import load_graphs
-from learned import LearnedGraphSelector, OpenAIPlanClient
-from models import Budget, RouterSignal
-from ops import run_preflight
-from router_learning import (
+from tune_executor import GraphExecutor
+from tune_ft_data import FTDataConfig, build_ft_datasets, write_ft_datasets
+from tune_graphs import load_graphs
+from tune_learned import LearnedGraphSelector, OpenAIPlanClient
+from tune_models import Budget, RouterSignal
+from tune_ops import run_preflight
+from tune_router_learning import (
     RouterContinualConfig,
     RouterDataConfig,
     RouterMergeConfig,
@@ -80,9 +80,9 @@ from router_learning import (
     write_json,
     write_router_dataset,
 )
-from selector import GraphSelector, SelectionPolicy
-from shadow import ShadowConfig, build_shadow_decisions, execute_shadow_decisions
-from training import (
+from tune_selector import GraphSelector, SelectionPolicy
+from tune_shadow import ShadowConfig, build_shadow_decisions, execute_shadow_decisions
+from tune_training import (
     DEFAULT_ORCHESTRATOR_MODEL,
     LocalAdapterPlanClient,
     evaluate_adapter,

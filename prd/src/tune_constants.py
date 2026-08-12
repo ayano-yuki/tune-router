@@ -1,3 +1,5 @@
+"""Shared constants for the TuneRouter orchestrator."""
+
 from __future__ import annotations
 
 LABEL_TO_MODEL = {
