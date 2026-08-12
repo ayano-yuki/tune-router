@@ -30,20 +30,23 @@ uv run --project .\prd tune-orchestrator --help
 |---:|---|---|---|---|
 | 1 | PRD-011 | P0 | - | flat module名の衝突を先に解消する |
 | 2 | PRD-008 | P0 | PRD-011 | artifactのatomic write、lock、署名基盤を作る |
-| 3 | PRD-015 | P0 | PRD-008 | endpoint、secret、training、traceをhardeningする |
-| 4 | PRD-002 | P0 | PRD-011 | 明示的なrouter正解labelを継続学習へ入れる |
-| 5 | PRD-006 | P0 | PRD-002 | 学習dataのschema、leak、偏り、機密情報をgateする |
-| 6 | PRD-007 | P0 | PRD-006 | router scoreを校正し、選択閾値を固定する |
-| 7 | PRD-003 | P0 | PRD-006, PRD-007 | router候補をbaseline比較で昇格判定する |
-| 8 | PRD-014 | P0 | PRD-003, PRD-008 | 全componentを束ねたrelease/rollbackを実装する |
-| 9 | PRD-004 | P0 | PRD-008, PRD-014 | 検証済みruntime releaseを実行時に強制する |
-| 10 | PRD-012 | P1 | PRD-004, PRD-014, PRD-015 | `doctor`を本番起動の単一gateにする |
-| 11 | PRD-005 | P1 | PRD-006, PRD-014 | 制約付き自由agent assemblyを完成させる |
-| 12 | PRD-013 | P1 | PRD-004, PRD-014 | drift、alert、dashboardを追加する |
-| 13 | PRD-009 | P0 | 上記各機能と並行 | 実HTTPを含むE2E回帰を固定する |
-| 14 | PRD-010 | P0 | PRD-009 | CIとtraining smokeを必須化する |
+| 3 | PRD-016 | P0 | PRD-008 | Query × Candidate × Outcomeを第一級artifactにする |
+| 4 | PRD-017 | P0 | PRD-016 | utility、oracle、regret、Paretoを評価の中心にする |
+| 5 | PRD-018 | P0 core / P1 learned | PRD-016, PRD-017 | fixed baselineとKNN/MLPでFTの増分価値を測る |
+| 6 | PRD-002 | P0 | PRD-011, PRD-016 | domain分類教師とcandidate outcome教師を分離する |
+| 7 | PRD-006 | P0 | PRD-002, PRD-016 | 学習dataのschema、leak、偏り、機密情報をgateする |
+| 8 | PRD-007 | P0 | PRD-006 | router scoreを校正し、選択閾値を固定する |
+| 9 | PRD-003 | P0 | PRD-006, PRD-007, PRD-018 P0 core | 分類gateとend-to-end utility gateの両方で昇格判定する |
+| 10 | PRD-015 | P0 | PRD-008 | endpoint、secret、training、traceをhardeningする |
+| 11 | PRD-014 | P0 | PRD-003, PRD-008 | 全componentを束ねたrelease/rollbackを実装する |
+| 12 | PRD-004 | P0 | PRD-008, PRD-014 | 検証済みruntime releaseを実行時に強制する |
+| 13 | PRD-012 | P1 | PRD-004, PRD-014, PRD-015 | `doctor`を本番起動の単一gateにする |
+| 14 | PRD-005 | P1 | PRD-006, PRD-014 | 制約付き自由agent assemblyを完成させる |
+| 15 | PRD-013 | P1 | PRD-004, PRD-014 | drift、alert、dashboardを追加する |
+| 16 | PRD-009 | P0 | 上記各機能と並行 | 実HTTPを含むE2E回帰を固定する |
+| 17 | PRD-010 | P0 | PRD-009 | CIとtraining smokeを必須化する |
 
-P0はproduction traffic投入前に必須、P1は限定canaryを100% trafficへ進める前に必須とする。
+P0はproduction traffic投入前に必須、P1は限定canaryを100% trafficへ進める前に必須とする。新しいselector学習へ進む前に、PRD-016からPRD-018のP0 coreで固定モデルを上回る余地と評価方法を確立する。
 
 ## PRD-002 Explicit router supervision
 
@@ -75,6 +78,8 @@ traceの `evaluation.router_feedback` を次のschemaで固定する。
 6. 明示feedbackがない場合のみ、`review_label in {preferred, approved, success}` または `user_rating >= min_rating` を弱い教師信号として許可する。
 7. `include_failed_corrections=true` の場合、実行が失敗していても `corrected` または正解付き `rejected` を採用する。このflagを実際の分岐に使用する。
 8. 現行classifierはtop-1分類なので、`gold_label=gold_labels[0]` とする。2件目以降は `metadata.secondary_gold_labels` に保持し、同一textを複数の単一label recordへ複製しない。
+
+ここで作るtop-1 labelは6カテゴリdomain classifierの教師信号に限定する。model/graph selectorの教師信号へ `idxmax(quality)` のcandidate idだけを流用しない。selector学習はPRD-016の全candidate outcomeとPRD-017のprofile別utilityを使い、PRD-018の `candidate -> expected utility` scoringとして別artifactで扱う。
 
 source別weightは `human corrected=2.0`、`incident_review=2.0`、`oracle=1.75`、`explicit approved=1.5`、`rating fallback=1.0` とする。fallback発生traceはさらに `0.7` を乗算する。
 
@@ -133,6 +138,8 @@ evaluation artifact formatは `tune-router-evaluation-v1` とし、最低限 `to
 
 promotion artifact formatは `tune-router-promotion-v1` とし、`status`、candidate/baseline/model/dataset digest、全checkのactual/threshold/passed、生成時刻を含める。
 
+この分類評価はdomain signalの健全性とprotected labelの退行を検出するための補助gateとする。最終的なrouter/orchestrator昇格は、PRD-017のutility profileを固定した同一test set上でPRD-018の必須baselineと比較し、`mean_utility`、`p95_regret`、`catastrophic_regret_rate`、cost、latency、failure/safetyをすべて通過しなければならない。promotion artifactは対応する `tune-routing-benchmark-v1` artifactのdigestも保持する。
+
 ### Implementation
 
 - `prd/src/tune_router_evaluation.py` を追加する。
@@ -164,6 +171,7 @@ promotion artifact formatは `tune-router-promotion-v1` とし、`status`、cand
 - label別退行、校正悪化、評価data不一致のいずれかでexit code `1`になる。
 - `--no-fail` はartifactの `status=fail` を変えず、process exit codeだけ `0`にする。
 - promotion artifactがPRD-014のrelease manifestへdigestでbindされる。
+- classification metricが良くても、PRD-017/018のend-to-end utility gateが不合格なら昇格できない。
 
 ### Required tests
 
@@ -704,11 +712,242 @@ subdirectory packageは作らず、以下へ一括renameする。
 - `prd/src/test/test_training.py`: remote code opt-in、revision必須、unsafe weight拒否、metadata digest。
 - `prd/src/test/test_e2e_security.py`: fake endpointを使ったsecret漏えいとoversized response検証。
 
+## PRD-016 Outcome Matrix and complete offline replay
+
+- [ ] `Query × Candidate × Outcome` をtraceの派生物ではなく、version付きの第一級artifactとして保存し、評価対象の全Queryを全候補で再生できるようにする。
+
+### Scope and data contract
+
+正規形は1行を1つのQuery/Candidate観測とするJSONLにする。modelとgraphは同じcandidate空間で扱う。
+
+```json
+{
+  "schema_version": 1,
+  "query_id": "q-001",
+  "query": "PostgreSQL on NFS is slow",
+  "query_digest": "sha256:...",
+  "dataset_split": "test",
+  "task_type": "infra_diagnosis",
+  "risk_level": "normal",
+  "router_scores": {"Database": 0.46, "Storage": 0.36},
+  "candidate": {
+    "candidate_id": "database-storage-parallel-v1",
+    "candidate_type": "graph",
+    "model_id": null,
+    "graph_id": "database-storage-parallel",
+    "revision": "sha256:..."
+  },
+  "outcome": {
+    "quality": 0.87,
+    "quality_method": "human_rubric-v1",
+    "input_tokens": 1200,
+    "output_tokens": 840,
+    "price_cost_usd": 0.0031,
+    "latency_ms": 3820,
+    "success": true,
+    "failure_code": null,
+    "safety_violation": false
+  }
+}
+```
+
+artifact envelopeは `tune-outcome-matrix-v1` とし、`created_at`、dataset/candidate inventory/quality rubric/configのdigest、生成seed、実行環境、row countを持つ。candidate inventoryにはcandidateごとのtype、model/graph revision、capability tier、pricing revision、availability条件を固定する。`largest` はcostから推測せず、このcapability tierで決定する。
+
+適用規則:
+
+1. 同じbenchmark runでは全Queryに同じcandidate inventoryを適用する。実行不能・timeout・policy拒否もrowを欠落させず、`success=false` と安定した `failure_code` で記録する。
+2. 未観測outcomeをquality/cost/latencyのゼロ値で補完しない。欠落はmatrix completeness違反とする。
+3. quality rubricとjudgeをversion/digestで固定し、candidate identityを伏せた評価を既定にする。judge model自身をcandidateに含める場合は自己評価を禁止する。
+4. query本文を保存できないdataでは、redacted textと不可逆digestを保存し、同一queryの対応関係を維持する。PRD-015のsecret/PII policyを適用する。
+5. splitはquery単位で固定し、同一またはnear-duplicate queryを複数splitへ入れない。normalizationやutilityの統計量をtest splitからfitしない。
+6. 現行 `candidate_results` nested schemaは移行入力として読めるようにするが、canonical artifact出力は上記の正規形にする。既存 `cost` は読込時だけ `price_cost_usd` へ明示変換する。
+
+### Implementation
+
+- `prd/src/tune_outcomes.py`
+  - schema dataclass、validation、nested形式からのnormalization、matrix completeness検査、digest生成を実装する。
+  - `(query_id, candidate_id)` の重複、candidate revision混在、非有限値、負値、不正splitを拒否する。
+- `prd/src/tune_replay.py`
+  - candidate inventoryを受け、各Queryを全候補で実行するresume可能なoffline replayを実装する。
+  - retryしても同一run内の成功rowを上書きせず、attempt履歴を別artifactへ保持する。
+- `prd/src/tune_cli.py`
+  - `replay-candidates --data --candidate-inventory --out`
+  - `normalize-outcomes --source --out`
+  - `validate-outcome-matrix --matrix --candidate-inventory --report`
+- 出力は `outcome-matrix.jsonl`、`outcome-matrix-manifest.json`、`matrix-coverage.json`、`replay-failures.jsonl` とする。
+
+### Acceptance criteria
+
+- 同一runの全Query × 全candidateについて、成功または理由付き失敗のrowが厳密に1件ある。
+- 任意のrowからquery split、candidate revision、quality rubric、pricing、生成設定をdigestで追跡できる。
+- modelだけでなくgraph outcomeも同じmatrixから比較できる。
+- traceに選択済みcandidateしか存在しない場合、それを全候補matrixとして誤認せずcompleteness gateをfailする。
+- query追加順やresumeの有無でcanonical digestと集計結果が変わらない。
+
+### Required tests
+
+- `prd/src/test/test_outcomes.py`: schema、normalization、重複、missing cell、revision混在、failure row、digest再現性。
+- `prd/src/test/test_replay.py`: 全候補実行、timeout/policy拒否、resume、部分artifact破損。
+- `prd/src/test/test_cli.py`: validation pass/failとexit code。
+
+## PRD-017 Utility-aware routing evaluation
+
+- [ ] 分類accuracyではなく、Quality/Cost/Latency/Failureを統合したend-to-end utilityとOracleに対するregretをrouterの主要KPIにする。
+
+### Utility contract
+
+utility profileはversion付きYAMLで定義し、benchmark開始前にdigestを固定する。
+
+```yaml
+format: tune-utility-profile-v1
+profile_id: balanced-v1
+weights:
+  quality: 1.0
+  price_cost: 0.25
+  latency: 0.15
+  failure: 2.0
+normalization:
+  source_split: train
+  method: robust_minmax
+catastrophic_regret_threshold: 0.30
+constraints:
+  safety_violations: 0
+```
+
+```text
+U(q, c, p) =
+    alpha(p) * normalized_quality(q, c)
+  - beta(p)  * normalized_price_cost(q, c)
+  - gamma(p) * normalized_latency(q, c)
+  - delta(p) * failure(q, c)
+
+oracle(q, p) = argmax_c U(q, c, p)
+regret(q, r, p) = U(q, oracle(q, p), p) - U(q, selected(r, q), p)
+```
+
+P0 profileは `quality-first`、`balanced`、`cheap`、`low-latency`、`security-critical` の5種とする。normalization parameterはtrainまたは専用calibration splitだけから算出し、test evaluation中は凍結する。hard constraint違反candidateはutility重みだけで相殺せずOracle候補から除外する。全候補がconstraint違反の場合はbenchmark failureとして明示する。
+
+同一utilityの場合のOracle tie-breakは、`safety_violation=false`、低failure severity、低cost、低latency、candidate idの辞書順とする。Oracleは性能上限を測るdiagnosticであり、deployable routerや昇格baselineとして扱わない。routerがhard constraint違反candidateを選んだ場合は、utility値にかかわらずpromotionをfailする。
+
+### Required metrics and artifacts
+
+`tune-routing-benchmark-v1` artifactにprofile/router/dataset単位で最低限次を含める。
+
+- `mean_utility`、`oracle_utility`、`utility_gap_to_oracle`
+- `mean_regret`、`p50_regret`、`p95_regret`、`max_regret`、`catastrophic_regret_rate`
+- mean/p95 price cost、cost per success、E2E latency p50/p95/p99
+- quality、task success、failure code別件数、safety violation
+- candidate別routing count/share、distribution entropy、top-1 share、collapse flag
+- coverage、unavailable selection rate、matrix completeness
+- Quality-Cost、Quality-Latency、Utility-CostのPareto membership
+- fixed model、current deterministic、learned router、Oracleとの差分
+
+collapseの既定判定は、`top1_share >= 0.95` または有効candidate数に対するnormalized entropyが `0.10` 未満とする。ただしfixed baselineとOracleはcollapse alert対象外とし、learned/dynamic routerだけに適用する。単一scoreでPareto情報を置換せず、各profileのutility表と生metricを併記する。
+
+### Implementation
+
+- `prd/src/tune_utility.py`
+  - profile validation、normalizer fit/apply、constraint、utility、Oracle、regretを実装する。
+- `prd/src/tune_evaluation.py`
+  - PRD-016 matrixを入力に、全metric、routing distribution、collapse、2軸/3軸Paretoを計算する。
+  - routerが選んだcandidateのcellがない場合は黙ってskipせず、coverage違反としてfailする。
+- `prd/src/tune_cli.py`
+  - `fit-utility-normalizer --matrix --profile --out`
+  - `benchmark-routing --matrix --predictions --profiles --out`
+  - `gate-routing --candidate --baseline --profile --out --report`
+- reportにはOracleからの改善余地、best fixedとの差、Pareto上の位置、routing distributionを必ず表示する。
+
+### Acceptance criteria
+
+- `A=.901, B=.900` の誤選択と `A=.99, B=.20` の誤選択がregretで区別される。
+- profileを変えると同じoutcome matrix上でOracle選択が再計算され、quality-first/cheap/low-latencyのtrade-offを説明できる。
+- test splitの値を変更してもfit済みnormalization parameterは変わらない。
+- `mean_regret`だけでtail riskを隠せず、Securityを含むrisk sliceのcatastrophic regretが独立して出力される。
+- Learned Routerが実質fixed-model化した場合、routing distributionとcollapse flagで検出できる。
+- Pareto判定はqualityが高く、cost/latencyが低い方向で一貫し、同値点を安定して処理する。
+
+### Required tests
+
+- `prd/src/test/test_utility.py`: profile validation、normalization leakage、constraint、tie-break、utility/regret、catastrophic threshold。
+- `prd/src/test/test_evaluation.py`: distribution/collapse、risk slice、欠落selection、Pareto dominance、deterministic output。
+- `prd/src/test/test_cli.py`: benchmark/gate artifactとpass/fail exit code。
+
+## PRD-018 Router baseline suite
+
+- [ ] 共通Router interfaceで固定・規則・軽量学習・LoRA selectorを同一Outcome Matrixへreplayし、Fine-Tuningの増分価値を検証する。
+
+### Common interface
+
+各routerは `router_id`、version/digest、fitに使用したdataset digest、利用可能candidate inventory digestを持ち、次の論理interfaceを実装する。
+
+```python
+class RouterBaseline(Protocol):
+    def fit(self, train_matrix, utility_profile) -> None: ...
+    def score_candidates(self, query, candidates, context) -> dict[str, float]: ...
+    def select(self, query, candidates, context) -> RoutePrediction: ...
+```
+
+`RoutePrediction` は `query_id`、`router_id`、`selected_candidate_id`、candidate score全件、router cost/latency、fallback、model/dataset/profile digestを持つ。best candidate idだけを教師labelにせず、学習baselineは可能な限り `candidate -> expected utility` を回帰またはrankingする。fit不要baselineは `fit` をno-opとし、Oracleだけは実outcomeを参照する別のdiagnostic interfaceに隔離する。
+
+### Required baselines
+
+P0 core:
+
+- `random`: seed固定でavailable candidateから選ぶ。
+- `always-cheapest`: inventoryまたはtrain matrixで定義した同一candidateを全queryに選ぶ。
+- `always-fastest`: train/calibration実績で最速の同一candidateを選ぶ。
+- `always-best-global`: train/calibration utility平均が最大の同一candidateを選ぶ。
+- `always-largest`: inventoryのcapability tierが最大のmodelを選ぶ。
+- `domain-rule`: 明示的なdomain mappingで選ぶ。
+- `current-deterministic`: 現行 `GraphSelector` をadapter経由で使う。
+- `oracle`: PRD-017定義の到達可能上限。production選択やpromotion candidateには使用禁止。
+
+P1 learned:
+
+- `knn-utility`: query embeddingの近傍outcomeからcandidate別expected utilityを推定する。
+- `mlp-utility`: query embeddingとcandidate featureからcandidate別expected utilityを推定する。
+- `learned-orchestrator`: 現行Qwen LoRAのstructured planを共通predictionへ変換する。
+
+KNN/MLPのembedding model、revision、前処理、seed、hyperparameterはartifactへ固定する。trainに存在しないcandidate、embedding failure、全candidate unavailable時のfallbackを明示し、test outcomeをfitやcandidate rankingへ使用しない。P2としてxRouteBench用import/export adapterを追加できるが、内部benchmarkのP0完了条件にはしない。GraphRouter/MF/SVM等の研究baseline、LLMRouter固有CLI/UI、multi-round router群の移植はscope外とする。
+
+### Implementation
+
+- `prd/src/tune_baselines.py`: interface、fixed baseline、domain rule、deterministic adapter、Oracle diagnostic。
+- `prd/src/tune_learned_baselines.py`: KNN/MLP expected-utility scorer。optional dependencyを分離し、seed固定を保証する。
+- `prd/src/tune_evaluation.py`: baseline registryと同一query setでの一括replay。
+- `prd/src/tune_cli.py`:
+  - `fit-router-baseline --type knn-utility|mlp-utility --matrix --profile --out`
+  - `predict-router-baseline --router --data --candidate-inventory --out`
+  - `benchmark-routing --baselines ...` で同一runへまとめる。
+
+### Promotion rules
+
+1. candidate routerは同一test set、candidate inventory、utility profile、normalizerで全P0 baselineと比較する。
+2. `always-best-global` をutilityで上回らないcandidateは、分類metricが良くてもproductionへ昇格しない。許容差とminimum sampleはprofileごとに事前登録する。
+3. `oracle_utility - candidate_utility` を改善余地として報告する。Oracle gapが小さいbenchmarkでは、複雑なFT追加よりfixed/軽量routerを優先する。
+4. KNN、MLP、LoRAの差はpaired query単位のconfidence intervalと運用コストを併記する。LoRAの差が事前登録した最小実用差を超えない場合、FTの採用根拠にしない。
+5. baselineごとのcoverageが一致しない比較を禁止する。unsupported queryを除外して見かけのmetricを上げない。
+
+### Acceptance criteria
+
+- 全P0 baseline、任意のKNN/MLP/LoRA prediction、Oracleを1回のbenchmarkで比較できる。
+- cheapest/fastest/largest/best-globalが別々の定義であり、costをmodel sizeの代理にしない。
+- KNN/MLPがtop-1 best labelだけでなくcandidate間のutility差を学習に利用する。
+- reportから「routingはfixed modelより有益か」「LoRAはKNN/MLPより有益か」「Oracleまでどれだけ余地があるか」を判断できる。
+- dynamic routerのrouting distributionとfixed化/collapseをbaseline表と同じartifactで確認できる。
+
+### Required tests
+
+- `prd/src/test/test_baselines.py`: 各fixed baseline、candidate availability、seed再現性、Oracle隔離、共通prediction schema。
+- `prd/src/test/test_learned_baselines.py`: KNN/MLP fit/predict、candidate utility ranking、unseen candidate、data leakage、再現性。
+- `prd/src/test/test_evaluation.py`: baseline coverage一致、best-global/Oracle gap、paired comparison、LoRA minimum practical difference。
+
 ## Final production exit criteria
 
 全TODO完了後、production readyと判定する条件:
 
-- [ ] PRD-002からPRD-015の全checkboxと受け入れ条件が完了している。
+- [ ] PRD-002からPRD-018の全checkboxと受け入れ条件が完了している。
+- [ ] PRD-016のOutcome Matrixが全候補coverage gateを通り、PRD-017/018のbenchmarkでcurrent candidateがbest fixed baselineを事前登録済みprofile上で上回っている。
 - [ ] mandatory CIがmain branchでpassし、required checkに設定されている。
 - [ ] router、orchestrator、banditを含むunified releaseが署名済みで、全promotion gateがpassしている。
 - [ ] `doctor --profile ./prd/config/production.yaml` がwarningなしでpassする。

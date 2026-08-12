@@ -1,5 +1,7 @@
 # Model Router Verification Draft
 
+> Status: exploratory design. Production向けのnormativeなartifact contract、utility定義、baseline/promotion要件は `../TODO.md` のPRD-016〜PRD-018を正本とする。本書と差異がある場合はPRD-016〜PRD-018を優先する。
+
 ## 1. Purpose
 
 本ドキュメントは、TuneScope Model Orchestrator / Model Router の検証方法の草案である。
@@ -75,12 +77,14 @@ Routerが選択したモデル/グラフで実際に得られた回答品質。
 
 ### 3.3 Regret
 
-OracleとRouter選択のQuality差。
+現行MVPではOracleとRouter選択のQuality差を使う。
 
 ```text
 regret(query) = quality(oracle_choice) - quality(router_choice)
 mean_regret = average(regret(query))
 ```
+
+Production benchmarkではPRD-017に従い、profile別のQuality/Cost/Latency/Failureを統合したutility差を正規のregretとする。quality-only regretは診断metricとして併記する。
 
 重要性:
 
