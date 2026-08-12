@@ -7,6 +7,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+from tune_artifacts import atomic_write_json, atomic_write_jsonl
 from tune_composition import GENERATED_GRAPH_ID
 from tune_constants import LABELS, LABEL_TO_MODEL
 from tune_learned import ALLOWED_GRAPHS, build_plan_messages
@@ -77,14 +78,8 @@ def build_ft_datasets(
 def write_ft_datasets(out_dir: Path, datasets: dict[str, Any]) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     for split in ("train", "dev", "preferences", "trajectory_preferences"):
-        with (out_dir / f"{split}.jsonl").open("w", encoding="utf-8", newline="\n") as handle:
-            for record in datasets[split]:
-                handle.write(json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n")
-    (out_dir / "metadata.json").write_text(
-        json.dumps(datasets["summary"], ensure_ascii=False, indent=2, sort_keys=True),
-        encoding="utf-8",
-        newline="\n",
-    )
+        atomic_write_jsonl(out_dir / f"{split}.jsonl", datasets[split])
+    atomic_write_json(out_dir / "metadata.json", datasets["summary"])
 
 
 def _candidate_example(

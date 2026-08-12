@@ -11,6 +11,7 @@ verification/repair loop、予算停止、JSONL trace、Query x Candidate結果�
 
 ```powershell
 uv sync --project .\prd
+uv sync --project .\prd --extra security  # Ed25519 artifact signing/verification
 ```
 
 Public interfaceは `tune-orchestrator` CLIです。`prd/src` 直下の `tune_*` Python moduleは内部実装であり、互換性を保証するpublic Python APIではありません。
@@ -105,7 +106,11 @@ uv run --project .\prd tune-orchestrator replay-bandit `
 uv run --project .\prd tune-orchestrator gate-bandit `
   --replay .\prd\artifacts\runtime\bandit-replay.json `
   --min-evaluated-requests 30 `
-  --max-loss-rate 0.05
+  --max-loss-rate 0.05 `
+  --production `
+  --private-key .\secrets\artifact-signing-key.pem `
+  --key-id production-2026 `
+  --signature-out .\prd\artifacts\runtime\bandit-promotion.sig.json
 ```
 
 ```powershell
@@ -152,15 +157,26 @@ uv run --project .\prd tune-orchestrator build-bandit-release `
   --rollout .\prd\artifacts\runtime\bandit-rollout.json `
   --bandit-state .\prd\artifacts\runtime\bandit-state.json `
   --promotion .\prd\artifacts\runtime\bandit-promotion.json `
+  --promotion-signature .\prd\artifacts\runtime\bandit-promotion.sig.json `
+  --public-key .\prd\config\artifact-signing-public.pem `
   --monitor .\prd\artifacts\runtime\bandit-monitor.json `
-  --require-monitor
+  --require-monitor `
+  --production `
+  --private-key .\secrets\artifact-signing-key.pem `
+  --key-id production-2026 `
+  --signature-out .\prd\artifacts\runtime\bandit-release.sig.json
 ```
 
 ```powershell
 uv run --project .\prd tune-orchestrator activate-bandit-release `
   --manifest .\prd\artifacts\runtime\bandit-release.json `
+  --manifest-signature .\prd\artifacts\runtime\bandit-release.sig.json `
+  --public-key .\prd\config\artifact-signing-public.pem `
   --bandit-state .\prd\artifacts\runtime\bandit-state.json `
-  --out .\prd\artifacts\runtime\bandit-current.json
+  --out .\prd\artifacts\runtime\bandit-current.json `
+  --private-key .\secrets\artifact-signing-key.pem `
+  --key-id production-2026 `
+  --signature-out .\prd\artifacts\runtime\bandit-current.sig.json
 ```
 
 反映したreleaseはregistryへ記録します。これによりincident時に「直前の正常release」を機械的に選べます。
@@ -168,7 +184,10 @@ uv run --project .\prd tune-orchestrator activate-bandit-release `
 ```powershell
 uv run --project .\prd tune-orchestrator record-bandit-release `
   --current .\prd\artifacts\runtime\bandit-current.json `
+  --current-signature .\prd\artifacts\runtime\bandit-current.sig.json `
   --manifest .\prd\artifacts\runtime\bandit-release.json `
+  --manifest-signature .\prd\artifacts\runtime\bandit-release.sig.json `
+  --public-key .\prd\config\artifact-signing-public.pem `
   --registry .\prd\artifacts\runtime\bandit-release-registry.json
 ```
 
@@ -187,8 +206,13 @@ rollbackを適用する場合は、候補manifest digestと任意のstate digest
 uv run --project .\prd tune-orchestrator apply-bandit-rollback `
   --rollback .\prd\artifacts\runtime\bandit-rollback.json `
   --manifest .\prd\artifacts\runtime\bandit-release-previous.json `
+  --manifest-signature .\prd\artifacts\runtime\bandit-release-previous.sig.json `
+  --public-key .\prd\config\artifact-signing-public.pem `
   --bandit-state .\prd\artifacts\runtime\bandit-state-previous.json `
-  --out .\prd\artifacts\runtime\bandit-current.json
+  --out .\prd\artifacts\runtime\bandit-current.json `
+  --private-key .\secrets\artifact-signing-key.pem `
+  --key-id production-2026 `
+  --signature-out .\prd\artifacts\runtime\bandit-current.sig.json
 ```
 
 runtime起動前にはcurrent pointer、manifest、state、registryをまとめて検証します。
@@ -196,6 +220,9 @@ runtime起動前にはcurrent pointer、manifest、state、registryをまとめ�
 ```powershell
 uv run --project .\prd tune-orchestrator verify-bandit-current `
   --current .\prd\artifacts\runtime\bandit-current.json `
+  --current-signature .\prd\artifacts\runtime\bandit-current.sig.json `
+  --manifest-signature .\prd\artifacts\runtime\bandit-release.sig.json `
+  --public-key .\prd\config\artifact-signing-public.pem `
   --bandit-state .\prd\artifacts\runtime\bandit-state.json `
   --registry .\prd\artifacts\runtime\bandit-release-registry.json `
   --require-registry
@@ -206,17 +233,29 @@ uv run --project .\prd tune-orchestrator verify-bandit-current `
 ```powershell
 uv run --project .\prd tune-orchestrator build-bandit-runtime-bundle `
   --current .\prd\artifacts\runtime\bandit-current.json `
+  --current-signature .\prd\artifacts\runtime\bandit-current.sig.json `
+  --manifest-signature .\prd\artifacts\runtime\bandit-release.sig.json `
+  --public-key .\prd\config\artifact-signing-public.pem `
   --bandit-state .\prd\artifacts\runtime\bandit-state.json `
   --current-verification .\prd\artifacts\runtime\bandit-current-verification.json `
   --registry .\prd\artifacts\runtime\bandit-release-registry.json `
   --graphs .\prd\graphs `
-  --model-config .\prd\config\model-endpoints.yaml
+  --model-config .\prd\config\model-endpoints.yaml `
+  --private-key .\secrets\artifact-signing-key.pem `
+  --key-id production-2026 `
+  --signature-out .\prd\artifacts\runtime\bandit-runtime-bundle.sig.json
 ```
+
+任意のJSON artifactは `sign-artifact` でdetached signatureを作成し、`verify-artifact` で検証できます。productionのpromotion、release manifest、current pointer、runtime bundleは署名なしでは生成・有効化できません。private keyはrepositoryやartifactへ保存せず、release jobのsecret mountから渡してください。
 
 ```powershell
 uv run --project .\prd tune-orchestrator verify-bandit-runtime-bundle `
   --bundle .\prd\artifacts\runtime\bandit-runtime-bundle.json `
+  --bundle-signature .\prd\artifacts\runtime\bandit-runtime-bundle.sig.json `
   --current .\prd\artifacts\runtime\bandit-current.json `
+  --current-signature .\prd\artifacts\runtime\bandit-current.sig.json `
+  --manifest-signature .\prd\artifacts\runtime\bandit-release.sig.json `
+  --public-key .\prd\config\artifact-signing-public.pem `
   --bandit-state .\prd\artifacts\runtime\bandit-state.json `
   --current-verification .\prd\artifacts\runtime\bandit-current-verification.json `
   --registry .\prd\artifacts\runtime\bandit-release-registry.json `

@@ -17,7 +17,6 @@ from tune_bandit import (
     BanditReplayConfig,
     BanditRolloutPlanConfig,
     apply_bandit_policy,
-    append_bandit_release_registry,
     artifact_digest,
     build_bandit_current_release,
     build_bandit_release_manifest,
@@ -39,7 +38,6 @@ from tune_bandit import (
     validate_bandit_rollback_candidate,
     write_bandit_artifact_verification_report,
     write_bandit_current_release,
-    write_bandit_release_registry,
     write_bandit_release_manifest,
     write_bandit_release_report,
     write_bandit_monitor_report,
@@ -49,6 +47,15 @@ from tune_bandit import (
     write_bandit_rollout_plan,
     write_bandit_rollout_report,
     write_bandit_state,
+    update_bandit_release_registry,
+)
+from tune_artifacts import (
+    ArtifactSignatureError,
+    append_jsonl,
+    atomic_write_json,
+    read_registry,
+    sign_artifact,
+    verify_artifact_signature,
 )
 from tune_clients import MockModelClient, OpenAIModelClient, OpenAIRouterClient
 from tune_composition import graph_from_bounded_plan
@@ -100,6 +107,7 @@ DEFAULT_RUNTIME_ARTIFACTS = DEFAULT_ARTIFACTS / "runtime"
 DEFAULT_FT_DATA = DEFAULT_ARTIFACTS / "ft-data"
 DEFAULT_FT_ADAPTER = DEFAULT_ARTIFACTS / "orchestrator-lora"
 DEFAULT_TRACE = DEFAULT_RUNTIME_ARTIFACTS / "traces.jsonl"
+BANDIT_RELEASE_REGISTRY_FORMAT = "tune-orchestrator-bandit-release-registry-v1"
 
 
 def cmd_select(args: argparse.Namespace) -> None:
@@ -258,8 +266,7 @@ def cmd_replay_bandit(args: argparse.Namespace) -> None:
         ),
     )
     out = Path(args.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(replay, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    atomic_write_json(out, replay)
     if args.report:
         write_bandit_replay_report(Path(args.report), replay)
     print(json.dumps({"out": args.out, "report": args.report, "summary": replay["summary"]}, ensure_ascii=False, indent=2))
@@ -278,8 +285,9 @@ def cmd_gate_bandit(args: argparse.Namespace) -> None:
         ),
     )
     out = Path(args.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(promotion, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    _validate_output_signature_args(args, required=args.production)
+    atomic_write_json(out, promotion)
+    _sign_output(out, args, required=args.production)
     if args.report:
         write_bandit_promotion_report(Path(args.report), promotion)
     print(json.dumps({"out": args.out, "report": args.report, **promotion}, ensure_ascii=False, indent=2))
@@ -300,8 +308,7 @@ def cmd_monitor_bandit(args: argparse.Namespace) -> None:
         ),
     )
     out = Path(args.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(monitor, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    atomic_write_json(out, monitor)
     if args.report:
         write_bandit_monitor_report(Path(args.report), monitor)
     print(json.dumps({"out": args.out, "report": args.report, **monitor}, ensure_ascii=False, indent=2))
@@ -351,8 +358,7 @@ def cmd_verify_bandit_rollout(args: argparse.Namespace) -> None:
         require_not_expired=not args.allow_expired,
     )
     out = Path(args.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(verification, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    atomic_write_json(out, verification)
     if args.report:
         write_bandit_artifact_verification_report(Path(args.report), verification)
     print(json.dumps({"out": args.out, "report": args.report, **verification}, ensure_ascii=False, indent=2))
@@ -364,6 +370,13 @@ def cmd_build_bandit_release(args: argparse.Namespace) -> None:
     rollout = _load_document(Path(args.rollout))
     state = load_bandit_state(Path(args.bandit_state))
     promotion = _load_document(Path(args.promotion)) if args.promotion else None
+    if args.promotion:
+        _verify_input_signature(
+            Path(args.promotion),
+            args.promotion_signature,
+            args.public_key,
+            required=args.production,
+        )
     monitor = _load_document(Path(args.monitor)) if args.monitor else None
     verification = _load_document(Path(args.verification)) if args.verification else None
     manifest = build_bandit_release_manifest(
@@ -374,7 +387,9 @@ def cmd_build_bandit_release(args: argparse.Namespace) -> None:
         verification=verification,
         require_monitor=args.require_monitor,
     )
+    _validate_output_signature_args(args, required=args.production)
     write_bandit_release_manifest(Path(args.out), manifest)
+    _sign_output(Path(args.out), args, required=args.production)
     if args.report:
         write_bandit_release_report(Path(args.report), manifest)
     print(json.dumps({"out": args.out, "report": args.report, **manifest}, ensure_ascii=False, indent=2))
@@ -385,6 +400,12 @@ def cmd_build_bandit_release(args: argparse.Namespace) -> None:
 def cmd_activate_bandit_release(args: argparse.Namespace) -> None:
     manifest_path = Path(args.manifest)
     manifest = _load_document(manifest_path)
+    _verify_input_signature(
+        manifest_path,
+        args.manifest_signature,
+        args.public_key,
+        required=args.channel == "production",
+    )
     state = load_bandit_state(Path(args.bandit_state))
     verification = validate_bandit_release_manifest(
         manifest=manifest,
@@ -402,13 +423,19 @@ def cmd_activate_bandit_release(args: argparse.Namespace) -> None:
         manifest_path=manifest_ref,
         channel=args.channel,
     )
+    _validate_output_signature_args(args, required=args.channel == "production")
     write_bandit_current_release(current_path, current)
     print(json.dumps({"out": args.out, "verification": verification, **current}, ensure_ascii=False, indent=2))
 
 
 def cmd_record_bandit_release(args: argparse.Namespace) -> None:
-    current = _load_document(Path(args.current))
-    manifest = _load_document(Path(args.manifest))
+    current_path = Path(args.current)
+    manifest_path = Path(args.manifest)
+    current = _load_document(current_path)
+    manifest = _load_document(manifest_path)
+    production = current.get("channel") == "production"
+    _verify_input_signature(current_path, args.current_signature, args.public_key, required=production)
+    _verify_input_signature(manifest_path, args.manifest_signature, args.public_key, required=production)
     verification = validate_bandit_current_release(
         current=current,
         manifest=manifest,
@@ -419,14 +446,12 @@ def cmd_record_bandit_release(args: argparse.Namespace) -> None:
         if not args.no_fail:
             raise SystemExit(1)
     registry_path = Path(args.registry)
-    registry = _load_document(registry_path) if registry_path.exists() else None
-    updated = append_bandit_release_registry(registry=registry, current=current, manifest=manifest)
-    write_bandit_release_registry(registry_path, updated)
+    updated = update_bandit_release_registry(registry_path, current=current, manifest=manifest)
     print(json.dumps({"registry": args.registry, "verification": verification, **updated}, ensure_ascii=False, indent=2))
 
 
 def cmd_select_bandit_rollback(args: argparse.Namespace) -> None:
-    registry = _load_document(Path(args.registry))
+    registry = read_registry(Path(args.registry), expected_format=BANDIT_RELEASE_REGISTRY_FORMAT)
     rollback = select_bandit_rollback_release(
         registry=registry,
         current_release_id=args.current_release_id,
@@ -434,8 +459,7 @@ def cmd_select_bandit_rollback(args: argparse.Namespace) -> None:
         require_not_expired=not args.allow_expired,
     )
     out_path = Path(args.out)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(rollback, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    atomic_write_json(out_path, rollback)
     if args.report:
         write_bandit_rollback_report(Path(args.report), rollback)
     print(json.dumps({"out": args.out, "report": args.report, **rollback}, ensure_ascii=False, indent=2))
@@ -448,6 +472,13 @@ def cmd_apply_bandit_rollback(args: argparse.Namespace) -> None:
     rollback = _load_document(rollback_path)
     manifest_path = Path(args.manifest) if args.manifest else _resolve_rollback_manifest_path(rollback, rollback_path)
     manifest = _load_document(manifest_path)
+    production = (args.channel or rollback.get("channel")) == "production"
+    _verify_input_signature(
+        manifest_path,
+        args.manifest_signature,
+        args.public_key,
+        required=production,
+    )
     state = load_bandit_state(Path(args.bandit_state)) if args.bandit_state else None
     verification = validate_bandit_rollback_candidate(
         rollback=rollback,
@@ -467,12 +498,13 @@ def cmd_apply_bandit_rollback(args: argparse.Namespace) -> None:
         manifest_path=manifest_ref,
         channel=args.channel,
     )
+    _validate_output_signature_args(args, required=current.get("channel") == "production")
     write_bandit_current_release(current_path, current)
+    _sign_output(current_path, args, required=current.get("channel") == "production")
+    _sign_output(current_path, args, required=args.channel == "production")
     if args.registry:
         registry_path = Path(args.registry)
-        registry = _load_document(registry_path) if registry_path.exists() else None
-        registry = append_bandit_release_registry(registry=registry, current=current, manifest=manifest)
-        write_bandit_release_registry(registry_path, registry)
+        update_bandit_release_registry(registry_path, current=current, manifest=manifest)
     print(
         json.dumps(
             {"out": args.out, "registry": args.registry, "verification": verification, **current},
@@ -488,7 +520,7 @@ def cmd_verify_bandit_current(args: argparse.Namespace) -> None:
     manifest_path = Path(args.manifest) if args.manifest else _resolve_current_manifest_path(current, current_path)
     manifest = _load_document(manifest_path)
     state = load_bandit_state(Path(args.bandit_state))
-    registry = _load_document(Path(args.registry)) if args.registry else None
+    registry = read_registry(Path(args.registry), expected_format=BANDIT_RELEASE_REGISTRY_FORMAT) if args.registry else None
     verification = validate_bandit_current_artifacts(
         current=current,
         manifest=manifest,
@@ -498,8 +530,7 @@ def cmd_verify_bandit_current(args: argparse.Namespace) -> None:
         require_not_expired=not args.allow_expired,
     )
     out_path = Path(args.out)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(verification, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    atomic_write_json(out_path, verification)
     print(json.dumps({"out": args.out, **verification}, ensure_ascii=False, indent=2))
     if verification["status"] != "pass" and not args.no_fail:
         raise SystemExit(1)
@@ -510,9 +541,15 @@ def cmd_build_bandit_runtime_bundle(args: argparse.Namespace) -> None:
     current = _load_document(current_path)
     manifest_path = Path(args.manifest) if args.manifest else _resolve_current_manifest_path(current, current_path)
     manifest = _load_document(manifest_path)
+    production = current.get("channel") == "production"
+    _verify_input_signature(current_path, args.current_signature, args.public_key, required=production)
+    _verify_input_signature(manifest_path, args.manifest_signature, args.public_key, required=production)
+    production = current.get("channel") == "production"
+    _verify_input_signature(current_path, args.current_signature, args.public_key, required=production)
+    _verify_input_signature(manifest_path, args.manifest_signature, args.public_key, required=production)
     state = load_bandit_state(Path(args.bandit_state))
     verification = _load_document(Path(args.current_verification))
-    registry = _load_document(Path(args.registry)) if args.registry else None
+    registry = read_registry(Path(args.registry), expected_format=BANDIT_RELEASE_REGISTRY_FORMAT) if args.registry else None
     graphs_digest = _path_digest(Path(args.graphs)) if args.graphs else None
     model_config_digest = _path_digest(Path(args.model_config)) if args.model_config else None
     out_path = Path(args.out)
@@ -534,22 +571,28 @@ def cmd_build_bandit_runtime_bundle(args: argparse.Namespace) -> None:
             "model_config": args.model_config,
         },
     )
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(bundle, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    _validate_output_signature_args(args, required=current.get("channel") == "production")
+    atomic_write_json(out_path, bundle)
+    _sign_output(out_path, args, required=current.get("channel") == "production")
     print(json.dumps({"out": args.out, **bundle}, ensure_ascii=False, indent=2))
     if bundle["status"] != "pass" and not args.no_fail:
         raise SystemExit(1)
 
 
 def cmd_verify_bandit_runtime_bundle(args: argparse.Namespace) -> None:
-    bundle = _load_document(Path(args.bundle))
+    bundle_path = Path(args.bundle)
+    bundle = _load_document(bundle_path)
     current_path = Path(args.current)
     current = _load_document(current_path)
     manifest_path = Path(args.manifest) if args.manifest else _resolve_current_manifest_path(current, current_path)
     manifest = _load_document(manifest_path)
+    production = current.get("channel") == "production"
+    _verify_input_signature(bundle_path, args.bundle_signature, args.public_key, required=production)
+    _verify_input_signature(current_path, args.current_signature, args.public_key, required=production)
+    _verify_input_signature(manifest_path, args.manifest_signature, args.public_key, required=production)
     state = load_bandit_state(Path(args.bandit_state))
     current_verification = _load_document(Path(args.current_verification))
-    registry = _load_document(Path(args.registry)) if args.registry else None
+    registry = read_registry(Path(args.registry), expected_format=BANDIT_RELEASE_REGISTRY_FORMAT) if args.registry else None
     verification = validate_bandit_runtime_bundle(
         bundle=bundle,
         current=current,
@@ -562,10 +605,88 @@ def cmd_verify_bandit_runtime_bundle(args: argparse.Namespace) -> None:
         require_not_expired=not args.allow_expired,
     )
     out_path = Path(args.out)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(verification, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    atomic_write_json(out_path, verification)
     print(json.dumps({"out": args.out, **verification}, ensure_ascii=False, indent=2))
     if verification["status"] != "pass" and not args.no_fail:
+        raise SystemExit(1)
+
+
+def cmd_sign_artifact(args: argparse.Namespace) -> None:
+    try:
+        signature = sign_artifact(
+            Path(args.artifact),
+            Path(args.private_key),
+            key_id=args.key_id,
+        )
+        atomic_write_json(Path(args.out), signature)
+    except ArtifactSignatureError:
+        print(json.dumps({"status": "fail", "error": "artifact signing failed"}))
+        raise SystemExit(1) from None
+    print(json.dumps({"status": "pass", "out": args.out, "key_id": args.key_id}, ensure_ascii=False, indent=2))
+
+
+def cmd_verify_artifact(args: argparse.Namespace) -> None:
+    try:
+        signature = _load_document(Path(args.signature))
+        verified = verify_artifact_signature(Path(args.artifact), signature, Path(args.public_key))
+    except (ArtifactSignatureError, OSError, ValueError):
+        verified = False
+    print(json.dumps({"status": "pass" if verified else "fail", "verified": verified}, indent=2))
+    if not verified:
+        raise SystemExit(1)
+
+
+def _sign_output(path: Path, args: argparse.Namespace, *, required: bool) -> Path | None:
+    _validate_output_signature_args(args, required=required)
+    private_key = getattr(args, "private_key", None)
+    key_id = getattr(args, "key_id", None)
+    signature_out = getattr(args, "signature_out", None)
+    supplied = [bool(private_key), bool(key_id), bool(signature_out)]
+    if not any(supplied):
+        return None
+    try:
+        signature = sign_artifact(path, Path(private_key), key_id=str(key_id))
+        output = Path(signature_out)
+        atomic_write_json(output, signature)
+        return output
+    except ArtifactSignatureError:
+        print(json.dumps({"status": "fail", "error": "artifact signing failed"}))
+        raise SystemExit(1) from None
+
+
+def _validate_output_signature_args(args: argparse.Namespace, *, required: bool) -> None:
+    supplied = [
+        bool(getattr(args, "private_key", None)),
+        bool(getattr(args, "key_id", None)),
+        bool(getattr(args, "signature_out", None)),
+    ]
+    if required and not all(supplied):
+        print(json.dumps({"status": "fail", "error": "production artifact signature is required"}))
+        raise SystemExit(1)
+    if any(supplied) and not all(supplied):
+        print(json.dumps({"status": "fail", "error": "private key, key id, and signature output must be provided together"}))
+        raise SystemExit(1)
+
+
+def _verify_input_signature(
+    artifact: Path,
+    signature_path: str | None,
+    public_key: str | None,
+    *,
+    required: bool,
+) -> None:
+    if not signature_path and not public_key and not required:
+        return
+    if not signature_path or not public_key:
+        print(json.dumps({"status": "fail", "error": "production input artifact signature is required"}))
+        raise SystemExit(1)
+    try:
+        signature = _load_document(Path(signature_path))
+        verified = verify_artifact_signature(artifact, signature, Path(public_key))
+    except (OSError, ValueError, ArtifactSignatureError):
+        verified = False
+    if not verified:
+        print(json.dumps({"status": "fail", "error": "artifact signature verification failed"}))
         raise SystemExit(1)
 
 
@@ -708,8 +829,7 @@ def cmd_evaluate_ft(args: argparse.Namespace) -> None:
     )
     metrics, predictions = evaluate_adapter(client, read_jsonl(Path(args.data)))
     output = Path(args.predictions)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps({"metrics": metrics, "records": predictions}, ensure_ascii=False, indent=2), encoding="utf-8")
+    atomic_write_json(output, {"metrics": metrics, "records": predictions})
     print(json.dumps(metrics, ensure_ascii=False, indent=2))
 
 
@@ -956,9 +1076,7 @@ def _model_catalog(model_config: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _append_jsonl(path: Path, value: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8", newline="\n") as handle:
-        handle.write(json.dumps(value, ensure_ascii=False, separators=(",", ":")) + "\n")
+    append_jsonl(path, value)
 
 
 def _add_router_args(parser: argparse.ArgumentParser) -> None:
@@ -987,6 +1105,14 @@ def _add_local_adapter_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--base-model")
     parser.add_argument("--device", default="auto")
     parser.add_argument("--max-new-tokens", type=int, default=1024)
+
+
+def _add_output_signature_args(parser: argparse.ArgumentParser, *, production_flag: bool = False) -> None:
+    parser.add_argument("--private-key", help="Ed25519 private key PEM path; never embedded in the artifact")
+    parser.add_argument("--key-id", help="public identifier for the signing key")
+    parser.add_argument("--signature-out", help="detached signature artifact output path")
+    if production_flag:
+        parser.add_argument("--production", action="store_true", help="require a detached signature for this artifact")
 
 
 def _add_execution_args(parser: argparse.ArgumentParser) -> None:
@@ -1084,6 +1210,7 @@ def build_parser() -> argparse.ArgumentParser:
     gate_bandit.add_argument("--max-switch-rate", type=float, default=0.50)
     gate_bandit.add_argument("--max-skip-rate", type=float, default=0.80)
     gate_bandit.add_argument("--no-fail", action="store_true")
+    _add_output_signature_args(gate_bandit, production_flag=True)
     gate_bandit.set_defaults(func=cmd_gate_bandit)
 
     monitor_bandit = subparsers.add_parser("monitor-bandit", help="evaluate live canary rollout health from orchestration traces")
@@ -1138,6 +1265,9 @@ def build_parser() -> argparse.ArgumentParser:
     release_bandit.add_argument("--report", default=str(DEFAULT_RUNTIME_ARTIFACTS / "bandit-release.md"))
     release_bandit.add_argument("--require-monitor", action="store_true")
     release_bandit.add_argument("--no-fail", action="store_true")
+    release_bandit.add_argument("--promotion-signature")
+    release_bandit.add_argument("--public-key")
+    _add_output_signature_args(release_bandit, production_flag=True)
     release_bandit.set_defaults(func=cmd_build_bandit_release)
 
     activate_bandit = subparsers.add_parser("activate-bandit-release", help="validate and write the current bandit release pointer")
@@ -1147,6 +1277,9 @@ def build_parser() -> argparse.ArgumentParser:
     activate_bandit.add_argument("--channel", default="production")
     activate_bandit.add_argument("--allow-expired", action="store_true")
     activate_bandit.add_argument("--no-fail", action="store_true")
+    activate_bandit.add_argument("--manifest-signature")
+    activate_bandit.add_argument("--public-key")
+    _add_output_signature_args(activate_bandit)
     activate_bandit.set_defaults(func=cmd_activate_bandit_release)
 
     record_release = subparsers.add_parser("record-bandit-release", help="append an activated bandit release to the release registry")
@@ -1155,6 +1288,9 @@ def build_parser() -> argparse.ArgumentParser:
     record_release.add_argument("--registry", default=str(DEFAULT_RUNTIME_ARTIFACTS / "bandit-release-registry.json"))
     record_release.add_argument("--allow-expired", action="store_true")
     record_release.add_argument("--no-fail", action="store_true")
+    record_release.add_argument("--current-signature")
+    record_release.add_argument("--manifest-signature")
+    record_release.add_argument("--public-key")
     record_release.set_defaults(func=cmd_record_bandit_release)
 
     rollback_release = subparsers.add_parser("select-bandit-rollback", help="select the latest healthy prior bandit release for rollback")
@@ -1176,6 +1312,9 @@ def build_parser() -> argparse.ArgumentParser:
     apply_rollback.add_argument("--channel")
     apply_rollback.add_argument("--allow-expired", action="store_true")
     apply_rollback.add_argument("--no-fail", action="store_true")
+    apply_rollback.add_argument("--manifest-signature")
+    apply_rollback.add_argument("--public-key")
+    _add_output_signature_args(apply_rollback)
     apply_rollback.set_defaults(func=cmd_apply_bandit_rollback)
 
     verify_current = subparsers.add_parser("verify-bandit-current", help="verify the active bandit current pointer, manifest, state, and optional registry")
@@ -1187,6 +1326,9 @@ def build_parser() -> argparse.ArgumentParser:
     verify_current.add_argument("--require-registry", action="store_true")
     verify_current.add_argument("--allow-expired", action="store_true")
     verify_current.add_argument("--no-fail", action="store_true")
+    verify_current.add_argument("--current-signature")
+    verify_current.add_argument("--manifest-signature")
+    verify_current.add_argument("--public-key")
     verify_current.set_defaults(func=cmd_verify_bandit_current)
 
     build_bundle = subparsers.add_parser("build-bandit-runtime-bundle", help="freeze current bandit runtime artifacts into an auditable bundle manifest")
@@ -1199,6 +1341,10 @@ def build_parser() -> argparse.ArgumentParser:
     build_bundle.add_argument("--model-config")
     build_bundle.add_argument("--out", default=str(DEFAULT_RUNTIME_ARTIFACTS / "bandit-runtime-bundle.json"))
     build_bundle.add_argument("--no-fail", action="store_true")
+    build_bundle.add_argument("--current-signature")
+    build_bundle.add_argument("--manifest-signature")
+    build_bundle.add_argument("--public-key")
+    _add_output_signature_args(build_bundle)
     build_bundle.set_defaults(func=cmd_build_bandit_runtime_bundle)
 
     verify_bundle = subparsers.add_parser("verify-bandit-runtime-bundle", help="verify that runtime artifacts still match a bandit runtime bundle")
@@ -1213,7 +1359,24 @@ def build_parser() -> argparse.ArgumentParser:
     verify_bundle.add_argument("--out", default=str(DEFAULT_RUNTIME_ARTIFACTS / "bandit-runtime-bundle-verification.json"))
     verify_bundle.add_argument("--allow-expired", action="store_true")
     verify_bundle.add_argument("--no-fail", action="store_true")
+    verify_bundle.add_argument("--bundle-signature")
+    verify_bundle.add_argument("--current-signature")
+    verify_bundle.add_argument("--manifest-signature")
+    verify_bundle.add_argument("--public-key")
     verify_bundle.set_defaults(func=cmd_verify_bandit_runtime_bundle)
+
+    sign = subparsers.add_parser("sign-artifact", help="create an Ed25519 detached signature for an artifact")
+    sign.add_argument("--artifact", required=True)
+    sign.add_argument("--private-key", required=True)
+    sign.add_argument("--key-id", required=True)
+    sign.add_argument("--out", required=True)
+    sign.set_defaults(func=cmd_sign_artifact)
+
+    verify_signature = subparsers.add_parser("verify-artifact", help="verify an Ed25519 detached artifact signature")
+    verify_signature.add_argument("--artifact", required=True)
+    verify_signature.add_argument("--signature", required=True)
+    verify_signature.add_argument("--public-key", required=True)
+    verify_signature.set_defaults(func=cmd_verify_artifact)
 
     validate = subparsers.add_parser("validate-graphs", help="validate graph definitions")
     validate.add_argument("--graphs", default=str(DEFAULT_GRAPHS))

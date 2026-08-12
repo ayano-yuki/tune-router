@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import unittest
+import tempfile
+from pathlib import Path
 
+from tune_artifacts import read_registry
 from tune_bandit import (
     BanditMonitorConfig,
     BanditPolicyConfig,
@@ -22,6 +25,7 @@ from tune_bandit import (
     plan_bandit_rollout,
     replay_bandit_policy,
     select_bandit_rollback_release,
+    update_bandit_release_registry,
     validate_bandit_rollout_binding,
     validate_bandit_rollout_artifacts,
     validate_bandit_release_manifest,
@@ -406,6 +410,28 @@ class BanditTests(unittest.TestCase):
         self.assertEqual(1, registry["summary"]["entries"])
         self.assertEqual(manifest["release_id"], registry["entries"][0]["release_id"])
         self.assertEqual(artifact_digest(manifest), registry["entries"][0]["manifest_digest"])
+
+    def test_release_registry_writer_is_idempotent_and_revisioned(self) -> None:
+        state = build_bandit_state([self._trace("p1", "parallel_experts", 5)])
+        manifest = build_bandit_release_manifest(
+            state=state,
+            rollout=plan_bandit_rollout(promotion={"status": "pass"}, monitor=None, state=state),
+            promotion={"status": "pass"},
+        )
+        current = build_bandit_current_release(
+            manifest=manifest,
+            manifest_path="bandit-release.json",
+            channel="production",
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "registry.json"
+            first = update_bandit_release_registry(path, current=current, manifest=manifest)
+            second = update_bandit_release_registry(path, current=current, manifest=manifest)
+            stored = read_registry(path, expected_format="tune-orchestrator-bandit-release-registry-v1")
+        self.assertEqual(1, first["revision"])
+        self.assertEqual(2, second["revision"])
+        self.assertEqual(1, second["summary"]["entries"])
+        self.assertEqual(second, stored)
 
     def test_current_artifact_verification_checks_state_and_registry(self) -> None:
         state = build_bandit_state([self._trace("p1", "parallel_experts", 5)])

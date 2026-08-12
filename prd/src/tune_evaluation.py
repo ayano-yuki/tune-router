@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import io
 import json
 import math
 import random
@@ -10,6 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from tune_artifacts import atomic_write_text
 from tune_constants import LABEL_TO_MODEL, MULTI_AGENT_GRAPHS
 from tune_models import RouterSignal
 from tune_selector import GraphSelector
@@ -126,8 +128,8 @@ def write_evaluation_outputs(
     _write_csv(out_dir / "router-evaluation-details.csv", details)
     _write_csv(out_dir / "pareto-quality-cost.csv", [row for row in pareto if row["axis"] == "cost"])
     _write_csv(out_dir / "pareto-quality-latency.csv", [row for row in pareto if row["axis"] == "latency"])
-    (out_dir / "verification-report.md").write_text(_report_markdown(summaries), encoding="utf-8", newline="\n")
-    (out_dir / "failure-analysis.md").write_text(_failure_markdown(details), encoding="utf-8", newline="\n")
+    atomic_write_text(out_dir / "verification-report.md", _report_markdown(summaries))
+    atomic_write_text(out_dir / "failure-analysis.md", _failure_markdown(details))
 
 
 def summarize_traces(traces: list[dict[str, Any]]) -> dict[str, Any]:
@@ -220,7 +222,6 @@ def summarize_traces(traces: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def write_trace_report(path: Path, summary: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
         "# Orchestration Trace Report",
         "",
@@ -244,7 +245,7 @@ def write_trace_report(path: Path, summary: dict[str, Any]) -> None:
     lines.extend(["", "## Stop Reasons", ""])
     lines.extend(f"- `{name}`: {count}" for name, count in summary["stop_reasons"].items())
     lines.append("")
-    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    atomic_write_text(path, "\n".join(lines))
 
 
 def _has_path(value: dict[str, Any], path: tuple[str, ...]) -> bool:
@@ -457,12 +458,13 @@ def _pareto_rows(summaries: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
     if not rows:
-        path.write_text("", encoding="utf-8")
+        atomic_write_text(path, "")
         return
-    with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
+    output = io.StringIO(newline="")
+    writer = csv.DictWriter(output, fieldnames=list(rows[0]), lineterminator="\n")
+    writer.writeheader()
+    writer.writerows(rows)
+    atomic_write_text(path, output.getvalue())
 
 
 def _report_markdown(summaries: list[dict[str, Any]]) -> str:

@@ -14,6 +14,7 @@ VERSION = "0.2.0"
 DIST_INFO = f"{NORMALIZED}-{VERSION}.dist-info"
 ROOT = Path(__file__).resolve().parent
 MODULES = (
+    "tune_artifacts",
     "tune_bandit",
     "tune_cli",
     "tune_clients",
@@ -104,6 +105,8 @@ def _metadata() -> str:
             "Summary: Learned graph orchestrator and router evaluation harness for TuneRouter",
             "Requires-Python: >=3.11",
             "Requires-Dist: PyYAML>=6.0",
+            "Provides-Extra: security",
+            "Requires-Dist: cryptography>=43.0.0,<47; extra == 'security'",
             "",
         ]
     )

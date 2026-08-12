@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from tune_artifacts import atomic_write_json
 from tune_learned import PlanClient, parse_plan
 
 
@@ -93,23 +94,18 @@ def train_orchestrator(args: Any) -> None:
     trainer.train()
     trainer.save_model(str(args.output))
     tokenizer.save_pretrained(str(args.output))
-    (Path(args.output) / "orchestrator_config.json").write_text(
-        json.dumps(
-            {
-                "format": "tune-orchestrator-adapter-v1",
-                "base_model": args.base_model,
-                "training_method": "lora_causal_lm_sft",
-                "train_examples": len(train_records),
-                "dev_examples": len(dev_records),
-                "max_length": args.max_length,
-                "lora_r": args.lora_r,
-                "lora_alpha": args.lora_alpha,
-            },
-            indent=2,
-            sort_keys=True,
-        ),
-        encoding="utf-8",
-        newline="\n",
+    atomic_write_json(
+        Path(args.output) / "orchestrator_config.json",
+        {
+            "format": "tune-orchestrator-adapter-v1",
+            "base_model": args.base_model,
+            "training_method": "lora_causal_lm_sft",
+            "train_examples": len(train_records),
+            "dev_examples": len(dev_records),
+            "max_length": args.max_length,
+            "lora_r": args.lora_r,
+            "lora_alpha": args.lora_alpha,
+        },
     )
 
 
