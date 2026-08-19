@@ -290,6 +290,8 @@ uv run --project .\prd tune-orchestrator evaluate `
 Random、Always Small、Always Large、Best Single、Rule-based、Graph Selector、追加predictionを同じ結果表で比較し、
 Quality、Routing Accuracy、Regret、Cost、Latency、success rate、multi-agent過不足、Pareto CSVを出力します。
 
+このcommandは現行MVPの評価harnessです。全候補Outcome Matrix、utility profile別Oracle/regret、routing collapse、KNN/MLPを含む共通baseline suiteへの拡張要件は、`TODO.md` のPRD-016〜PRD-018を正本とします。実装順も、運用機構の追加より先に固定モデルに対するQuality/Cost/Latency上の増分価値を検証する順へ変更しています。
+
 実行traceの完全性、verifier pass、repair成功率、ループ回数、cost/latencyは次で集計できます。
 
 ```powershell
