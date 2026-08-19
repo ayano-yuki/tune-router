@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from tune_artifacts import atomic_write_json
 from tune_constants import LABELS
 from tune_training import import_training_dependencies
 
@@ -249,8 +250,7 @@ def write_router_dataset(out_dir: Path, dataset: dict[str, Any]) -> None:
 
 
 def write_json(path: Path, value: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    atomic_write_json(path, value)
 
 
 def _normalize_source_record(record: dict[str, Any], source: str, min_text_chars: int) -> dict[str, Any] | None:

@@ -12,6 +12,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 EXPECTED_MODULES = {
+    "tune_artifacts",
     "tune_bandit",
     "tune_cli",
     "tune_clients",
@@ -68,6 +69,11 @@ class PackagingTests(unittest.TestCase):
             self.assertTrue(any(name.startswith("graph_definitions/") for name in names))
             self.assertFalse(any("test" in Path(name).parts for name in names))
             self.assertFalse(any(name in {"models.py", "cli.py", "training.py", "__init__.py"} for name in names))
+            metadata = next(name for name in names if name.endswith(".dist-info/METADATA"))
+            with zipfile.ZipFile(wheel_path) as wheel:
+                metadata_text = wheel.read(metadata).decode("utf-8")
+            self.assertIn("Provides-Extra: security", metadata_text)
+            self.assertIn("Requires-Dist: cryptography>=43.0.0,<47; extra == 'security'", metadata_text)
 
             env = os.environ.copy()
             env["PYTHONPATH"] = str(site)

@@ -359,7 +359,7 @@ promotion artifact formatは `tune-router-promotion-v1` とし、`status`、cand
 
 ## PRD-008 Atomic artifact registry and signatures
 
-- [ ] JSON fileの単純上書きを廃止し、並行更新、途中書込、改ざんを検出できるartifact基盤へ統一する。
+- [x] JSON fileの単純上書きを廃止し、並行更新、途中書込、改ざんを検出できるartifact基盤へ統一する。
 
 ### Implementation
 

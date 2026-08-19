@@ -532,7 +532,11 @@ uv run --project ./prd tune-orchestrator gate-bandit \
   --min-mean-reward-delta 0.0 \
   --max-loss-rate 0.05 \
   --max-switch-rate 0.50 \
-  --max-skip-rate 0.80
+  --max-skip-rate 0.80 \
+  --production \
+  --private-key /run/secrets/artifact-signing-key.pem \
+  --key-id production-2026 \
+  --signature-out ./prd/artifacts/runtime/bandit-promotion.sig.json
 ```
 
 `status=fail` の場合、既定ではexit code 1で終了します。手元確認だけで失敗終了を避ける場合は
@@ -660,11 +664,17 @@ uv run --project ./prd tune-orchestrator build-bandit-release \
   --rollout ./prd/artifacts/runtime/bandit-rollout.json \
   --bandit-state ./prd/artifacts/runtime/bandit-state.json \
   --promotion ./prd/artifacts/runtime/bandit-promotion.json \
+  --promotion-signature ./prd/artifacts/runtime/bandit-promotion.sig.json \
+  --public-key ./prd/config/artifact-signing-public.pem \
   --monitor ./prd/artifacts/runtime/bandit-monitor.json \
   --verification ./prd/artifacts/runtime/bandit-rollout-verification.json \
   --require-monitor \
   --out ./prd/artifacts/runtime/bandit-release.json \
-  --report ./prd/artifacts/runtime/bandit-release.md
+  --report ./prd/artifacts/runtime/bandit-release.md \
+  --production \
+  --private-key /run/secrets/artifact-signing-key.pem \
+  --key-id production-2026 \
+  --signature-out ./prd/artifacts/runtime/bandit-release.sig.json
 ```
 
 runtimeへはrelease manifestを渡すのを推奨します。
@@ -672,9 +682,14 @@ runtimeへはrelease manifestを渡すのを推奨します。
 ```bash
 uv run --project ./prd tune-orchestrator activate-bandit-release \
   --manifest ./prd/artifacts/runtime/bandit-release.json \
+  --manifest-signature ./prd/artifacts/runtime/bandit-release.sig.json \
+  --public-key ./prd/config/artifact-signing-public.pem \
   --bandit-state ./prd/artifacts/runtime/bandit-state.json \
   --out ./prd/artifacts/runtime/bandit-current.json \
-  --channel production
+  --channel production \
+  --private-key /run/secrets/artifact-signing-key.pem \
+  --key-id production-2026 \
+  --signature-out ./prd/artifacts/runtime/bandit-current.sig.json
 ```
 
 activation後はrelease registryへ記録します。registryは同じrelease id、channel、manifest digestの再登録を1件へ畳み込みます。
@@ -682,7 +697,10 @@ activation後はrelease registryへ記録します。registryは同じrelease id
 ```bash
 uv run --project ./prd tune-orchestrator record-bandit-release \
   --current ./prd/artifacts/runtime/bandit-current.json \
+  --current-signature ./prd/artifacts/runtime/bandit-current.sig.json \
   --manifest ./prd/artifacts/runtime/bandit-release.json \
+  --manifest-signature ./prd/artifacts/runtime/bandit-release.sig.json \
+  --public-key ./prd/config/artifact-signing-public.pem \
   --registry ./prd/artifacts/runtime/bandit-release-registry.json
 ```
 
@@ -704,9 +722,14 @@ rollbackを適用する場合は、候補に記録されたmanifest digestと実
 uv run --project ./prd tune-orchestrator apply-bandit-rollback \
   --rollback ./prd/artifacts/runtime/bandit-rollback.json \
   --manifest ./prd/artifacts/runtime/bandit-release-previous.json \
+  --manifest-signature ./prd/artifacts/runtime/bandit-release-previous.sig.json \
+  --public-key ./prd/config/artifact-signing-public.pem \
   --bandit-state ./prd/artifacts/runtime/bandit-state-previous.json \
   --out ./prd/artifacts/runtime/bandit-current.json \
-  --registry ./prd/artifacts/runtime/bandit-release-registry.json
+  --registry ./prd/artifacts/runtime/bandit-release-registry.json \
+  --private-key /run/secrets/artifact-signing-key.pem \
+  --key-id production-2026 \
+  --signature-out ./prd/artifacts/runtime/bandit-current.sig.json
 ```
 
 runtime起動前の最終gateとして、current pointer、release manifest、bandit state、release registryを照合します。
@@ -714,6 +737,9 @@ runtime起動前の最終gateとして、current pointer、release manifest、ba
 ```bash
 uv run --project ./prd tune-orchestrator verify-bandit-current \
   --current ./prd/artifacts/runtime/bandit-current.json \
+  --current-signature ./prd/artifacts/runtime/bandit-current.sig.json \
+  --manifest-signature ./prd/artifacts/runtime/bandit-release.sig.json \
+  --public-key ./prd/config/artifact-signing-public.pem \
   --bandit-state ./prd/artifacts/runtime/bandit-state.json \
   --registry ./prd/artifacts/runtime/bandit-release-registry.json \
   --require-registry \
@@ -726,20 +752,32 @@ release registry、graph定義、model configのdigestを固定します。
 ```bash
 uv run --project ./prd tune-orchestrator build-bandit-runtime-bundle \
   --current ./prd/artifacts/runtime/bandit-current.json \
+  --current-signature ./prd/artifacts/runtime/bandit-current.sig.json \
+  --manifest-signature ./prd/artifacts/runtime/bandit-release.sig.json \
+  --public-key ./prd/config/artifact-signing-public.pem \
   --bandit-state ./prd/artifacts/runtime/bandit-state.json \
   --current-verification ./prd/artifacts/runtime/bandit-current-verification.json \
   --registry ./prd/artifacts/runtime/bandit-release-registry.json \
   --graphs ./prd/graphs \
   --model-config ./prd/config/model-endpoints.yaml \
-  --out ./prd/artifacts/runtime/bandit-runtime-bundle.json
+  --out ./prd/artifacts/runtime/bandit-runtime-bundle.json \
+  --private-key /run/secrets/artifact-signing-key.pem \
+  --key-id production-2026 \
+  --signature-out ./prd/artifacts/runtime/bandit-runtime-bundle.sig.json
 ```
+
+署名操作には `uv sync --project ./prd --extra security` でsecurity extraを導入します。private keyはrepository、artifact、command outputへ保存せず、release jobのread-only secret mountから渡します。個別検証は `verify-artifact --artifact <path> --signature <sig.json> --public-key <public.pem>` を使います。
 
 systemd unit、Kubernetes Job、release pipelineなどの起動直前にbundle照合を入れます。
 
 ```bash
 uv run --project ./prd tune-orchestrator verify-bandit-runtime-bundle \
   --bundle ./prd/artifacts/runtime/bandit-runtime-bundle.json \
+  --bundle-signature ./prd/artifacts/runtime/bandit-runtime-bundle.sig.json \
   --current ./prd/artifacts/runtime/bandit-current.json \
+  --current-signature ./prd/artifacts/runtime/bandit-current.sig.json \
+  --manifest-signature ./prd/artifacts/runtime/bandit-release.sig.json \
+  --public-key ./prd/config/artifact-signing-public.pem \
   --bandit-state ./prd/artifacts/runtime/bandit-state.json \
   --current-verification ./prd/artifacts/runtime/bandit-current-verification.json \
   --registry ./prd/artifacts/runtime/bandit-release-registry.json \

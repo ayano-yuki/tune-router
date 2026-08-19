@@ -8,6 +8,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from tune_artifacts import artifact_digest, atomic_write_json, atomic_write_text, update_registry
 from tune_models import RouteDecision, RouterSignal
 from tune_selector import GraphSelector
 from tune_shadow import ShadowConfig, build_shadow_decisions
@@ -140,8 +141,7 @@ def _iter_bandit_observation_traces(traces: list[dict[str, Any]]) -> list[dict[s
 
 
 def write_bandit_state(path: Path, state: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(state, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    atomic_write_json(path, state)
 
 
 def load_bandit_state(path: Path) -> dict[str, Any]:
@@ -266,7 +266,6 @@ def replay_bandit_policy(
 
 
 def write_bandit_replay_report(path: Path, replay: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
     summary = replay["summary"]
     lines = [
         "# Bandit Replay Report",
@@ -304,7 +303,7 @@ def write_bandit_replay_report(path: Path, replay: dict[str, Any]) -> None:
             f"{float(row['reward_delta']):.4f} | {int(row['candidate_count'])} |"
         )
     lines.append("")
-    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    atomic_write_text(path, "\n".join(lines))
 
 
 def evaluate_bandit_promotion(
@@ -361,7 +360,6 @@ def evaluate_bandit_promotion(
 
 
 def write_bandit_promotion_report(path: Path, promotion: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
     summary = promotion["summary"]
     lines = [
         "# Bandit Promotion Gate",
@@ -384,7 +382,7 @@ def write_bandit_promotion_report(path: Path, promotion: dict[str, Any]) -> None
             f"{float(check['actual']):.4f} | {float(check['threshold']):.4f} |"
         )
     lines.append("")
-    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    atomic_write_text(path, "\n".join(lines))
 
 
 def monitor_bandit_rollout(
@@ -460,7 +458,6 @@ def monitor_bandit_rollout(
 
 
 def write_bandit_monitor_report(path: Path, monitor: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
     summary = monitor["summary"]
     bandit = summary["bandit"]
     baseline = summary["baseline"]
@@ -494,7 +491,7 @@ def write_bandit_monitor_report(path: Path, monitor: dict[str, Any]) -> None:
     else:
         lines.append("- none")
     lines.append("")
-    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    atomic_write_text(path, "\n".join(lines))
 
 
 def plan_bandit_rollout(
@@ -572,8 +569,7 @@ def plan_bandit_rollout(
 
 
 def write_bandit_rollout_plan(path: Path, plan: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(plan, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    atomic_write_json(path, plan)
 
 
 def validate_bandit_rollout_binding(
@@ -687,7 +683,6 @@ def validate_bandit_rollout_artifacts(
 
 
 def write_bandit_artifact_verification_report(path: Path, verification: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
         "# Bandit Rollout Artifact Verification",
         "",
@@ -718,7 +713,7 @@ def write_bandit_artifact_verification_report(path: Path, verification: dict[str
             f"{float(check['actual']):.4f} | {float(check['threshold']):.4f} |"
         )
     lines.append("")
-    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    atomic_write_text(path, "\n".join(lines))
 
 
 def build_bandit_release_manifest(
@@ -858,12 +853,10 @@ def validate_bandit_release_manifest(
 
 
 def write_bandit_release_manifest(path: Path, manifest: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    atomic_write_json(path, manifest)
 
 
 def write_bandit_release_report(path: Path, manifest: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
         "# Bandit Release Manifest",
         "",
@@ -881,7 +874,7 @@ def write_bandit_release_report(path: Path, manifest: dict[str, Any]) -> None:
     lines.extend(["", "## Reasons", ""])
     lines.extend(f"- {reason}" for reason in manifest.get("reasons", []))
     lines.append("")
-    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    atomic_write_text(path, "\n".join(lines))
 
 
 def build_bandit_current_release(
@@ -1143,8 +1136,7 @@ def validate_bandit_runtime_bundle(
 
 
 def write_bandit_current_release(path: Path, current: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(current, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+    atomic_write_json(path, current)
 
 
 def append_bandit_release_registry(
@@ -1227,13 +1219,26 @@ def select_bandit_rollback_release(
     }
 
 
-def write_bandit_release_registry(path: Path, registry: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(registry, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8", newline="\n")
+def update_bandit_release_registry(
+    path: Path,
+    *,
+    current: dict[str, Any],
+    manifest: dict[str, Any],
+    expected_revision: int | None = None,
+) -> dict[str, Any]:
+    return update_registry(
+        path,
+        expected_format="tune-orchestrator-bandit-release-registry-v1",
+        expected_revision=expected_revision,
+        update=lambda registry: append_bandit_release_registry(
+            registry=registry,
+            current=current,
+            manifest=manifest,
+        ),
+    )
 
 
 def write_bandit_rollback_report(path: Path, rollback: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
     candidate = rollback.get("candidate") or {}
     lines = [
         "# Bandit Rollback Candidate",
@@ -1260,7 +1265,7 @@ def write_bandit_rollback_report(path: Path, rollback: dict[str, Any]) -> None:
     lines.extend(["## Reasons", ""])
     lines.extend(f"- {reason}" for reason in rollback.get("reasons", []))
     lines.append("")
-    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    atomic_write_text(path, "\n".join(lines))
 
 
 def validate_bandit_rollback_candidate(
@@ -1365,7 +1370,6 @@ def build_bandit_rollback_current_release(
 
 
 def write_bandit_rollout_report(path: Path, plan: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
         "# Bandit Rollout Plan",
         "",
@@ -1395,7 +1399,7 @@ def write_bandit_rollout_report(path: Path, plan: dict[str, Any]) -> None:
     ]
     lines.extend(f"- {reason}" for reason in plan.get("reasons", []))
     lines.append("")
-    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    atomic_write_text(path, "\n".join(lines))
 
 
 def apply_bandit_policy(
@@ -1797,10 +1801,6 @@ def _optional_digest_check(expected: Any, actual: Any) -> dict[str, Any]:
     if expected is None:
         return _promotion_check(True, 1, 1)
     return _promotion_check(expected == actual, 1 if expected == actual else 0, 1)
-
-
-def artifact_digest(value: Any) -> str:
-    return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
 
 
 def _utc_now() -> str:
