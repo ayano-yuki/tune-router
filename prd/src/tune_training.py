@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from learned import PlanClient, parse_plan
+from tune_learned import PlanClient, parse_plan
 
 
 DEFAULT_ORCHESTRATOR_MODEL = "Qwen/Qwen2.5-1.5B-Instruct"

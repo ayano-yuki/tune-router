@@ -17,7 +17,7 @@ training = [
 ]
 
 [project.scripts]
-tune-orchestrator = "cli:main"
+tune-orchestrator = "tune_cli:main"
 
 [build-system]
 requires = []

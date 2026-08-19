@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from router_learning import (
+from tune_router_learning import (
     RouterContinualConfig,
     RouterDataConfig,
     RouterMergeConfig,

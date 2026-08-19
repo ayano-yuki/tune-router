@@ -13,6 +13,24 @@ NORMALIZED = "tune_orchestrator"
 VERSION = "0.2.0"
 DIST_INFO = f"{NORMALIZED}-{VERSION}.dist-info"
 ROOT = Path(__file__).resolve().parent
+MODULES = (
+    "tune_bandit",
+    "tune_cli",
+    "tune_clients",
+    "tune_composition",
+    "tune_constants",
+    "tune_evaluation",
+    "tune_executor",
+    "tune_ft_data",
+    "tune_graphs",
+    "tune_learned",
+    "tune_models",
+    "tune_ops",
+    "tune_router_learning",
+    "tune_selector",
+    "tune_shadow",
+    "tune_training",
+)
 
 
 def get_requires_for_build_wheel(config_settings=None):  # noqa: ANN001
@@ -46,9 +64,10 @@ def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
     records: list[tuple[str, bytes]] = []
 
     with zipfile.ZipFile(wheel_path, "w", compression=zipfile.ZIP_DEFLATED) as wheel:
-        for path in sorted((ROOT / "src").glob("*.py")):
-            if path.name == "__init__.py":
-                continue
+        for module in MODULES:
+            path = ROOT / "src" / f"{module}.py"
+            if not path.is_file():
+                raise FileNotFoundError(f"wheel module is missing: {path}")
             _write(wheel, records, path.name, path.read_bytes())
 
         graphs = ROOT / "graphs"
@@ -103,7 +122,7 @@ def _wheel_metadata() -> str:
 
 
 def _entry_points() -> str:
-    return "[console_scripts]\ntune-orchestrator = cli:main\n"
+    return "[console_scripts]\ntune-orchestrator = tune_cli:main\n"
 
 
 def _write(wheel: zipfile.ZipFile, records: list[tuple[str, bytes]], name: str, data: bytes) -> None:

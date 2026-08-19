@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from evaluation import evaluate_offline, summarize_traces, write_evaluation_outputs
+from tune_evaluation import evaluate_offline, summarize_traces, write_evaluation_outputs
 
 
 class EvaluationTests(unittest.TestCase):

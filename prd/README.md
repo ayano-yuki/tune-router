@@ -13,6 +13,8 @@ verification/repair loop、予算停止、JSONL trace、Query x Candidate結果�
 uv sync --project .\prd
 ```
 
+Public interfaceは `tune-orchestrator` CLIです。`prd/src` 直下の `tune_*` Python moduleは内部実装であり、互換性を保証するpublic Python APIではありません。
+
 ## Dataset
 
 日本語データセットは`prd/artifacts/`を正本として使用します。

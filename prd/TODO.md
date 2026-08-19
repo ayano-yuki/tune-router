@@ -452,7 +452,7 @@ promotion artifact formatは `tune-router-promotion-v1` とし、`status`、cand
 
 ## PRD-011 Collision-safe flat source modules
 
-- [ ] `prd/src` 直下という制約を維持しながら、`models`、`cli`、`training` 等の一般名によるimport衝突を解消する。
+- [x] `prd/src` 直下という制約を維持しながら、`models`、`cli`、`training` 等の一般名によるimport衝突を解消する。
 
 ### Rename map
 

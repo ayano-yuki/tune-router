@@ -3,8 +3,8 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from graphs import load_graphs
-from ops import required_model_aliases, validate_local_orchestrator_adapter, validate_model_config
+from tune_graphs import load_graphs
+from tune_ops import required_model_aliases, validate_local_orchestrator_adapter, validate_model_config
 
 
 GRAPHS = Path(__file__).resolve().parents[2] / "graphs"

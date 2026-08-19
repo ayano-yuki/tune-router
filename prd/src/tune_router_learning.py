@@ -9,8 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from constants import LABELS
-from training import import_training_dependencies
+from tune_constants import LABELS
+from tune_training import import_training_dependencies
 
 
 ROUTER_DATA_FORMAT = "tune-router-training-data-v1"
